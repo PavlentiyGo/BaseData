@@ -1,14 +1,14 @@
 ﻿namespace BaseData
 {
-    partial class Form1
+    partial class Form2
     {
         /// <summary>
-        ///  Required designer variable.
+        /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        ///  Clean up any resources being used.
+        /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
@@ -23,8 +23,8 @@
         #region Windows Form Designer generated code
 
         /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
@@ -36,31 +36,30 @@
             // dataGridView1
             // 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(0, 0);
+            dataGridView1.Location = new Point(0, 2);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(788, 438);
+            dataGridView1.Size = new Size(805, 452);
             dataGridView1.TabIndex = 0;
             // 
             // button1
             // 
-            button1.Location = new Point(255, 23);
+            button1.Location = new Point(410, 392);
             button1.Name = "button1";
-            button1.Size = new Size(286, 41);
+            button1.Size = new Size(75, 23);
             button1.TabIndex = 1;
-            button1.Text = "Подключиться";
+            button1.Text = "Закрыть";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
-            // Form1
+            // Form2
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(button1);
             Controls.Add(dataGridView1);
-            Name = "Form1";
-            Text = "Form1";
-            Load += Form1_Load;
+            Name = "Form2";
+            Text = "Form2";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
         }
