@@ -33,14 +33,12 @@
             BdText = new TextBox();
             IdText = new TextBox();
             PasswordText = new TextBox();
-            dataGridView1 = new DataGridView();
             PortLabel = new Label();
             BdLabel = new Label();
             IdLabel = new Label();
             PasswordLabel = new Label();
             EntryButton = new Button();
             AutoButton = new Button();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // CloseButton
@@ -80,14 +78,6 @@
             PasswordText.Name = "PasswordText";
             PasswordText.Size = new Size(100, 23);
             PasswordText.TabIndex = 5;
-            // 
-            // dataGridView1
-            // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(-2, -5);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(805, 452);
-            dataGridView1.TabIndex = 0;
             // 
             // PortLabel
             // 
@@ -161,10 +151,8 @@
             Controls.Add(BdText);
             Controls.Add(PortText);
             Controls.Add(CloseButton);
-            Controls.Add(dataGridView1);
             Name = "Form2";
             Text = "Form2";
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -175,7 +163,6 @@
         private TextBox BdText;
         private TextBox IdText;
         private TextBox PasswordText;
-        private DataGridView dataGridView1;
         private Label PortLabel;
         private Label BdLabel;
         private Label IdLabel;

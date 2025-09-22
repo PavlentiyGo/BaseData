@@ -28,20 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            dataGridView1 = new DataGridView();
             CreateButton = new Button();
             AddButton = new Button();
             GetButton = new Button();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
-            // 
-            // dataGridView1
-            // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(0, 0);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(788, 438);
-            dataGridView1.TabIndex = 0;
             // 
             // CreateButton
             // 
@@ -81,17 +71,13 @@
             Controls.Add(GetButton);
             Controls.Add(AddButton);
             Controls.Add(CreateButton);
-            Controls.Add(dataGridView1);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
-
-        private DataGridView dataGridView1;
         private Button CreateButton;
         private Button AddButton;
         private Button GetButton;
