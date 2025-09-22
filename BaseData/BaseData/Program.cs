@@ -9,21 +9,15 @@ namespace WindowsFormsApp1
 {
     internal static class Program
     {
-
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            try
-            {
-                Application.Run(new Form1());
-            }
-            finally
-            {
-                Application.Exit();
-                Environment.Exit(0);
-            }
+            Application.Run(new Form1());
+            Application.Exit();
+            Environment.Exit(0);
+            
         }
     }
 }

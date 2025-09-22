@@ -39,7 +39,7 @@
             IdLabel = new Label();
             PasswordLabel = new Label();
             EntryButton = new Button();
-            button1 = new Button();
+            AutoButton = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
@@ -59,7 +59,6 @@
             PortText.Name = "PortText";
             PortText.Size = new Size(100, 23);
             PortText.TabIndex = 2;
-            PortText.TextChanged += PortText_TextChanged;
             // 
             // BdText
             // 
@@ -67,7 +66,6 @@
             BdText.Name = "BdText";
             BdText.Size = new Size(100, 23);
             BdText.TabIndex = 3;
-            BdText.TextChanged += BdText_TextChanged;
             // 
             // IdText
             // 
@@ -75,7 +73,6 @@
             IdText.Name = "IdText";
             IdText.Size = new Size(100, 23);
             IdText.TabIndex = 4;
-            IdText.TextChanged += IdText_TextChanged;
             // 
             // PasswordText
             // 
@@ -83,7 +80,6 @@
             PasswordText.Name = "PasswordText";
             PasswordText.Size = new Size(100, 23);
             PasswordText.TabIndex = 5;
-            PasswordText.TextChanged += textBox4_TextChanged;
             // 
             // dataGridView1
             // 
@@ -101,7 +97,6 @@
             PortLabel.TabIndex = 6;
             PortLabel.Text = "Порт";
             PortLabel.TextAlign = ContentAlignment.MiddleCenter;
-            PortLabel.Click += label1_Click_2;
             // 
             // BdLabel
             // 
@@ -111,7 +106,6 @@
             BdLabel.TabIndex = 7;
             BdLabel.Text = "Название БД";
             BdLabel.TextAlign = ContentAlignment.MiddleCenter;
-            BdLabel.Click += label2_Click_1;
             // 
             // IdLabel
             // 
@@ -121,7 +115,6 @@
             IdLabel.TabIndex = 8;
             IdLabel.Text = "Айди";
             IdLabel.TextAlign = ContentAlignment.MiddleCenter;
-            IdLabel.Click += label3_Click;
             // 
             // PasswordLabel
             // 
@@ -131,7 +124,6 @@
             PasswordLabel.TabIndex = 9;
             PasswordLabel.Text = "Пароль";
             PasswordLabel.TextAlign = ContentAlignment.MiddleCenter;
-            PasswordLabel.Click += label4_Click;
             // 
             // EntryButton
             // 
@@ -143,22 +135,22 @@
             EntryButton.UseVisualStyleBackColor = true;
             EntryButton.Click += EntryButton_Click;
             // 
-            // button1
+            // AutoButton
             // 
-            button1.Location = new Point(195, 267);
-            button1.Name = "button1";
-            button1.Size = new Size(100, 42);
-            button1.TabIndex = 11;
-            button1.Text = "Поставить автоматически";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click_1;
+            AutoButton.Location = new Point(195, 267);
+            AutoButton.Name = "AutoButton";
+            AutoButton.Size = new Size(100, 42);
+            AutoButton.TabIndex = 11;
+            AutoButton.Text = "Поставить автоматически";
+            AutoButton.UseVisualStyleBackColor = true;
+            AutoButton.Click += Auto_Click;
             // 
             // Form2
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(button1);
+            Controls.Add(AutoButton);
             Controls.Add(EntryButton);
             Controls.Add(PasswordLabel);
             Controls.Add(IdLabel);
@@ -189,6 +181,6 @@
         private Label IdLabel;
         private Label PasswordLabel;
         private Button EntryButton;
-        private Button button1;
+        private Button AutoButton;
     }
 }

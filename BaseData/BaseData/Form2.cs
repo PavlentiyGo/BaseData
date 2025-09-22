@@ -13,115 +13,64 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace BaseData
 {
+    public static class AppSettings
+    {
+        public static string sqlConnection { get; set; }
+    }
     public partial class Form2 : Form
     {
-        //string connectionString = "Server=localhost;Port=5432;Database=Internet-shop(Project); User Id = postgres; Password=WE<3ANGELINA";
         public Form2()
         {
             InitializeComponent();
-            string enteredText = PortText.Text;
-            Console.WriteLine(enteredText);
 
+            
         }
-
         private void SqlConnectionReader(string connectionString)
         {
             NpgsqlConnection sqlConnection = new NpgsqlConnection(connectionString);
-            sqlConnection.Open();
-            NpgsqlCommand command = new NpgsqlCommand();
-            command.Connection = sqlConnection;
-            command.CommandType = CommandType.Text;
-            command.CommandText = "SELECT * FROM clients";
-
-            NpgsqlDataReader dataReader = command.ExecuteReader();
-            if (dataReader.HasRows)
+            try
             {
-                DataTable data = new DataTable();
-                data.Load(dataReader);
-
-                dataGridView1.DataSource = data;
-
+                sqlConnection = new NpgsqlConnection(connectionString);
+                sqlConnection.Open();
+                if (sqlConnection.State == ConnectionState.Open)
+                {
+                    MessageBox.Show("Подключение успешно установлено!");
+                    NpgsqlCommand command = new NpgsqlCommand();
+                    command.Connection = sqlConnection;
+                }
             }
-            command.Dispose();
-            sqlConnection.Close();
+            catch (NpgsqlException ex)
+            {
+                MessageBox.Show($"Ошибка PostgreSQL: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Общая ошибка: {ex.Message}");
+            }
+            finally
+            {
+                sqlConnection?.Close();
+                sqlConnection?.Dispose();
+            }
         }
-
-
-
-
-
-
-
-
-
         private void button1_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click_2(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label4_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void PortText_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void BdText_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void IdText_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void EntryButton_Click(object sender, EventArgs e)
         {
-            string Connect = "Server=localhost;Port=";
-            Connect += PortText.Text;
-            Connect += ";Database=";
-            Connect += BdText.Text;
-            Connect += "; User Id = ";
-            Connect += IdText.Text;
-            Connect += "; Password=";
-            Connect += PasswordText.Text;
-            MessageBox.Show(Connect);
-            SqlConnectionReader(Connect);
+            AppSettings.sqlConnection = "Server=localhost;Port=";
+            AppSettings.sqlConnection += PortText.Text;
+            AppSettings.sqlConnection += ";Database=";
+            AppSettings.sqlConnection += BdText.Text;
+            AppSettings.sqlConnection += "; User Id = ";
+            AppSettings.sqlConnection += IdText.Text;
+            AppSettings.sqlConnection += "; Password=";
+            AppSettings.sqlConnection += PasswordText.Text;
+            SqlConnectionReader(AppSettings.sqlConnection);
         }
-        private void button1_Click_1(object sender, EventArgs e)
+        private void Auto_Click(object sender, EventArgs e)
         {
             PortText.Text = "5432";
             BdText.Text = "Internet-shop(Project)";
