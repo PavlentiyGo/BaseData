@@ -22,13 +22,11 @@ namespace BaseData
         {
             tabPage1.Text = "Клиенты";
             tabPage2.Text = "Товары";
-            TabPage tabPage3 = new TabPage("Продажи");
-            tabControl1.TabPages.Add(tabPage3);
-            tabPage2.Location = new Point(4, 24);
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(787, 420);
-            tabPage2.TabIndex = 1;
-            tabPage2.UseVisualStyleBackColor = true;
+            tabPage3.Text = "Продажи";
+            Clients clients = new Clients();
+            clients.Dock = DockStyle.Fill;
+            tabPage1.Controls.Add(clients);
+            clients.Show(AppSettings.sqlConnection);
         }
     }
 }
