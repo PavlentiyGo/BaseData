@@ -16,25 +16,17 @@ namespace BaseData
         public Form3()
         {
             InitializeComponent();
-            SqlGetDate();
+            CreateTabs();
         }
-        private void SqlGetDate()
+        private void CreateTabs()
         {
-            NpgsqlConnection sqlConnection = new NpgsqlConnection(AppSettings.sqlConnection);
-            sqlConnection.Open();
-            NpgsqlCommand command = new NpgsqlCommand();
-            command.Connection = sqlConnection;
-            command.CommandType = CommandType.Text;
-            command.CommandText = "SELECT * FROM clients";
-            NpgsqlDataReader dataReader = command.ExecuteReader();
-            if (dataReader.HasRows)
-            {
-                DataTable data = new DataTable();
-                data.Load(dataReader);
-                dataGridView1.DataSource = data;
-            }
-            command.Dispose();
-            sqlConnection.Close();
+            tabPage1.Text = "Клиенты";
+            tabPage2.Text = "Товары";
+            tabPage3.Text = "Продажи";
+            Clients clients = new Clients();
+            clients.Dock = DockStyle.Fill;
+            tabPage1.Controls.Add(clients);
+            clients.Show(AppSettings.sqlConnection);
         }
     }
 }
