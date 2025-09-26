@@ -1,4 +1,3 @@
-// Form1.cs (исправленный)
 using Npgsql;
 using System;
 using System.Windows.Forms;
@@ -37,13 +36,10 @@ namespace BaseData
                 return;
             }
 
-            // Открываем форму для добавления данных
             Form4 form4 = new Form4();
             form4.ShowDialog();
         }
 
-        // Form1.cs - улучшим обработку нажатия кнопки "Вывести данные"
-        // Form1.cs - убедимся, что обработчик корректен
         private void GetData_Click(object sender, EventArgs e)
         {
             try
@@ -55,17 +51,11 @@ namespace BaseData
                     return;
                 }
 
-                // Проверяем строку подключения
-                MessageBox.Show($"Подключение: {AppSettings.SqlConnection}", "Информация",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                 Form3 form3 = new Form3();
-                form3.ShowDialog(); // Используем ShowDialog вместо Show для диагностики
+                form3.ShowDialog();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка открытия Form3: {ex.Message}", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

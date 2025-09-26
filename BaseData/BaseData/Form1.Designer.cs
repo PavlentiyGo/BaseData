@@ -20,9 +20,6 @@
             AddButton = new Button();
             GetButton = new Button();
             SuspendLayout();
-            // 
-            // CreateButton
-            // 
             CreateButton.BackColor = Color.SteelBlue;
             CreateButton.FlatStyle = FlatStyle.Flat;
             CreateButton.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
@@ -35,9 +32,6 @@
             CreateButton.Text = "Создать схему и таблицы";
             CreateButton.UseVisualStyleBackColor = false;
             CreateButton.Click += CreateDataBase_Click;
-            // 
-            // AddButton
-            // 
             AddButton.BackColor = Color.SteelBlue;
             AddButton.FlatStyle = FlatStyle.Flat;
             AddButton.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
@@ -50,9 +44,7 @@
             AddButton.Text = "Внести данные";
             AddButton.UseVisualStyleBackColor = false;
             AddButton.Click += AddData_Click;
-            // 
-            // GetButton
-            // 
+
             GetButton.BackColor = Color.SteelBlue;
             GetButton.FlatStyle = FlatStyle.Flat;
             GetButton.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
@@ -65,9 +57,7 @@
             GetButton.Text = "Вывести данные";
             GetButton.UseVisualStyleBackColor = false;
             GetButton.Click += GetData_Click;
-            // 
-            // Form1
-            // 
+
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.WhiteSmoke;

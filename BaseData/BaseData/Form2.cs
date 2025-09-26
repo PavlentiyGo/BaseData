@@ -76,46 +76,14 @@ namespace BaseData
                     using (NpgsqlCommand createCommand = new NpgsqlCommand(GetTableCreationScript(), sqlConnection))
                     {
                         createCommand.ExecuteNonQuery();
-                        AddTestData(sqlConnection);
                     }
 
-                    MessageBox.Show("База данных успешно пересоздана!", "Успех",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Ошибка пересоздания БД: {ex.Message}", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }
-        }
-
-        private void AddTestData(NpgsqlConnection connection)
-        {
-            try
-            {
-                // Тестовые клиенты
-                var clientCmd = new NpgsqlCommand(@"
-                    INSERT INTO clients (surname, name, middlename, location, phone, email, constclient) 
-                    VALUES 
-                    ('Иванов', 'Иван', 'Иванович', 'Москва', '+79161234567', 'ivanov@mail.ru', true),
-                    ('Петров', 'Петр', 'Петрович', 'Санкт-Петербург', '+79167654321', 'petrov@mail.ru', false)
-                    ON CONFLICT (email) DO NOTHING", connection);
-                clientCmd.ExecuteNonQuery();
-
-                // Тестовые товары с остатками
-                var goodsCmd = new NpgsqlCommand(@"
-                    INSERT INTO goods (name, price, unit, stock_quantity) 
-                    VALUES 
-                    ('Ноутбук', 50000.00, 'шт', 10),
-                    ('Мышь', 1500.50, 'шт', 25),
-                    ('Монитор', 25000.00, 'шт', 5)
-                    ON CONFLICT (id) DO NOTHING", connection);
-                goodsCmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка добавления тестовых данных: {ex.Message}");
             }
         }
 
@@ -157,7 +125,6 @@ namespace BaseData
                         command.Connection = sqlConnection;
                         command.CommandText = GetTableCreationScript();
                         command.ExecuteNonQuery();
-                        AddTestData(sqlConnection);
                     }
                 }
                 catch (Exception ex)
