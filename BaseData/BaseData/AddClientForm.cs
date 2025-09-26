@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Drawing;
 using Npgsql;
 
 namespace BaseData
@@ -37,7 +38,6 @@ namespace BaseData
             {
                 Styles.ApplyFormStyle(this);
 
-                // Применяем стили к элементам управления
                 if (txtSurname != null) Styles.ApplyTextBoxStyle(txtSurname);
                 if (txtName != null) Styles.ApplyTextBoxStyle(txtName);
                 if (txtMiddleName != null) Styles.ApplyTextBoxStyle(txtMiddleName);
@@ -48,7 +48,6 @@ namespace BaseData
                 if (btnAdd != null) Styles.ApplyButtonStyle(btnAdd);
                 if (btnCancel != null) Styles.ApplySecondaryButtonStyle(btnCancel);
 
-                // Стиль для checkbox
                 if (chkConstClient != null)
                 {
                     chkConstClient.ForeColor = Styles.DarkColor;
@@ -65,19 +64,17 @@ namespace BaseData
         {
             this.SuspendLayout();
             this.Text = "Добавить клиента";
-            this.Size = new System.Drawing.Size(450, 400);
+            this.Size = new System.Drawing.Size(450, 500);
             this.StartPosition = FormStartPosition.CenterParent;
             this.Padding = new Padding(20);
 
-            // Главный контейнер
             TableLayoutPanel mainPanel = new TableLayoutPanel();
             mainPanel.Dock = DockStyle.Fill;
-            mainPanel.RowCount = 9;
+            mainPanel.RowCount = 10;
             mainPanel.ColumnCount = 2;
             mainPanel.Padding = new Padding(10);
             mainPanel.BackColor = Color.Transparent;
 
-            // Заголовок
             Label titleLabel = new Label()
             {
                 Text = "Добавление клиента",
@@ -88,7 +85,6 @@ namespace BaseData
                 Height = 40
             };
 
-            // Создаем элементы управления
             Label lblSurname = new Label() { Text = "Фамилия:", TextAlign = ContentAlignment.MiddleRight };
             txtSurname = new TextBox();
 
@@ -109,24 +105,12 @@ namespace BaseData
 
             chkConstClient = new CheckBox() { Text = "Постоянный клиент" };
 
-            // Панель для кнопок
-            Panel buttonPanel = new Panel();
-            buttonPanel.Dock = DockStyle.Bottom;
-            buttonPanel.Height = 50;
-            buttonPanel.Padding = new Padding(10);
-
-            btnAdd = new Button() { Text = "Добавить", Size = new Size(80, 35) };
+            btnAdd = new Button() { Text = "Добавить", Size = new Size(100, 45) };
             btnAdd.Click += BtnAdd_Click;
 
-            btnCancel = new Button() { Text = "Отмена", Size = new Size(80, 35) };
+            btnCancel = new Button() { Text = "Отмена", Size = new Size(100, 45) };
             btnCancel.Click += (s, e) => this.Close();
 
-            buttonPanel.Controls.Add(btnCancel);
-            buttonPanel.Controls.Add(btnAdd);
-            btnAdd.Left = buttonPanel.Width - btnAdd.Width - 10;
-            btnCancel.Left = btnAdd.Left - btnCancel.Width - 10;
-
-            // Настройка стилей лейблов
             Styles.ApplyLabelStyle(lblSurname);
             Styles.ApplyLabelStyle(lblName, true);
             Styles.ApplyLabelStyle(lblMiddleName);
@@ -134,7 +118,6 @@ namespace BaseData
             Styles.ApplyLabelStyle(lblPhone);
             Styles.ApplyLabelStyle(lblEmail, true);
 
-            // Добавляем элементы на главную панель
             mainPanel.Controls.Add(lblSurname, 0, 0);
             mainPanel.Controls.Add(txtSurname!, 1, 0);
             mainPanel.Controls.Add(lblName, 0, 1);
@@ -150,17 +133,34 @@ namespace BaseData
             mainPanel.SetColumnSpan(chkConstClient!, 2);
             mainPanel.Controls.Add(chkConstClient!, 0, 6);
 
-            // Настройка размеров строк и колонок
+            Panel buttonsPanel = new Panel();
+            buttonsPanel.Dock = DockStyle.Fill;
+            buttonsPanel.BackColor = Color.Transparent;
+            mainPanel.SetColumnSpan(buttonsPanel, 2);
+            mainPanel.Controls.Add(buttonsPanel, 0, 8);
+
+            buttonsPanel.Controls.Add(btnCancel);
+            buttonsPanel.Controls.Add(btnAdd);
+
+            btnAdd.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnCancel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+
+            btnAdd.Top = buttonsPanel.Height - btnAdd.Height - 5;
+            btnAdd.Left = buttonsPanel.Width - btnAdd.Width - 5;
+
+            btnCancel.Top = buttonsPanel.Height - btnCancel.Height - 5;
+            btnCancel.Left = btnAdd.Left - btnCancel.Width - 10;
+
             for (int i = 0; i < 7; i++)
             {
-                mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
+                mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             }
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
             mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
             mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 
-            // Компоновка формы
             this.Controls.Add(mainPanel);
-            this.Controls.Add(buttonPanel);
             this.Controls.Add(titleLabel);
 
             this.ResumeLayout(false);
@@ -213,7 +213,6 @@ namespace BaseData
 
         private void AddClient(string surname, string name, string middlename, string location, string phone, string email, bool constClient)
         {
-            // ИСПРАВЛЕНО: обязательные поля - только имя и email
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email))
             {
                 MessageBox.Show("Заполните обязательные поля (Имя, Email)");
@@ -268,7 +267,6 @@ namespace BaseData
         private void UpdateClient(int clientId, string surname, string name, string middlename,
             string location, string phone, string email, bool constClient)
         {
-            // ИСПРАВЛЕНО: обязательные поля - только имя и email
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email))
             {
                 MessageBox.Show("Заполните обязательные поля (Имя, Email)");

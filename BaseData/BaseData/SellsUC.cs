@@ -32,26 +32,30 @@ namespace BaseData
             // Панель для кнопок
             Panel buttonPanel = new Panel();
             buttonPanel.Dock = DockStyle.Top;
-            buttonPanel.Height = 50;
-            buttonPanel.Padding = new Padding(10);
+            buttonPanel.Height = 60; // Увеличена высота панели
+            buttonPanel.Padding = new Padding(10, 12, 10, 12); // Увеличены отступы
             buttonPanel.BackColor = Color.Transparent;
+
+            // Общие настройки для кнопок
+            Size buttonSize = new Size(140, 40); // Увеличена высота кнопок до 40px
+            int buttonSpacing = 15; // Расстояние между кнопками
 
             // btnRefresh
             this.btnRefresh.Text = "Обновить";
-            this.btnRefresh.Size = new Size(100, 35);
-            this.btnRefresh.Location = new Point(10, 7);
+            this.btnRefresh.Size = buttonSize;
+            this.btnRefresh.Location = new Point(10, 10);
             this.btnRefresh.Click += (s, e) => RefreshData();
 
             // btnViewDetails
             this.btnViewDetails.Text = "Детали заказа";
-            this.btnViewDetails.Size = new Size(120, 35);
-            this.btnViewDetails.Location = new Point(120, 7);
+            this.btnViewDetails.Size = buttonSize;
+            this.btnViewDetails.Location = new Point(btnRefresh.Right + buttonSpacing, 10);
             this.btnViewDetails.Click += ViewOrderDetails;
 
             // btnDelete
             this.btnDelete.Text = "Удалить";
-            this.btnDelete.Size = new Size(100, 35);
-            this.btnDelete.Location = new Point(250, 7);
+            this.btnDelete.Size = buttonSize;
+            this.btnDelete.Location = new Point(btnViewDetails.Right + buttonSpacing, 10);
             this.btnDelete.Click += DeleteSelectedOrder;
 
             // dataGridView1
@@ -62,12 +66,17 @@ namespace BaseData
             this.dataGridView1.BackgroundColor = Color.White;
             this.dataGridView1.BorderStyle = BorderStyle.FixedSingle;
             this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new Point(0, 50);
+            this.dataGridView1.Location = new Point(0, 60);
             this.dataGridView1.Margin = new Padding(10);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.TabIndex = 3;
             this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.EnableHeadersVisualStyles = false;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            this.dataGridView1.ColumnHeadersHeight = 35;
+            this.dataGridView1.RowHeadersVisible = false;
 
             // Добавляем кнопки на панель
             buttonPanel.Controls.Add(this.btnRefresh);
@@ -93,6 +102,13 @@ namespace BaseData
                 if (this.dataGridView1 != null)
                 {
                     Styles.ApplyDataGridViewStyle(this.dataGridView1);
+
+                    // Дополнительные стили для улучшения внешнего вида
+                    this.dataGridView1.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
+                    this.dataGridView1.DefaultCellStyle.Padding = new Padding(3);
+                    this.dataGridView1.RowTemplate.Height = 30;
+                    this.dataGridView1.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                    this.dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 }
             }
             catch (Exception ex)
@@ -104,9 +120,23 @@ namespace BaseData
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            if (btnRefresh != null) Styles.ApplySecondaryButtonStyle(btnRefresh);
-            if (btnViewDetails != null) Styles.ApplySecondaryButtonStyle(btnViewDetails);
-            if (btnDelete != null) Styles.ApplyDangerButtonStyle(btnDelete);
+
+            // Применяем стили к кнопкам с увеличенной высотой
+            if (btnRefresh != null)
+            {
+                Styles.ApplySecondaryButtonStyle(btnRefresh);
+                btnRefresh.Font = new Font(btnRefresh.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (btnViewDetails != null)
+            {
+                Styles.ApplySecondaryButtonStyle(btnViewDetails);
+                btnViewDetails.Font = new Font(btnViewDetails.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (btnDelete != null)
+            {
+                Styles.ApplyDangerButtonStyle(btnDelete);
+                btnDelete.Font = new Font(btnDelete.Font.FontFamily, 9F, FontStyle.Regular);
+            }
         }
 
         private void DeleteSelectedOrder(object? sender, EventArgs e)
@@ -295,18 +325,28 @@ namespace BaseData
                     this.dataGridView1.DataSource = dataTable;
 
                     // Настраиваем формат отображения
-                    if (dataTable.Columns.Contains("Дата заказа"))
+                    if (dataGridView1.Columns.Contains("Дата заказа"))
                     {
-                        this.dataGridView1.Columns["Дата заказа"]!.DefaultCellStyle.Format = "dd.MM.yyyy";
+                        dataGridView1.Columns["Дата заказа"]!.DefaultCellStyle.Format = "dd.MM.yyyy";
+                        dataGridView1.Columns["Дата заказа"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
-                    if (dataTable.Columns.Contains("Дата доставки"))
+                    if (dataGridView1.Columns.Contains("Дата доставки"))
                     {
-                        this.dataGridView1.Columns["Дата доставки"]!.DefaultCellStyle.Format = "dd.MM.yyyy";
+                        dataGridView1.Columns["Дата доставки"]!.DefaultCellStyle.Format = "dd.MM.yyyy";
+                        dataGridView1.Columns["Дата доставки"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
-                    if (dataTable.Columns.Contains("Сумма"))
+                    if (dataGridView1.Columns.Contains("Сумма"))
                     {
-                        this.dataGridView1.Columns["Сумма"]!.DefaultCellStyle.Format = "N2";
+                        dataGridView1.Columns["Сумма"]!.DefaultCellStyle.Format = "N2";
+                        dataGridView1.Columns["Сумма"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                     }
+                    if (dataGridView1.Columns.Contains("Скидка %"))
+                    {
+                        dataGridView1.Columns["Скидка %"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    }
+
+                    // Автоматическое изменение размера колонок после загрузки данных
+                    dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
                 }
             }
             catch (Exception ex)

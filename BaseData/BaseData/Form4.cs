@@ -30,7 +30,7 @@ namespace BaseData
 
             // Настройки формы
             this.Text = "Добавление данных";
-            this.Size = new System.Drawing.Size(500, 450);
+            this.Size = new System.Drawing.Size(500, 500); // Увеличил высоту формы
             this.StartPosition = FormStartPosition.CenterParent;
             this.Padding = new Padding(30);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -42,11 +42,14 @@ namespace BaseData
             mainPanel.Dock = DockStyle.Fill;
             mainPanel.RowCount = 5;
             mainPanel.ColumnCount = 1;
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+
+            // Увеличил высоту строк для кнопок
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F)); // Заголовок
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));  // Кнопка 1
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));  // Кнопка 2
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));  // Кнопка 3
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));  // Кнопка 4
+
             mainPanel.Padding = new Padding(20);
             mainPanel.BackColor = Color.Transparent;
 
@@ -60,13 +63,14 @@ namespace BaseData
                 Dock = DockStyle.Fill,
             };
 
-            // Кнопка добавления клиента
+            // Кнопка добавления клиента - УВЕЛИЧЕНА
             Button btnAddClient = new Button()
             {
                 Text = "Добавить клиента",
                 Dock = DockStyle.Fill,
-                Font = new Font(Styles.MainFont, 11F, FontStyle.Bold),
-                Margin = new Padding(10)
+                Font = new Font(Styles.MainFont, 12F, FontStyle.Bold), // Увеличил размер шрифта
+                Margin = new Padding(10, 15, 10, 15), // Увеличил вертикальные отступы
+                Height = 60 // Явно задал высоту
             };
             btnAddClient.Click += (s, e) =>
             {
@@ -83,13 +87,14 @@ namespace BaseData
                 }
             };
 
-            // Кнопка добавления товара - ИСПРАВЛЕНО
+            // Кнопка добавления товара - УВЕЛИЧЕНА
             Button btnAddProduct = new Button()
             {
                 Text = "Добавить товар",
                 Dock = DockStyle.Fill,
-                Font = new Font(Styles.MainFont, 11F, FontStyle.Bold),
-                Margin = new Padding(10)
+                Font = new Font(Styles.MainFont, 12F, FontStyle.Bold), // Увеличил размер шрифта
+                Margin = new Padding(10, 15, 10, 15), // Увеличил вертикальные отступы
+                Height = 60 // Явно задал высоту
             };
             btnAddProduct.Click += (s, e) =>
             {
@@ -106,13 +111,14 @@ namespace BaseData
                 }
             };
 
-            // Кнопка добавления продажи - ИСПРАВЛЕНО
+            // Кнопка добавления продажи - УВЕЛИЧЕНА
             Button btnAddSale = new Button()
             {
                 Text = "Оформить продажу",
                 Dock = DockStyle.Fill,
-                Font = new Font(Styles.MainFont, 11F, FontStyle.Bold),
-                Margin = new Padding(10)
+                Font = new Font(Styles.MainFont, 12F, FontStyle.Bold), // Увеличил размер шрифта
+                Margin = new Padding(10, 15, 10, 15), // Увеличил вертикальные отступы
+                Height = 60 // Явно задал высоту
             };
             btnAddSale.Click += (s, e) =>
             {
@@ -129,13 +135,14 @@ namespace BaseData
                 }
             };
 
-            // Кнопка закрытия
+            // Кнопка закрытия - УВЕЛИЧЕНА
             Button btnClose = new Button()
             {
                 Text = "Закрыть",
                 Dock = DockStyle.Fill,
-                Font = new Font(Styles.MainFont, 10F, FontStyle.Regular),
-                Margin = new Padding(10)
+                Font = new Font(Styles.MainFont, 11F, FontStyle.Regular), // Увеличил размер шрифта
+                Margin = new Padding(10, 15, 10, 15), // Увеличил вертикальные отступы
+                Height = 50 // Явно задал высоту
             };
             btnClose.Click += (s, e) => this.Close();
 

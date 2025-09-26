@@ -24,7 +24,6 @@ namespace BaseData
             this.goodsTabPage = new TabPage();
             this.sellsTabPage = new TabPage();
 
-            // mainTabControl
             this.mainTabControl.Dock = DockStyle.Fill;
             this.mainTabControl.Controls.Add(this.clientsTabPage);
             this.mainTabControl.Controls.Add(this.goodsTabPage);
@@ -32,22 +31,18 @@ namespace BaseData
             this.mainTabControl.Location = new Point(0, 0);
             this.mainTabControl.Size = new Size(1000, 700);
 
-            // clientsTabPage
             this.clientsTabPage.Text = "Клиенты";
             this.clientsTabPage.Padding = new Padding(10);
             this.clientsTabPage.BackColor = Styles.LightColor;
 
-            // goodsTabPage
             this.goodsTabPage.Text = "Товары";
             this.goodsTabPage.Padding = new Padding(10);
             this.goodsTabPage.BackColor = Styles.LightColor;
 
-            // sellsTabPage
             this.sellsTabPage.Text = "Продажи";
             this.sellsTabPage.Padding = new Padding(10);
             this.sellsTabPage.BackColor = Styles.LightColor;
 
-            // Form3
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.ClientSize = new Size(1000, 700);
@@ -64,6 +59,14 @@ namespace BaseData
                 if (this.mainTabControl != null)
                 {
                     Styles.ApplyTabControlStyle(this.mainTabControl);
+
+                    this.mainTabControl.ItemSize = new Size(120, 35);
+                    this.mainTabControl.SizeMode = TabSizeMode.Fixed;
+
+                    foreach (TabPage tabPage in this.mainTabControl.TabPages)
+                    {
+                        tabPage.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+                    }
                 }
             }
             catch (Exception ex)
@@ -179,7 +182,7 @@ namespace BaseData
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleCenter,
                 ForeColor = Styles.DangerColor,
-                Font = new Font(Styles.MainFont, 10F),
+                Font = new Font("Segoe UI", 10F, FontStyle.Regular),
                 BackColor = Styles.LightColor
             };
             tabPage.Controls.Clear();
@@ -193,7 +196,7 @@ namespace BaseData
                 Text = message,
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font(Styles.MainFont, 10F),
+                Font = new Font("Segoe UI", 10F, FontStyle.Regular),
                 ForeColor = Styles.DarkColor,
                 BackColor = Styles.LightColor
             };

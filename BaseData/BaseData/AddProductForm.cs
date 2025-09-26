@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Drawing;
 using Npgsql;
 
 namespace BaseData
@@ -10,12 +11,15 @@ namespace BaseData
         private TextBox? txtPrice;
         private TextBox? txtStock;
         private ComboBox? cmbUnit;
+        private ComboBox? cmbCurrency;
         private Button? btnAdd;
+        private Button? btnCancel;
         private int? _productId;
 
         public AddProductForm()
         {
             InitializeComponent();
+            ApplyStyles();
         }
 
         public AddProductForm(int productId) : this()
@@ -26,31 +30,124 @@ namespace BaseData
             LoadProductData(productId);
         }
 
+        private void ApplyStyles()
+        {
+            try
+            {
+                Styles.ApplyFormStyle(this);
+
+                if (txtName != null) Styles.ApplyTextBoxStyle(txtName);
+                if (txtPrice != null) Styles.ApplyTextBoxStyle(txtPrice);
+                if (txtStock != null) Styles.ApplyTextBoxStyle(txtStock);
+                if (cmbUnit != null) Styles.ApplyComboBoxStyle(cmbUnit);
+                if (cmbCurrency != null) Styles.ApplyComboBoxStyle(cmbCurrency);
+
+                if (btnAdd != null) Styles.ApplyButtonStyle(btnAdd);
+                if (btnCancel != null) Styles.ApplySecondaryButtonStyle(btnCancel);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка применения стилей: {ex.Message}");
+            }
+        }
+
         private void InitializeComponent()
         {
             this.SuspendLayout();
             this.Text = "Добавить товар";
-            this.Size = new System.Drawing.Size(300, 250);
+            this.Size = new System.Drawing.Size(450, 400);
             this.StartPosition = FormStartPosition.CenterParent;
+            this.Padding = new Padding(20);
 
-            Label lblName = new Label() { Text = "Название:", Location = new System.Drawing.Point(10, 15), Size = new System.Drawing.Size(80, 20) };
-            txtName = new TextBox() { Location = new System.Drawing.Point(100, 10), Size = new System.Drawing.Size(150, 20) };
+            TableLayoutPanel mainPanel = new TableLayoutPanel();
+            mainPanel.Dock = DockStyle.Fill;
+            mainPanel.RowCount = 7;
+            mainPanel.ColumnCount = 2;
+            mainPanel.Padding = new Padding(10);
+            mainPanel.BackColor = Color.Transparent;
 
-            Label lblPrice = new Label() { Text = "Цена:", Location = new System.Drawing.Point(10, 45), Size = new System.Drawing.Size(80, 20) };
-            txtPrice = new TextBox() { Location = new System.Drawing.Point(100, 40), Size = new System.Drawing.Size(150, 20) };
+            Label titleLabel = new Label()
+            {
+                Text = "Добавление товара",
+                Font = new Font(Styles.MainFont, 12F, FontStyle.Bold),
+                ForeColor = Styles.DarkColor,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Height = 40
+            };
 
-            Label lblUnit = new Label() { Text = "Единица:", Location = new System.Drawing.Point(10, 75), Size = new System.Drawing.Size(80, 20) };
-            cmbUnit = new ComboBox() { Location = new System.Drawing.Point(100, 70), Size = new System.Drawing.Size(150, 20) };
-            cmbUnit.Items.AddRange(new string[] { "шт", "кг", "л", "м" });
+            Label lblName = new Label() { Text = "Название:*", TextAlign = ContentAlignment.MiddleRight };
+            txtName = new TextBox();
+
+            Label lblPrice = new Label() { Text = "Цена:*", TextAlign = ContentAlignment.MiddleRight };
+            txtPrice = new TextBox();
+
+            Label lblCurrency = new Label() { Text = "Валюта:", TextAlign = ContentAlignment.MiddleRight };
+            cmbCurrency = new ComboBox();
+            cmbCurrency.Items.AddRange(new string[] { "RUB", "USD", "EUR", "KZT" });
+            cmbCurrency.SelectedIndex = 0;
+
+            Label lblUnit = new Label() { Text = "Единица:*", TextAlign = ContentAlignment.MiddleRight };
+            cmbUnit = new ComboBox();
+            cmbUnit.Items.AddRange(new string[] { "шт", "кг", "л", "м", "уп" });
             cmbUnit.SelectedIndex = 0;
 
-            Label lblStock = new Label() { Text = "Количество:", Location = new System.Drawing.Point(10, 105), Size = new System.Drawing.Size(80, 20) };
-            txtStock = new TextBox() { Location = new System.Drawing.Point(100, 100), Size = new System.Drawing.Size(150, 20), Text = "0" };
+            Label lblStock = new Label() { Text = "Количество:", TextAlign = ContentAlignment.MiddleRight };
+            txtStock = new TextBox() { Text = "0" };
 
-            btnAdd = new Button() { Text = "Добавить", Location = new System.Drawing.Point(100, 140), Size = new System.Drawing.Size(100, 30) };
+            btnAdd = new Button() { Text = "Добавить", Size = new Size(100, 45) };
             btnAdd.Click += BtnAdd_Click;
 
-            this.Controls.AddRange(new Control[] { lblName, txtName!, lblPrice, txtPrice!, lblUnit, cmbUnit!, lblStock, txtStock!, btnAdd! });
+            btnCancel = new Button() { Text = "Отмена", Size = new Size(100, 45) };
+            btnCancel.Click += (s, e) => this.Close();
+
+            Styles.ApplyLabelStyle(lblName, true);
+            Styles.ApplyLabelStyle(lblPrice, true);
+            Styles.ApplyLabelStyle(lblCurrency);
+            Styles.ApplyLabelStyle(lblUnit, true);
+            Styles.ApplyLabelStyle(lblStock);
+
+            mainPanel.Controls.Add(lblName, 0, 0);
+            mainPanel.Controls.Add(txtName!, 1, 0);
+            mainPanel.Controls.Add(lblPrice, 0, 1);
+            mainPanel.Controls.Add(txtPrice!, 1, 1);
+            mainPanel.Controls.Add(lblCurrency, 0, 2);
+            mainPanel.Controls.Add(cmbCurrency!, 1, 2);
+            mainPanel.Controls.Add(lblUnit, 0, 3);
+            mainPanel.Controls.Add(cmbUnit!, 1, 3);
+            mainPanel.Controls.Add(lblStock, 0, 4);
+            mainPanel.Controls.Add(txtStock!, 1, 4);
+
+            Panel buttonsPanel = new Panel();
+            buttonsPanel.Dock = DockStyle.Fill;
+            buttonsPanel.BackColor = Color.Transparent;
+            mainPanel.SetColumnSpan(buttonsPanel, 2);
+            mainPanel.Controls.Add(buttonsPanel, 0, 6);
+
+            buttonsPanel.Controls.Add(btnCancel);
+            buttonsPanel.Controls.Add(btnAdd);
+
+            btnAdd.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+            btnCancel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+
+            btnAdd.Top = buttonsPanel.Height - btnAdd.Height - 5;
+            btnAdd.Left = buttonsPanel.Width - btnAdd.Width - 5;
+
+            btnCancel.Top = buttonsPanel.Height - btnCancel.Height - 5;
+            btnCancel.Left = btnAdd.Left - btnCancel.Width - 10;
+
+            for (int i = 0; i < 5; i++)
+            {
+                mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            }
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+
+            this.Controls.Add(mainPanel);
+            this.Controls.Add(titleLabel);
+
             this.ResumeLayout(false);
         }
 
@@ -62,7 +159,7 @@ namespace BaseData
                 {
                     connection.Open();
                     var command = new NpgsqlCommand(
-                        "SELECT name, price, unit, stock_quantity FROM goods WHERE id = @id",
+                        "SELECT name, price, unit, stock_quantity, currency FROM goods WHERE id = @id",
                         connection);
                     command.Parameters.AddWithValue("id", productId);
 
@@ -73,6 +170,8 @@ namespace BaseData
                         txtPrice!.Text = reader.GetDecimal(1).ToString("0.00");
                         cmbUnit!.SelectedItem = reader.GetString(2);
                         txtStock!.Text = reader.GetInt32(3).ToString();
+                        if (!reader.IsDBNull(4))
+                            cmbCurrency!.SelectedItem = reader.GetString(4);
                     }
                 }
             }
@@ -87,15 +186,17 @@ namespace BaseData
             if (_productId.HasValue)
             {
                 UpdateProduct(_productId.Value, txtName!.Text, txtPrice!.Text,
-                    cmbUnit!.SelectedItem?.ToString() ?? "шт", txtStock!.Text);
+                    cmbUnit!.SelectedItem?.ToString() ?? "шт", txtStock!.Text,
+                    cmbCurrency!.SelectedItem?.ToString() ?? "RUB");
             }
             else
             {
-                AddProduct(txtName!.Text, txtPrice!.Text, cmbUnit!.SelectedItem?.ToString() ?? "шт", txtStock!.Text);
+                AddProduct(txtName!.Text, txtPrice!.Text, cmbUnit!.SelectedItem?.ToString() ?? "шт",
+                    txtStock!.Text, cmbCurrency!.SelectedItem?.ToString() ?? "RUB");
             }
         }
 
-        private void AddProduct(string name, string priceText, string unit, string stockText)
+        private void AddProduct(string name, string priceText, string unit, string stockText, string currency)
         {
             if (!ValidateInput(name, priceText, stockText))
                 return;
@@ -106,14 +207,15 @@ namespace BaseData
                 {
                     connection.Open();
                     var command = new NpgsqlCommand(@"
-                        INSERT INTO goods (name, price, unit, stock_quantity) 
-                        VALUES (@name, @price, @unit, @stock)",
+                        INSERT INTO goods (name, price, unit, stock_quantity, currency) 
+                        VALUES (@name, @price, @unit, @stock, @currency)",
                         connection);
 
-                    command.Parameters.AddWithValue("name", name);
+                    command.Parameters.AddWithValue("name", name.Trim());
                     command.Parameters.AddWithValue("price", decimal.Parse(priceText));
                     command.Parameters.AddWithValue("unit", unit);
                     command.Parameters.AddWithValue("stock", int.Parse(stockText));
+                    command.Parameters.AddWithValue("currency", currency);
 
                     command.ExecuteNonQuery();
                     MessageBox.Show("Товар успешно добавлен");
@@ -126,7 +228,7 @@ namespace BaseData
             }
         }
 
-        private void UpdateProduct(int productId, string name, string priceText, string unit, string stockText)
+        private void UpdateProduct(int productId, string name, string priceText, string unit, string stockText, string currency)
         {
             if (!ValidateInput(name, priceText, stockText))
                 return;
@@ -138,14 +240,15 @@ namespace BaseData
                     connection.Open();
                     var command = new NpgsqlCommand(@"
                     UPDATE goods 
-                    SET name = @name, price = @price, unit = @unit, stock_quantity = @stock
+                    SET name = @name, price = @price, unit = @unit, stock_quantity = @stock, currency = @currency
                     WHERE id = @id", connection);
 
                     command.Parameters.AddWithValue("id", productId);
-                    command.Parameters.AddWithValue("name", name);
+                    command.Parameters.AddWithValue("name", name.Trim());
                     command.Parameters.AddWithValue("price", decimal.Parse(priceText));
                     command.Parameters.AddWithValue("unit", unit);
                     command.Parameters.AddWithValue("stock", int.Parse(stockText));
+                    command.Parameters.AddWithValue("currency", currency);
 
                     command.ExecuteNonQuery();
                     MessageBox.Show("Данные товара успешно обновлены");
@@ -160,9 +263,9 @@ namespace BaseData
 
         private bool ValidateInput(string name, string priceText, string stockText)
         {
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(priceText))
+            if (string.IsNullOrEmpty(name))
             {
-                MessageBox.Show("Заполните название и цену товара");
+                MessageBox.Show("Введите название товара");
                 return false;
             }
 

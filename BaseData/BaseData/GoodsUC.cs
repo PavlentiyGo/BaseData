@@ -31,17 +31,18 @@ namespace BaseData
 
             SuspendLayout();
 
-            // Панель для кнопок
             Panel buttonPanel = new Panel();
             buttonPanel.Dock = DockStyle.Top;
-            buttonPanel.Height = 50;
-            buttonPanel.Padding = new Padding(10);
+            buttonPanel.Height = 60;
+            buttonPanel.Padding = new Padding(10, 12, 10, 12);
             buttonPanel.BackColor = Color.Transparent;
 
-            // btnAdd
+            Size buttonSize = new Size(140, 40);
+            int buttonSpacing = 15;
+
             this.btnAdd.Text = "Добавить товар";
-            this.btnAdd.Size = new Size(140, 35);
-            this.btnAdd.Location = new Point(10, 7);
+            this.btnAdd.Size = buttonSize;
+            this.btnAdd.Location = new Point(10, 10);
             this.btnAdd.Click += (s, e) =>
             {
                 if (AppSettings.IsConnectionStringSet)
@@ -57,25 +58,21 @@ namespace BaseData
                 }
             };
 
-            // btnRefresh
             this.btnRefresh.Text = "Обновить";
-            this.btnRefresh.Size = new Size(100, 35);
-            this.btnRefresh.Location = new Point(160, 7);
+            this.btnRefresh.Size = buttonSize;
+            this.btnRefresh.Location = new Point(btnAdd.Right + buttonSpacing, 10);
             this.btnRefresh.Click += (s, e) => RefreshData();
 
-            // btnEdit
             this.btnEdit.Text = "Редактировать";
-            this.btnEdit.Size = new Size(120, 35);
-            this.btnEdit.Location = new Point(270, 7);
+            this.btnEdit.Size = buttonSize;
+            this.btnEdit.Location = new Point(btnRefresh.Right + buttonSpacing, 10);
             this.btnEdit.Click += EditSelectedGood;
 
-            // btnDelete
             this.btnDelete.Text = "Удалить";
-            this.btnDelete.Size = new Size(100, 35);
-            this.btnDelete.Location = new Point(400, 7);
+            this.btnDelete.Size = buttonSize;
+            this.btnDelete.Location = new Point(btnEdit.Right + buttonSpacing, 10);
             this.btnDelete.Click += DeleteSelectedGood;
 
-            // dataGridView1
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.Dock = DockStyle.Fill;
@@ -83,21 +80,24 @@ namespace BaseData
             this.dataGridView1.BackgroundColor = Color.White;
             this.dataGridView1.BorderStyle = BorderStyle.FixedSingle;
             this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new Point(0, 50);
+            this.dataGridView1.Location = new Point(0, 60);
             this.dataGridView1.Margin = new Padding(10);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.TabIndex = 4;
             this.dataGridView1.CellDoubleClick += DataGridView1_CellDoubleClick;
             this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.EnableHeadersVisualStyles = false;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            this.dataGridView1.ColumnHeadersHeight = 35;
+            this.dataGridView1.RowHeadersVisible = false;
 
-            // Добавляем кнопки на панель
             buttonPanel.Controls.Add(this.btnAdd);
             buttonPanel.Controls.Add(this.btnRefresh);
             buttonPanel.Controls.Add(this.btnEdit);
             buttonPanel.Controls.Add(this.btnDelete);
 
-            // UserControl
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.White;
@@ -116,6 +116,12 @@ namespace BaseData
                 if (this.dataGridView1 != null)
                 {
                     Styles.ApplyDataGridViewStyle(this.dataGridView1);
+
+                    this.dataGridView1.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
+                    this.dataGridView1.DefaultCellStyle.Padding = new Padding(3);
+                    this.dataGridView1.RowTemplate.Height = 30;
+                    this.dataGridView1.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                    this.dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 }
             }
             catch (Exception ex)
@@ -127,10 +133,27 @@ namespace BaseData
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            if (btnRefresh != null) Styles.ApplySecondaryButtonStyle(btnRefresh);
-            if (btnEdit != null) Styles.ApplySecondaryButtonStyle(btnEdit);
-            if (btnAdd != null) Styles.ApplyButtonStyle(btnAdd);
-            if (btnDelete != null) Styles.ApplyDangerButtonStyle(btnDelete);
+
+            if (btnRefresh != null)
+            {
+                Styles.ApplySecondaryButtonStyle(btnRefresh);
+                btnRefresh.Font = new Font(btnRefresh.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (btnEdit != null)
+            {
+                Styles.ApplySecondaryButtonStyle(btnEdit);
+                btnEdit.Font = new Font(btnEdit.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (btnAdd != null)
+            {
+                Styles.ApplyButtonStyle(btnAdd);
+                btnAdd.Font = new Font(btnAdd.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (btnDelete != null)
+            {
+                Styles.ApplyDangerButtonStyle(btnDelete);
+                btnDelete.Font = new Font(btnDelete.Font.FontFamily, 9F, FontStyle.Regular);
+            }
         }
 
         private void DataGridView1_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
@@ -248,6 +271,18 @@ namespace BaseData
                                 adapter.Fill(data);
 
                                 this.dataGridView1.DataSource = data;
+
+                                if (dataGridView1.Columns.Contains("price"))
+                                {
+                                    dataGridView1.Columns["price"]!.DefaultCellStyle.Format = "N2";
+                                    dataGridView1.Columns["price"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                                }
+                                if (dataGridView1.Columns.Contains("stock_quantity"))
+                                {
+                                    dataGridView1.Columns["stock_quantity"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                                }
+
+                                dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
                             }
                         }
                     }
@@ -259,8 +294,5 @@ namespace BaseData
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        
-        
     }
 }

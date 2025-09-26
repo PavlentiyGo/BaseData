@@ -80,7 +80,8 @@ namespace BaseData
             name VARCHAR(255) NOT NULL,
             price DECIMAL(10,2) CHECK (price > 0),
             unit VARCHAR(20) DEFAULT 'шт',
-            stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0)
+            stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0),
+            currency VARCHAR(3) DEFAULT 'RUB'  -- ← ДОБАВЛЕНО!
         );
 
         CREATE TABLE IF NOT EXISTS orders(
@@ -97,10 +98,10 @@ namespace BaseData
             order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
             good_id INTEGER REFERENCES goods(id) ON DELETE CASCADE,
             quantity INTEGER CHECK (quantity > 0),
-            price DECIMAL(10,2) CHECK (price >= 0)
+            price DECIMAL(10,2) CHECK (price >= 0),
+            currency VARCHAR(3) DEFAULT 'RUB'  -- ← ОПЦИОНАЛЬНО, но рекомендуется
         );";
         }
-
         private void RecreateDatabaseStructure()
         {
             using (NpgsqlConnection sqlConnection = new NpgsqlConnection(AppSettings.SqlConnection))
@@ -198,7 +199,7 @@ namespace BaseData
             // CloseButton
             this.CloseButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             this.CloseButton.Location = new Point(350, 350);
-            this.CloseButton.Size = new Size(100, 35);
+            this.CloseButton.Size = new Size(100, 40);
             this.CloseButton.TabIndex = 6;
             this.CloseButton.Text = "Закрыть";
             this.CloseButton.UseVisualStyleBackColor = true;
@@ -247,14 +248,14 @@ namespace BaseData
 
             // EntryButton
             this.EntryButton.Location = new Point(300, 250);
-            this.EntryButton.Size = new Size(150, 30);
+            this.EntryButton.Size = new Size(150, 50);
             this.EntryButton.Text = "Подключиться";
             this.EntryButton.UseVisualStyleBackColor = true;
             this.EntryButton.Click += EntryButton_Click;
 
             // AutoButton
             this.AutoButton.Location = new Point(100, 250);
-            this.AutoButton.Size = new Size(120, 35);
+            this.AutoButton.Size = new Size(150, 40);
             this.AutoButton.Text = "Автозаполнение";
             this.AutoButton.UseVisualStyleBackColor = true;
             this.AutoButton.Click += Auto_Click;

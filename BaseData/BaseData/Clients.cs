@@ -34,14 +34,18 @@ namespace BaseData
             // Панель для кнопок
             Panel buttonPanel = new Panel();
             buttonPanel.Dock = DockStyle.Top;
-            buttonPanel.Height = 50;
-            buttonPanel.Padding = new Padding(10);
+            buttonPanel.Height = 60; // Увеличена высота панели
+            buttonPanel.Padding = new Padding(10, 12, 10, 12); // Увеличены отступы
             buttonPanel.BackColor = Color.Transparent;
+
+            // Общие настройки для кнопок
+            Size buttonSize = new Size(140, 40); // Увеличена высота кнопок до 40px
+            int buttonSpacing = 15; // Расстояние между кнопками
 
             // addButton
             this.addButton.Text = "Добавить клиента";
-            this.addButton.Size = new Size(140, 35);
-            this.addButton.Location = new Point(10, 7);
+            this.addButton.Size = buttonSize;
+            this.addButton.Location = new Point(10, 10);
             this.addButton.Click += (s, e) =>
             {
                 if (AppSettings.IsConnectionStringSet)
@@ -59,20 +63,20 @@ namespace BaseData
 
             // refreshButton
             this.refreshButton.Text = "Обновить";
-            this.refreshButton.Size = new Size(100, 35);
-            this.refreshButton.Location = new Point(160, 7);
+            this.refreshButton.Size = buttonSize;
+            this.refreshButton.Location = new Point(addButton.Right + buttonSpacing, 10);
             this.refreshButton.Click += (s, e) => RefreshData();
 
             // editButton
             this.editButton.Text = "Редактировать";
-            this.editButton.Size = new Size(120, 35);
-            this.editButton.Location = new Point(270, 7);
+            this.editButton.Size = buttonSize;
+            this.editButton.Location = new Point(refreshButton.Right + buttonSpacing, 10);
             this.editButton.Click += EditSelectedClient;
 
             // deleteButton
             this.deleteButton.Text = "Удалить";
-            this.deleteButton.Size = new Size(100, 35);
-            this.deleteButton.Location = new Point(400, 7);
+            this.deleteButton.Size = buttonSize;
+            this.deleteButton.Location = new Point(editButton.Right + buttonSpacing, 10);
             this.deleteButton.Click += DeleteSelectedClient;
 
             // dataGrid
@@ -83,13 +87,18 @@ namespace BaseData
             this.dataGrid.BackgroundColor = Color.White;
             this.dataGrid.BorderStyle = BorderStyle.FixedSingle;
             this.dataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGrid.Location = new Point(0, 50);
+            this.dataGrid.Location = new Point(0, 60);
             this.dataGrid.Margin = new Padding(10);
             this.dataGrid.Name = "dataGrid";
             this.dataGrid.ReadOnly = true;
             this.dataGrid.TabIndex = 4;
             this.dataGrid.CellDoubleClick += DataGrid_CellDoubleClick;
             this.dataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            this.dataGrid.EnableHeadersVisualStyles = false;
+            this.dataGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
+            this.dataGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            this.dataGrid.ColumnHeadersHeight = 35;
+            this.dataGrid.RowHeadersVisible = false;
 
             // Добавляем кнопки на панель
             buttonPanel.Controls.Add(this.addButton);
@@ -116,6 +125,11 @@ namespace BaseData
                 if (this.dataGrid != null)
                 {
                     Styles.ApplyDataGridViewStyle(this.dataGrid);
+
+                    // Дополнительные стили для улучшения внешнего вида
+                    this.dataGrid.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
+                    this.dataGrid.DefaultCellStyle.Padding = new Padding(3);
+                    this.dataGrid.RowTemplate.Height = 30;
                 }
             }
             catch (Exception ex)
@@ -127,10 +141,28 @@ namespace BaseData
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            if (refreshButton != null) Styles.ApplySecondaryButtonStyle(refreshButton);
-            if (editButton != null) Styles.ApplySecondaryButtonStyle(editButton);
-            if (addButton != null) Styles.ApplyButtonStyle(addButton);
-            if (deleteButton != null) Styles.ApplyDangerButtonStyle(deleteButton);
+
+            // Применяем стили к кнопкам с увеличенной высотой
+            if (refreshButton != null)
+            {
+                Styles.ApplySecondaryButtonStyle(refreshButton);
+                refreshButton.Font = new Font(refreshButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (editButton != null)
+            {
+                Styles.ApplySecondaryButtonStyle(editButton);
+                editButton.Font = new Font(editButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (addButton != null)
+            {
+                Styles.ApplyButtonStyle(addButton);
+                addButton.Font = new Font(addButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (deleteButton != null)
+            {
+                Styles.ApplyDangerButtonStyle(deleteButton);
+                deleteButton.Font = new Font(deleteButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
         }
 
         private void DataGrid_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
@@ -290,7 +322,13 @@ namespace BaseData
                         column.HeaderText = "Постоянный";
                         column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     }
+
+                    // Улучшаем внешний вид колонок
+                    column.DefaultCellStyle.Padding = new Padding(5, 3, 5, 3);
                 }
+
+                // Автоматическое изменение размера колонок после загрузки данных
+                this.dataGrid.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
             }
             catch
             {
