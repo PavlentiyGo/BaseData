@@ -9,6 +9,10 @@ namespace BaseData
 
         public static bool IsConnectionStringSet => !string.IsNullOrEmpty(SqlConnection);
 
+        // Курсы валют (можно сделать настраиваемыми)
+        public static decimal UsdRate => 90.0m;
+        public static decimal EurRate => 98.0m;
+
         public static bool TestConnection()
         {
             try

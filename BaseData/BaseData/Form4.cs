@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace BaseData
 {
@@ -8,29 +9,153 @@ namespace BaseData
         public Form4()
         {
             InitializeComponent();
+            ApplyStyles();
+        }
+
+        private void ApplyStyles()
+        {
+            try
+            {
+                Styles.ApplyFormStyle(this);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка применения стилей: {ex.Message}");
+            }
         }
 
         private void InitializeComponent()
         {
             this.SuspendLayout();
+
+            // Настройки формы
             this.Text = "Добавление данных";
-            this.Size = new System.Drawing.Size(300, 200);
+            this.Size = new System.Drawing.Size(500, 450);
             this.StartPosition = FormStartPosition.CenterParent;
+            this.Padding = new Padding(30);
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
 
-            Button btnAddClient = new Button() { Text = "Добавить клиента", Location = new System.Drawing.Point(50, 20), Size = new System.Drawing.Size(200, 30) };
-            btnAddClient.Click += (s, e) => { new AddClientForm().ShowDialog(); };
+            // Главный контейнер
+            TableLayoutPanel mainPanel = new TableLayoutPanel();
+            mainPanel.Dock = DockStyle.Fill;
+            mainPanel.RowCount = 5;
+            mainPanel.ColumnCount = 1;
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            mainPanel.Padding = new Padding(20);
+            mainPanel.BackColor = Color.Transparent;
 
-            Button btnAddProduct = new Button() { Text = "Добавить товар", Location = new System.Drawing.Point(50, 60), Size = new System.Drawing.Size(200, 30) };
-            btnAddProduct.Click += (s, e) => { new AddProductForm().ShowDialog(); };
+            // Заголовок
+            Label titleLabel = new Label()
+            {
+                Text = "Добавление данных",
+                Font = new Font(Styles.MainFont, 16F, FontStyle.Bold),
+                ForeColor = Styles.DarkColor,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Fill,
+            };
 
-            Button btnAddSale = new Button() { Text = "Добавить продажу", Location = new System.Drawing.Point(50, 100), Size = new System.Drawing.Size(200, 30) };
-            btnAddSale.Click += (s, e) => { new AddSaleForm().ShowDialog(); };
+            // Кнопка добавления клиента
+            Button btnAddClient = new Button()
+            {
+                Text = "Добавить клиента",
+                Dock = DockStyle.Fill,
+                Font = new Font(Styles.MainFont, 11F, FontStyle.Bold),
+                Margin = new Padding(10)
+            };
+            btnAddClient.Click += (s, e) =>
+            {
+                if (AppSettings.IsConnectionStringSet)
+                {
+                    AddClientForm form = new AddClientForm();
+                    form.ShowDialog();
+                    form.Dispose();
+                }
+                else
+                {
+                    MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
 
-            Button btnClose = new Button() { Text = "Закрыть", Location = new System.Drawing.Point(50, 140), Size = new System.Drawing.Size(200, 30) };
+            // Кнопка добавления товара - ИСПРАВЛЕНО
+            Button btnAddProduct = new Button()
+            {
+                Text = "Добавить товар",
+                Dock = DockStyle.Fill,
+                Font = new Font(Styles.MainFont, 11F, FontStyle.Bold),
+                Margin = new Padding(10)
+            };
+            btnAddProduct.Click += (s, e) =>
+            {
+                if (AppSettings.IsConnectionStringSet)
+                {
+                    AddProductForm form = new AddProductForm();
+                    form.ShowDialog();
+                    form.Dispose();
+                }
+                else
+                {
+                    MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+
+            // Кнопка добавления продажи - ИСПРАВЛЕНО
+            Button btnAddSale = new Button()
+            {
+                Text = "Оформить продажу",
+                Dock = DockStyle.Fill,
+                Font = new Font(Styles.MainFont, 11F, FontStyle.Bold),
+                Margin = new Padding(10)
+            };
+            btnAddSale.Click += (s, e) =>
+            {
+                if (AppSettings.IsConnectionStringSet)
+                {
+                    AddSaleForm form = new AddSaleForm();
+                    form.ShowDialog();
+                    form.Dispose();
+                }
+                else
+                {
+                    MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+
+            // Кнопка закрытия
+            Button btnClose = new Button()
+            {
+                Text = "Закрыть",
+                Dock = DockStyle.Fill,
+                Font = new Font(Styles.MainFont, 10F, FontStyle.Regular),
+                Margin = new Padding(10)
+            };
             btnClose.Click += (s, e) => this.Close();
 
-            this.Controls.AddRange(new Control[] { btnAddClient, btnAddProduct, btnAddSale, btnClose });
+            // Добавляем элементы на панель
+            mainPanel.Controls.Add(titleLabel, 0, 0);
+            mainPanel.Controls.Add(btnAddClient, 0, 1);
+            mainPanel.Controls.Add(btnAddProduct, 0, 2);
+            mainPanel.Controls.Add(btnAddSale, 0, 3);
+            mainPanel.Controls.Add(btnClose, 0, 4);
+
+            // Добавляем панель на форму
+            this.Controls.Add(mainPanel);
+
             this.ResumeLayout(false);
+
+            // Применяем стили к кнопкам после инициализации
+            Styles.ApplyButtonStyle(btnAddClient);
+            Styles.ApplyButtonStyle(btnAddProduct);
+            Styles.ApplyButtonStyle(btnAddSale);
+            Styles.ApplySecondaryButtonStyle(btnClose);
         }
     }
 }

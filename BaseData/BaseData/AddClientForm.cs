@@ -6,53 +6,229 @@ namespace BaseData
 {
     public partial class AddClientForm : Form
     {
+        private TextBox? txtSurname;
+        private TextBox? txtName;
+        private TextBox? txtMiddleName;
+        private TextBox? txtLocation;
+        private TextBox? txtPhone;
+        private TextBox? txtEmail;
+        private CheckBox? chkConstClient;
+        private Button? btnAdd;
+        private Button? btnCancel;
+        private int? _clientId;
+
         public AddClientForm()
         {
             InitializeComponent();
+            ApplyStyles();
+        }
+
+        public AddClientForm(int clientId) : this()
+        {
+            _clientId = clientId;
+            if (btnAdd != null) btnAdd.Text = "Сохранить";
+            this.Text = "Редактировать клиента";
+            LoadClientData(clientId);
+        }
+
+        private void ApplyStyles()
+        {
+            try
+            {
+                Styles.ApplyFormStyle(this);
+
+                // Применяем стили к элементам управления
+                if (txtSurname != null) Styles.ApplyTextBoxStyle(txtSurname);
+                if (txtName != null) Styles.ApplyTextBoxStyle(txtName);
+                if (txtMiddleName != null) Styles.ApplyTextBoxStyle(txtMiddleName);
+                if (txtLocation != null) Styles.ApplyTextBoxStyle(txtLocation);
+                if (txtPhone != null) Styles.ApplyTextBoxStyle(txtPhone);
+                if (txtEmail != null) Styles.ApplyTextBoxStyle(txtEmail);
+
+                if (btnAdd != null) Styles.ApplyButtonStyle(btnAdd);
+                if (btnCancel != null) Styles.ApplySecondaryButtonStyle(btnCancel);
+
+                // Стиль для checkbox
+                if (chkConstClient != null)
+                {
+                    chkConstClient.ForeColor = Styles.DarkColor;
+                    chkConstClient.Font = new Font(Styles.MainFont, 9F);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка применения стилей: {ex.Message}");
+            }
         }
 
         private void InitializeComponent()
         {
             this.SuspendLayout();
             this.Text = "Добавить клиента";
-            this.Size = new System.Drawing.Size(350, 300);
+            this.Size = new System.Drawing.Size(450, 400);
             this.StartPosition = FormStartPosition.CenterParent;
+            this.Padding = new Padding(20);
 
-            Label lblSurname = new Label() { Text = "Фамилия:", Location = new System.Drawing.Point(10, 15), Size = new System.Drawing.Size(100, 20) };
-            TextBox txtSurname = new TextBox() { Location = new System.Drawing.Point(120, 10), Size = new System.Drawing.Size(200, 20) };
+            // Главный контейнер
+            TableLayoutPanel mainPanel = new TableLayoutPanel();
+            mainPanel.Dock = DockStyle.Fill;
+            mainPanel.RowCount = 9;
+            mainPanel.ColumnCount = 2;
+            mainPanel.Padding = new Padding(10);
+            mainPanel.BackColor = Color.Transparent;
 
-            Label lblName = new Label() { Text = "Имя:", Location = new System.Drawing.Point(10, 45), Size = new System.Drawing.Size(100, 20) };
-            TextBox txtName = new TextBox() { Location = new System.Drawing.Point(120, 40), Size = new System.Drawing.Size(200, 20) };
+            // Заголовок
+            Label titleLabel = new Label()
+            {
+                Text = "Добавление клиента",
+                Font = new Font(Styles.MainFont, 12F, FontStyle.Bold),
+                ForeColor = Styles.DarkColor,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Height = 40
+            };
 
-            Label lblMiddleName = new Label() { Text = "Отчество:", Location = new System.Drawing.Point(10, 75), Size = new System.Drawing.Size(100, 20) };
-            TextBox txtMiddleName = new TextBox() { Location = new System.Drawing.Point(120, 70), Size = new System.Drawing.Size(200, 20) };
+            // Создаем элементы управления
+            Label lblSurname = new Label() { Text = "Фамилия:", TextAlign = ContentAlignment.MiddleRight };
+            txtSurname = new TextBox();
 
-            Label lblLocation = new Label() { Text = "Адрес:", Location = new System.Drawing.Point(10, 105), Size = new System.Drawing.Size(100, 20) };
-            TextBox txtLocation = new TextBox() { Location = new System.Drawing.Point(120, 100), Size = new System.Drawing.Size(200, 20) };
+            Label lblName = new Label() { Text = "Имя:*", TextAlign = ContentAlignment.MiddleRight };
+            txtName = new TextBox();
 
-            Label lblPhone = new Label() { Text = "Телефон:", Location = new System.Drawing.Point(10, 135), Size = new System.Drawing.Size(100, 20) };
-            TextBox txtPhone = new TextBox() { Location = new System.Drawing.Point(120, 130), Size = new System.Drawing.Size(200, 20) };
+            Label lblMiddleName = new Label() { Text = "Отчество:", TextAlign = ContentAlignment.MiddleRight };
+            txtMiddleName = new TextBox();
 
-            Label lblEmail = new Label() { Text = "Email:", Location = new System.Drawing.Point(10, 165), Size = new System.Drawing.Size(100, 20) };
-            TextBox txtEmail = new TextBox() { Location = new System.Drawing.Point(120, 160), Size = new System.Drawing.Size(200, 20) };
+            Label lblLocation = new Label() { Text = "Адрес:", TextAlign = ContentAlignment.MiddleRight };
+            txtLocation = new TextBox();
 
-            CheckBox chkConstClient = new CheckBox() { Text = "Постоянный клиент", Location = new System.Drawing.Point(120, 185) };
+            Label lblPhone = new Label() { Text = "Телефон:", TextAlign = ContentAlignment.MiddleRight };
+            txtPhone = new TextBox();
 
-            Button btnAdd = new Button() { Text = "Добавить", Location = new System.Drawing.Point(120, 220), Size = new System.Drawing.Size(100, 30) };
-            btnAdd.Click += (s, e) => AddClient(txtSurname.Text, txtName.Text, txtMiddleName.Text,
-                txtLocation.Text, txtPhone.Text, txtEmail.Text, chkConstClient.Checked);
+            Label lblEmail = new Label() { Text = "Email:*", TextAlign = ContentAlignment.MiddleRight };
+            txtEmail = new TextBox();
 
-            this.Controls.AddRange(new Control[] { lblSurname, txtSurname, lblName, txtName, lblMiddleName, txtMiddleName,
-                lblLocation, txtLocation, lblPhone, txtPhone, lblEmail, txtEmail, chkConstClient, btnAdd });
+            chkConstClient = new CheckBox() { Text = "Постоянный клиент" };
+
+            // Панель для кнопок
+            Panel buttonPanel = new Panel();
+            buttonPanel.Dock = DockStyle.Bottom;
+            buttonPanel.Height = 50;
+            buttonPanel.Padding = new Padding(10);
+
+            btnAdd = new Button() { Text = "Добавить", Size = new Size(80, 35) };
+            btnAdd.Click += BtnAdd_Click;
+
+            btnCancel = new Button() { Text = "Отмена", Size = new Size(80, 35) };
+            btnCancel.Click += (s, e) => this.Close();
+
+            buttonPanel.Controls.Add(btnCancel);
+            buttonPanel.Controls.Add(btnAdd);
+            btnAdd.Left = buttonPanel.Width - btnAdd.Width - 10;
+            btnCancel.Left = btnAdd.Left - btnCancel.Width - 10;
+
+            // Настройка стилей лейблов
+            Styles.ApplyLabelStyle(lblSurname);
+            Styles.ApplyLabelStyle(lblName, true);
+            Styles.ApplyLabelStyle(lblMiddleName);
+            Styles.ApplyLabelStyle(lblLocation);
+            Styles.ApplyLabelStyle(lblPhone);
+            Styles.ApplyLabelStyle(lblEmail, true);
+
+            // Добавляем элементы на главную панель
+            mainPanel.Controls.Add(lblSurname, 0, 0);
+            mainPanel.Controls.Add(txtSurname!, 1, 0);
+            mainPanel.Controls.Add(lblName, 0, 1);
+            mainPanel.Controls.Add(txtName!, 1, 1);
+            mainPanel.Controls.Add(lblMiddleName, 0, 2);
+            mainPanel.Controls.Add(txtMiddleName!, 1, 2);
+            mainPanel.Controls.Add(lblLocation, 0, 3);
+            mainPanel.Controls.Add(txtLocation!, 1, 3);
+            mainPanel.Controls.Add(lblPhone, 0, 4);
+            mainPanel.Controls.Add(txtPhone!, 1, 4);
+            mainPanel.Controls.Add(lblEmail, 0, 5);
+            mainPanel.Controls.Add(txtEmail!, 1, 5);
+            mainPanel.SetColumnSpan(chkConstClient!, 2);
+            mainPanel.Controls.Add(chkConstClient!, 0, 6);
+
+            // Настройка размеров строк и колонок
+            for (int i = 0; i < 7; i++)
+            {
+                mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
+            }
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+
+            // Компоновка формы
+            this.Controls.Add(mainPanel);
+            this.Controls.Add(buttonPanel);
+            this.Controls.Add(titleLabel);
 
             this.ResumeLayout(false);
         }
 
+        private void LoadClientData(int clientId)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
+                {
+                    connection.Open();
+                    var command = new NpgsqlCommand(
+                        "SELECT surname, name, middlename, location, phone, email, constclient FROM clients WHERE id = @id",
+                        connection);
+                    command.Parameters.AddWithValue("id", clientId);
+
+                    var reader = command.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        txtSurname!.Text = reader.IsDBNull(0) ? "" : reader.GetString(0);
+                        txtName!.Text = reader.GetString(1);
+                        txtMiddleName!.Text = reader.IsDBNull(2) ? "" : reader.GetString(2);
+                        txtLocation!.Text = reader.IsDBNull(3) ? "" : reader.GetString(3);
+                        txtPhone!.Text = reader.IsDBNull(4) ? "" : reader.GetString(4);
+                        txtEmail!.Text = reader.GetString(5);
+                        chkConstClient!.Checked = reader.GetBoolean(6);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных клиента: {ex.Message}");
+            }
+        }
+
+        private void BtnAdd_Click(object? sender, EventArgs e)
+        {
+            if (_clientId.HasValue)
+            {
+                UpdateClient(_clientId.Value, txtSurname!.Text, txtName!.Text, txtMiddleName!.Text,
+                    txtLocation!.Text, txtPhone!.Text, txtEmail!.Text, chkConstClient!.Checked);
+            }
+            else
+            {
+                AddClient(txtSurname!.Text, txtName!.Text, txtMiddleName!.Text,
+                    txtLocation!.Text, txtPhone!.Text, txtEmail!.Text, chkConstClient!.Checked);
+            }
+        }
+
         private void AddClient(string surname, string name, string middlename, string location, string phone, string email, bool constClient)
         {
-            if (string.IsNullOrEmpty(surname) || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email))
+            // ИСПРАВЛЕНО: обязательные поля - только имя и email
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email))
             {
-                MessageBox.Show("Заполните обязательные поля (Фамилия, Имя, Email)");
+                MessageBox.Show("Заполните обязательные поля (Имя, Email)");
+                return;
+            }
+
+            if (!IsValidEmail(email))
+            {
+                MessageBox.Show("Введите корректный email адрес");
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(phone) && !IsValidPhone(phone))
+            {
+                MessageBox.Show("Введите корректный номер телефона");
                 return;
             }
 
@@ -64,14 +240,14 @@ namespace BaseData
                     var command = new NpgsqlCommand(@"
                 INSERT INTO clients (surname, name, middlename, location, phone, email, constclient) 
                 VALUES (@surname, @name, @middlename, @location, @phone, @email, @constclient)",
-                        connection);
+                            connection);
 
-                    command.Parameters.AddWithValue("surname", surname);
-                    command.Parameters.AddWithValue("name", name);
-                    command.Parameters.AddWithValue("middlename", middlename ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("location", location ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("phone", phone ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("email", email);
+                    command.Parameters.AddWithValue("surname", string.IsNullOrEmpty(surname) ? (object)DBNull.Value : surname.Trim());
+                    command.Parameters.AddWithValue("name", name.Trim());
+                    command.Parameters.AddWithValue("middlename", string.IsNullOrEmpty(middlename) ? (object)DBNull.Value : middlename.Trim());
+                    command.Parameters.AddWithValue("location", string.IsNullOrEmpty(location) ? (object)DBNull.Value : location.Trim());
+                    command.Parameters.AddWithValue("phone", string.IsNullOrEmpty(phone) ? (object)DBNull.Value : phone.Trim());
+                    command.Parameters.AddWithValue("email", email.Trim().ToLower());
                     command.Parameters.AddWithValue("constclient", constClient);
 
                     command.ExecuteNonQuery();
@@ -79,10 +255,93 @@ namespace BaseData
                     this.Close();
                 }
             }
+            catch (NpgsqlException ex) when (ex.SqlState == "23505")
+            {
+                MessageBox.Show("Клиент с таким email уже существует");
+            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка добавления клиента: {ex.Message}");
             }
+        }
+
+        private void UpdateClient(int clientId, string surname, string name, string middlename,
+            string location, string phone, string email, bool constClient)
+        {
+            // ИСПРАВЛЕНО: обязательные поля - только имя и email
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email))
+            {
+                MessageBox.Show("Заполните обязательные поля (Имя, Email)");
+                return;
+            }
+
+            if (!IsValidEmail(email))
+            {
+                MessageBox.Show("Введите корректный email адрес");
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(phone) && !IsValidPhone(phone))
+            {
+                MessageBox.Show("Введите корректный номер телефона");
+                return;
+            }
+
+            try
+            {
+                using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
+                {
+                    connection.Open();
+                    var command = new NpgsqlCommand(@"
+                    UPDATE clients 
+                    SET surname = @surname, name = @name, middlename = @middlename, 
+                        location = @location, phone = @phone, email = @email, constclient = @constclient
+                    WHERE id = @id", connection);
+
+                    command.Parameters.AddWithValue("id", clientId);
+                    command.Parameters.AddWithValue("surname", string.IsNullOrEmpty(surname) ? (object)DBNull.Value : surname.Trim());
+                    command.Parameters.AddWithValue("name", name.Trim());
+                    command.Parameters.AddWithValue("middlename", string.IsNullOrEmpty(middlename) ? (object)DBNull.Value : middlename.Trim());
+                    command.Parameters.AddWithValue("location", string.IsNullOrEmpty(location) ? (object)DBNull.Value : location.Trim());
+                    command.Parameters.AddWithValue("phone", string.IsNullOrEmpty(phone) ? (object)DBNull.Value : phone.Trim());
+                    command.Parameters.AddWithValue("email", email.Trim().ToLower());
+                    command.Parameters.AddWithValue("constclient", constClient);
+
+                    command.ExecuteNonQuery();
+                    MessageBox.Show("Данные клиента успешно обновлены");
+                    this.Close();
+                }
+            }
+            catch (NpgsqlException ex) when (ex.SqlState == "23505")
+            {
+                MessageBox.Show("Клиент с таким email уже существует");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка обновления клиента: {ex.Message}");
+            }
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private bool IsValidPhone(string phone)
+        {
+            if (string.IsNullOrWhiteSpace(phone))
+                return true;
+
+            string cleaned = System.Text.RegularExpressions.Regex.Replace(phone, @"[^\d+]", "");
+            return System.Text.RegularExpressions.Regex.IsMatch(cleaned, @"^(\+?\d{10,15})$");
         }
     }
 }
