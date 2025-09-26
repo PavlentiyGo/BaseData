@@ -2,15 +2,8 @@
 {
     partial class Form2
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -21,11 +14,6 @@
         }
 
         #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             CloseButton = new Button();
@@ -43,95 +31,97 @@
             // 
             // CloseButton
             // 
-            CloseButton.Location = new Point(352, 403);
+            CloseButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            CloseButton.Location = new Point(350, 350);
             CloseButton.Name = "CloseButton";
-            CloseButton.Size = new Size(75, 23);
-            CloseButton.TabIndex = 1;
+            CloseButton.Size = new Size(100, 35);
+            CloseButton.TabIndex = 6;
             CloseButton.Text = "Закрыть";
             CloseButton.UseVisualStyleBackColor = true;
             CloseButton.Click += button1_Click;
             // 
             // PortText
             // 
-            PortText.Location = new Point(341, 57);
+            PortText.Location = new Point(300, 50);
             PortText.Name = "PortText";
-            PortText.Size = new Size(100, 23);
-            PortText.TabIndex = 2;
+            PortText.Size = new Size(150, 23);
+            PortText.TabIndex = 1;
             // 
             // BdText
             // 
-            BdText.Location = new Point(341, 100);
+            BdText.Location = new Point(300, 90);
             BdText.Name = "BdText";
-            BdText.Size = new Size(100, 23);
-            BdText.TabIndex = 3;
+            BdText.Size = new Size(150, 23);
+            BdText.TabIndex = 2;
             // 
             // IdText
             // 
-            IdText.Location = new Point(341, 141);
+            IdText.Location = new Point(300, 130);
             IdText.Name = "IdText";
-            IdText.Size = new Size(100, 23);
-            IdText.TabIndex = 4;
+            IdText.Size = new Size(150, 23);
+            IdText.TabIndex = 3;
             // 
             // PasswordText
             // 
-            PasswordText.Location = new Point(341, 180);
+            PasswordText.Location = new Point(300, 170);
             PasswordText.Name = "PasswordText";
-            PasswordText.Size = new Size(100, 23);
-            PasswordText.TabIndex = 5;
+            PasswordText.PasswordChar = '*';
+            PasswordText.Size = new Size(150, 23);
+            PasswordText.TabIndex = 4;
             // 
             // PortLabel
             // 
-            PortLabel.Location = new Point(195, 56);
+            PortLabel.Location = new Point(200, 50);
             PortLabel.Name = "PortLabel";
-            PortLabel.Size = new Size(100, 23);
+            PortLabel.Size = new Size(80, 23);
             PortLabel.TabIndex = 6;
             PortLabel.Text = "Порт";
-            PortLabel.TextAlign = ContentAlignment.MiddleCenter;
+            PortLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
             // BdLabel
             // 
-            BdLabel.Location = new Point(195, 100);
+            BdLabel.Location = new Point(200, 90);
             BdLabel.Name = "BdLabel";
-            BdLabel.Size = new Size(100, 23);
+            BdLabel.Size = new Size(80, 23);
             BdLabel.TabIndex = 7;
-            BdLabel.Text = "Название БД";
-            BdLabel.TextAlign = ContentAlignment.MiddleCenter;
+            BdLabel.Text = "База данных";
+            BdLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
             // IdLabel
             // 
-            IdLabel.Location = new Point(195, 141);
+            IdLabel.Location = new Point(200, 130);
             IdLabel.Name = "IdLabel";
-            IdLabel.Size = new Size(100, 23);
+            IdLabel.Size = new Size(80, 23);
             IdLabel.TabIndex = 8;
-            IdLabel.Text = "Айди";
-            IdLabel.TextAlign = ContentAlignment.MiddleCenter;
+            IdLabel.Text = "Пользователь";
+            IdLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
             // PasswordLabel
             // 
-            PasswordLabel.Location = new Point(195, 180);
+            PasswordLabel.Location = new Point(200, 170);
             PasswordLabel.Name = "PasswordLabel";
-            PasswordLabel.Size = new Size(100, 23);
+            PasswordLabel.Size = new Size(80, 23);
             PasswordLabel.TabIndex = 9;
             PasswordLabel.Text = "Пароль";
-            PasswordLabel.TextAlign = ContentAlignment.MiddleCenter;
+            PasswordLabel.TextAlign = ContentAlignment.MiddleRight;
             // 
             // EntryButton
             // 
-            EntryButton.Location = new Point(352, 267);
+            EntryButton.Location = new Point(350, 220);
             EntryButton.Name = "EntryButton";
-            EntryButton.Size = new Size(75, 23);
-            EntryButton.TabIndex = 10;
-            EntryButton.Text = "Войти";
+            EntryButton.Size = new Size(100, 35);
+            EntryButton.TabIndex = 5;
+            EntryButton.Text = "Подключиться";
             EntryButton.UseVisualStyleBackColor = true;
             EntryButton.Click += EntryButton_Click;
             // 
             // AutoButton
             // 
-            AutoButton.Location = new Point(195, 267);
+            AutoButton.Location = new Point(200, 220);
             AutoButton.Name = "AutoButton";
-            AutoButton.Size = new Size(100, 42);
-            AutoButton.TabIndex = 11;
-            AutoButton.Text = "Поставить автоматически";
+            AutoButton.Size = new Size(120, 35);
+            AutoButton.TabIndex = 0;
+            AutoButton.Text = "Автозаполнение";
             AutoButton.UseVisualStyleBackColor = true;
             AutoButton.Click += Auto_Click;
             // 
@@ -139,7 +129,8 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            BackColor = Color.WhiteSmoke;
+            ClientSize = new Size(500, 400);
             Controls.Add(AutoButton);
             Controls.Add(EntryButton);
             Controls.Add(PasswordLabel);
@@ -152,12 +143,13 @@
             Controls.Add(PortText);
             Controls.Add(CloseButton);
             Name = "Form2";
-            Text = "Form2";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Подключение к базе данных";
             ResumeLayout(false);
             PerformLayout();
         }
-
         #endregion
+
         private Button CloseButton;
         private TextBox PortText;
         private TextBox BdText;

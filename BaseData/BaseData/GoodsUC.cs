@@ -6,13 +6,13 @@ using System.Drawing;
 
 namespace BaseData
 {
-    public class Clients : UserControl
+    public class GoodsUC : UserControl
     {
         private string? currentConnectionString;
-        private Button refreshButton = null!;
-        private DataGridView dataGrid = null!;
+        private Button btnRefresh = null!;
+        private DataGridView dataGridView1 = null!;
 
-        public Clients()
+        public GoodsUC()
         {
             InitializeComponent();
             CreateRefreshButton();
@@ -21,41 +21,41 @@ namespace BaseData
 
         private void InitializeComponent()
         {
-            this.refreshButton = new Button();
-            this.dataGrid = new DataGridView();
+            this.btnRefresh = new Button();
+            this.dataGridView1 = new DataGridView();
 
             SuspendLayout();
 
-            // refreshButton
-            this.refreshButton.Location = new Point(10, 10);
-            this.refreshButton.Name = "refreshButton";
-            this.refreshButton.Size = new Size(80, 30);
-            this.refreshButton.TabIndex = 0;
-            this.refreshButton.Text = "Обновить";
-            this.refreshButton.UseVisualStyleBackColor = true;
+            // btnRefresh
+            this.btnRefresh.Location = new Point(10, 10);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new Size(80, 30);
+            this.btnRefresh.TabIndex = 0;
+            this.btnRefresh.Text = "Обновить";
+            this.btnRefresh.UseVisualStyleBackColor = true;
 
-            // dataGrid
-            this.dataGrid.AllowUserToAddRows = false;
-            this.dataGrid.AllowUserToDeleteRows = false;
-            this.dataGrid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            this.dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGrid.BackgroundColor = Color.White;
-            this.dataGrid.BorderStyle = BorderStyle.None;
-            this.dataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGrid.Location = new Point(10, 50);
-            this.dataGrid.Margin = new Padding(10);
-            this.dataGrid.Name = "dataGrid";
-            this.dataGrid.ReadOnly = true;
-            this.dataGrid.Size = new Size(760, 340);
-            this.dataGrid.TabIndex = 1;
+            // dataGridView1
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.BackgroundColor = Color.White;
+            this.dataGridView1.BorderStyle = BorderStyle.None;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new Point(10, 50);
+            this.dataGridView1.Margin = new Padding(10);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.Size = new Size(760, 340);
+            this.dataGridView1.TabIndex = 1;
 
             // UserControl
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.White;
-            this.Controls.Add(this.dataGrid);
-            this.Controls.Add(this.refreshButton);
-            this.Name = "Clients";
+            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.btnRefresh);
+            this.Name = "GoodsUC";
             this.Size = new Size(780, 400);
 
             ResumeLayout(false);
@@ -65,12 +65,12 @@ namespace BaseData
         {
             try
             {
-                if (this.dataGrid != null)
+                if (this.dataGridView1 != null)
                 {
                     var method = typeof(Styles).GetMethod("ApplyDataGridViewStyle");
                     if (method != null)
                     {
-                        method.Invoke(null, new object[] { this.dataGrid });
+                        method.Invoke(null, new object[] { this.dataGridView1 });
                     }
                 }
             }
@@ -82,13 +82,13 @@ namespace BaseData
 
         private void CreateRefreshButton()
         {
-            this.refreshButton.Text = "Обновить";
-            this.refreshButton.Size = new Size(80, 30);
-            this.refreshButton.Location = new Point(10, 10);
-            this.refreshButton.BackColor = Color.SteelBlue;
-            this.refreshButton.ForeColor = Color.White;
-            this.refreshButton.FlatStyle = FlatStyle.Flat;
-            this.refreshButton.Click += (s, e) => RefreshData();
+            this.btnRefresh.Text = "Обновить";
+            this.btnRefresh.Size = new Size(80, 30);
+            this.btnRefresh.Location = new Point(10, 10);
+            this.btnRefresh.BackColor = Color.SteelBlue;
+            this.btnRefresh.ForeColor = Color.White;
+            this.btnRefresh.FlatStyle = FlatStyle.Flat;
+            this.btnRefresh.Click += (s, e) => RefreshData();
         }
 
         public void Show(string? connectionString)
@@ -99,7 +99,7 @@ namespace BaseData
 
         private void RefreshData()
         {
-            if (this.dataGrid == null) return;
+            if (this.dataGridView1 == null) return;
 
             try
             {
@@ -115,7 +115,7 @@ namespace BaseData
 
                     if (sqlConnection.State == ConnectionState.Open)
                     {
-                        string query = "SELECT * FROM clients ORDER BY id";
+                        string query = "SELECT * FROM goods ORDER BY id";
                         using (NpgsqlCommand command = new NpgsqlCommand(query, sqlConnection))
                         {
                             using (NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command))
@@ -123,12 +123,12 @@ namespace BaseData
                                 DataTable data = new DataTable();
                                 adapter.Fill(data);
 
-                                this.dataGrid.DataSource = data;
+                                this.dataGridView1.DataSource = data;
                                 SafeConfigureDataGridViewColumns();
 
                                 if (data.Rows.Count == 0)
                                 {
-                                    ShowInfoMessage("Таблица клиентов пуста");
+                                    ShowInfoMessage("Таблица товаров пуста");
                                 }
                             }
                         }
@@ -149,29 +149,26 @@ namespace BaseData
         {
             try
             {
-                if (this.dataGrid?.Columns == null || this.dataGrid.Columns.Count == 0)
+                if (this.dataGridView1?.Columns == null || this.dataGridView1.Columns.Count == 0)
                     return;
 
-                foreach (DataGridViewColumn column in this.dataGrid.Columns)
+                foreach (DataGridViewColumn column in this.dataGridView1.Columns)
                 {
                     if (column?.Name == null) continue;
 
                     string columnName = column.Name.ToLower();
 
                     if (columnName == "id") column.HeaderText = "ID";
-                    else if (columnName == "surname") column.HeaderText = "Фамилия";
-                    else if (columnName == "name") column.HeaderText = "Имя";
-                    else if (columnName == "middlename") column.HeaderText = "Отчество";
-                    else if (columnName == "location") column.HeaderText = "Адрес";
-                    else if (columnName == "email") column.HeaderText = "Email";
-                    else if (columnName == "constclient") column.HeaderText = "Постоянный клиент";
+                    else if (columnName == "name") column.HeaderText = "Название товара";
+                    else if (columnName == "price") column.HeaderText = "Цена";
+                    else if (columnName == "measure") column.HeaderText = "Валюта";
                 }
 
-                this.dataGrid.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.Fill);
+                this.dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.Fill);
             }
-            catch
+            catch (Exception ex)
             {
-                // Игнорируем ошибки настройки колонок
+                System.Diagnostics.Debug.WriteLine($"Ошибка настройки колонок: {ex.Message}");
             }
         }
 

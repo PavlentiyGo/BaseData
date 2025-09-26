@@ -2,15 +2,8 @@
 {
     partial class Form1
     {
-        /// <summary>
-        ///  Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        ///  Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -21,11 +14,6 @@
         }
 
         #region Windows Form Designer generated code
-
-        /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             CreateButton = new Button();
@@ -35,49 +23,67 @@
             // 
             // CreateButton
             // 
-            CreateButton.Location = new Point(255, 23);
+            CreateButton.BackColor = Color.SteelBlue;
+            CreateButton.FlatStyle = FlatStyle.Flat;
+            CreateButton.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            CreateButton.ForeColor = Color.White;
+            CreateButton.Location = new Point(250, 50);
+            CreateButton.Margin = new Padding(3, 4, 3, 4);
             CreateButton.Name = "CreateButton";
-            CreateButton.Size = new Size(286, 41);
+            CreateButton.Size = new Size(400, 60);
             CreateButton.TabIndex = 1;
             CreateButton.Text = "Создать схему и таблицы";
-            CreateButton.UseVisualStyleBackColor = true;
+            CreateButton.UseVisualStyleBackColor = false;
             CreateButton.Click += CreateDataBase_Click;
             // 
             // AddButton
             // 
-            AddButton.Location = new Point(255, 79);
+            AddButton.BackColor = Color.SteelBlue;
+            AddButton.FlatStyle = FlatStyle.Flat;
+            AddButton.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            AddButton.ForeColor = Color.White;
+            AddButton.Location = new Point(250, 130);
+            AddButton.Margin = new Padding(3, 4, 3, 4);
             AddButton.Name = "AddButton";
-            AddButton.Size = new Size(286, 36);
+            AddButton.Size = new Size(400, 60);
             AddButton.TabIndex = 2;
             AddButton.Text = "Внести данные";
-            AddButton.UseVisualStyleBackColor = true;
+            AddButton.UseVisualStyleBackColor = false;
             AddButton.Click += AddData_Click;
             // 
             // GetButton
             // 
-            GetButton.Location = new Point(255, 136);
+            GetButton.BackColor = Color.SteelBlue;
+            GetButton.FlatStyle = FlatStyle.Flat;
+            GetButton.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            GetButton.ForeColor = Color.White;
+            GetButton.Location = new Point(250, 210);
+            GetButton.Margin = new Padding(3, 4, 3, 4);
             GetButton.Name = "GetButton";
-            GetButton.Size = new Size(286, 37);
+            GetButton.Size = new Size(400, 60);
             GetButton.TabIndex = 3;
             GetButton.Text = "Вывести данные";
-            GetButton.UseVisualStyleBackColor = true;
+            GetButton.UseVisualStyleBackColor = false;
             GetButton.Click += GetData_Click;
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            BackColor = Color.WhiteSmoke;
+            ClientSize = new Size(900, 400);
             Controls.Add(GetButton);
             Controls.Add(AddButton);
             Controls.Add(CreateButton);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "Form1";
-            Text = "Form1";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "База данных: Управление";
             Load += Form1_Load;
             ResumeLayout(false);
         }
-
         #endregion
+
         private Button CreateButton;
         private Button AddButton;
         private Button GetButton;
