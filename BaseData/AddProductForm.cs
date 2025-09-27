@@ -105,10 +105,10 @@ namespace BaseData
             Label lblStock = new Label() { Text = "Количество:", TextAlign = ContentAlignment.MiddleRight };
             txtStock = new TextBox() { Text = "0" };
 
-            btnAdd = new Button() { Text = "Добавить", Size = new Size(100, 45) };
+            btnAdd = new Button() { Text = "Добавить", Size = new Size(120, 45) };
             btnAdd.Click += BtnAdd_Click;
 
-            btnCancel = new Button() { Text = "Отмена", Size = new Size(100, 45) };
+            btnCancel = new Button() { Text = "Отмена", Size = new Size(120, 45) };
             btnCancel.Click += (s, e) =>
             {
                 rch.LogInfo("Форма добавления товара закрыта по отмене");

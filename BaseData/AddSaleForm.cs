@@ -43,9 +43,8 @@ namespace BaseData
                 if (dgvOrderItems != null)
                 {
                     Styles.ApplyDataGridViewStyle(dgvOrderItems);
-                    // Дополнительные стили для заголовков
                     dgvOrderItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-                    dgvOrderItems.ColumnHeadersHeight = 50; // Высокие заголовки
+                    dgvOrderItems.ColumnHeadersHeight = 50; 
                     dgvOrderItems.ColumnHeadersDefaultCellStyle.Font = new Font(Styles.MainFont, 10F, FontStyle.Bold);
                     dgvOrderItems.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     dgvOrderItems.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
@@ -78,7 +77,6 @@ namespace BaseData
             this.StartPosition = FormStartPosition.CenterParent;
             this.Padding = new Padding(20);
 
-            // Заголовок
             Label titleLabel = new Label()
             {
                 Text = "Оформление продажи",
@@ -88,15 +86,13 @@ namespace BaseData
                 Height = 50
             };
 
-            // Главный контейнер
             TableLayoutPanel mainPanel = new TableLayoutPanel();
             mainPanel.Dock = DockStyle.Fill;
-            mainPanel.RowCount = 8;
+            mainPanel.RowCount = 9;
             mainPanel.ColumnCount = 4;
             mainPanel.Padding = new Padding(10);
             mainPanel.BackColor = Color.Transparent;
 
-            // Инициализация всех полей
             this.dgvOrderItems = new DataGridView();
             this.cmbClients = new ComboBox();
             this.cmbGoods = new ComboBox();
@@ -108,41 +104,35 @@ namespace BaseData
             this.btnCreateOrder = new Button();
             this.btnCancel = new Button();
 
-            // Настройка размеров строк и колонок
             for (int i = 0; i < 4; i++)
             {
                 mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             }
             mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
             mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F));
             mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
 
-            // Убраны фиксированные ширины колонок - теперь все колонки равномерно распределяются
             for (int i = 0; i < 4; i++)
             {
                 mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
             }
 
-            // === Клиент ===
             Label lblClient = new Label() { Text = "Клиент:*", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblClient, true);
             this.cmbClients.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbClients.Height = 35;
 
-            // === Дата заказа ===
             Label lblDate = new Label() { Text = "Дата заказа:*", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblDate, true);
             this.dtOrderDate.Value = DateTime.Now;
             this.dtOrderDate.Height = 35;
 
-            // === Дата доставки ===
             Label lblDeliveryDate = new Label() { Text = "Дата доставки:*", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblDeliveryDate, true);
             this.dtDeliveryDate.Value = DateTime.Now.AddDays(3);
             this.dtDeliveryDate.Height = 35;
 
-            // === Валюта ===
             Label lblCurrency = new Label() { Text = "Валюта:", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblCurrency);
             this.cmbCurrency.Items.AddRange(new string[] { "RUB - Российский рубль", "USD - Доллар США", "EUR - Евро" });
@@ -150,25 +140,21 @@ namespace BaseData
             this.cmbCurrency.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbCurrency.Height = 35;
 
-            // === Товар ===
             Label lblGood = new Label() { Text = "Товар:*", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblGood, true);
             this.cmbGoods.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbGoods.Height = 35;
 
-            // === Количество ===
             Label lblQuantity = new Label() { Text = "Количество:*", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblQuantity, true);
             this.txtQuantity.Text = "1";
             this.txtQuantity.Height = 35;
 
-            // === Кнопка "Добавить товар" ===
             this.btnAddItem.Text = "Добавить товар";
             this.btnAddItem.Height = 50;
             this.btnAddItem.Font = new Font(Styles.MainFont, 10F, FontStyle.Bold);
             this.btnAddItem.Click += this.AddItemToOrder;
 
-            // === Кнопка "Отмена" ===
             this.btnCancel.Text = "Отмена";
             this.btnCancel.Size = new Size(160, 45);
             this.btnCancel.Font = new Font(Styles.MainFont, 10F);
@@ -178,7 +164,6 @@ namespace BaseData
                 this.Close();
             };
 
-            // === ТАБЛИЦА ЗАКАЗА - ВО ВСЮ ШИРИНУ С ВЫСОКИМИ ЗАГОЛОВКАМИ ===
             this.dgvOrderItems.Dock = DockStyle.Fill;
             this.dgvOrderItems.AllowUserToAddRows = false;
             this.dgvOrderItems.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -187,18 +172,15 @@ namespace BaseData
             this.dgvOrderItems.MinimumSize = new Size(0, 300);
             this.dgvOrderItems.Font = new Font(Styles.MainFont, 10F);
 
-            // ВЫСОКИЕ ЗАГОЛОВКИ СТОЛБЦОВ
             this.dgvOrderItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            this.dgvOrderItems.ColumnHeadersHeight = 50; // Увеличенная высота заголовков
+            this.dgvOrderItems.ColumnHeadersHeight = 50;
             this.dgvOrderItems.ColumnHeadersDefaultCellStyle.Font = new Font(Styles.MainFont, 10F, FontStyle.Bold);
             this.dgvOrderItems.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             this.dgvOrderItems.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
             this.dgvOrderItems.ColumnHeadersDefaultCellStyle.ForeColor = Color.DarkBlue;
 
-            // Увеличение высоты строк в таблице
             this.dgvOrderItems.RowTemplate.Height = 35;
 
-            // Создание столбцов с настройкой заголовков
             this.dgvOrderItems.Columns.Add("GoodId", "ID товара");
             this.dgvOrderItems.Columns.Add("GoodName", "Товар");
             this.dgvOrderItems.Columns.Add("Quantity", "Количество");
@@ -207,7 +189,6 @@ namespace BaseData
             this.dgvOrderItems.Columns.Add("Currency", "Валюта");
             this.dgvOrderItems.Columns["GoodId"].Visible = false;
 
-            // Настройка внешнего вида столбцов
             foreach (DataGridViewColumn column in this.dgvOrderItems.Columns)
             {
                 column.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -215,20 +196,17 @@ namespace BaseData
                 column.DefaultCellStyle.Padding = new Padding(5, 0, 5, 0);
             }
 
-            // Специфические настройки для столбцов
             this.dgvOrderItems.Columns["Quantity"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             this.dgvOrderItems.Columns["Price"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             this.dgvOrderItems.Columns["Price"].DefaultCellStyle.Format = "N2";
             this.dgvOrderItems.Columns["Stock"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             this.dgvOrderItems.Columns["Currency"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-            // === Кнопка "Создать заказ" ===
             this.btnCreateOrder.Text = "Создать заказ";
             this.btnCreateOrder.Size = new Size(160, 45);
             this.btnCreateOrder.Font = new Font(Styles.MainFont, 10F, FontStyle.Bold);
             this.btnCreateOrder.Click += this.CreateOrder;
 
-            // === Размещение в сетке ===
             mainPanel.Controls.Add(lblClient, 0, 0);
             mainPanel.Controls.Add(this.cmbClients, 1, 0);
             mainPanel.Controls.Add(lblDate, 2, 0);
@@ -244,7 +222,6 @@ namespace BaseData
             mainPanel.Controls.Add(lblQuantity, 2, 2);
             mainPanel.Controls.Add(this.txtQuantity, 3, 2);
 
-            // Пустая ячейка для выравнивания
             mainPanel.Controls.Add(new Panel() { BackColor = Color.Transparent }, 0, 3);
             mainPanel.Controls.Add(new Panel() { BackColor = Color.Transparent }, 1, 3);
             mainPanel.Controls.Add(new Panel() { BackColor = Color.Transparent }, 2, 3);
@@ -253,11 +230,9 @@ namespace BaseData
             mainPanel.Controls.Add(this.btnAddItem, 0, 4);
             mainPanel.SetColumnSpan(this.btnAddItem, 4);
 
-            // ТАБЛИЦА ЗАНИМАЕТ ВСЮ ШИРИНУ
             mainPanel.Controls.Add(this.dgvOrderItems, 0, 5);
             mainPanel.SetColumnSpan(this.dgvOrderItems, 4);
 
-            // === Панель кнопок ===
             FlowLayoutPanel buttonPanel = new FlowLayoutPanel();
             buttonPanel.Dock = DockStyle.Fill;
             buttonPanel.Height = 60;
@@ -267,10 +242,9 @@ namespace BaseData
             buttonPanel.Controls.Add(this.btnCreateOrder);
             buttonPanel.Controls.Add(this.btnCancel);
 
-            mainPanel.Controls.Add(buttonPanel, 0, 7);
+            mainPanel.Controls.Add(buttonPanel, 0, 6);
             mainPanel.SetColumnSpan(buttonPanel, 4);
 
-            // === Добавление контролов на форму ===
             this.Controls.Add(mainPanel);
             this.Controls.Add(titleLabel);
 
@@ -503,7 +477,6 @@ namespace BaseData
             decimal totalAmountRub = 0;
             int itemCount = 0;
 
-            // Проверка остатков и расчёт общей суммы в рублях
             foreach (DataGridViewRow row in this.dgvOrderItems.Rows)
             {
                 if (row.Cells["GoodId"].Value == null) continue;

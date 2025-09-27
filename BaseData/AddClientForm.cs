@@ -114,10 +114,10 @@ namespace BaseData
 
             chkConstClient = new CheckBox() { Text = "Постоянный клиент" };
 
-            btnAdd = new Button() { Text = "Добавить", Size = new Size(100, 45) };
+            btnAdd = new Button() { Text = "Добавить", Size = new Size(120, 45) };
             btnAdd.Click += BtnAdd_Click;
 
-            btnCancel = new Button() { Text = "Отмена", Size = new Size(100, 45) };
+            btnCancel = new Button() { Text = "Отмена", Size = new Size(120, 45) };
             btnCancel.Click += (s, e) =>
             {
                 rch.LogInfo("Форма добавления клиента закрыта по отмене");

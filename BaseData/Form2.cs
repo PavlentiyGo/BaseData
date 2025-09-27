@@ -8,7 +8,6 @@ namespace BaseData
 {
     public partial class Form2 : Form
     {
-        private Button? CloseButton;
         private TextBox? PortText;
         private TextBox? BdText;
         private TextBox? IdText;
@@ -42,7 +41,6 @@ namespace BaseData
                     TitleLabel.TextAlign = ContentAlignment.MiddleCenter;
                 }
 
-                // Применяем стили к элементам управления
                 if (PortText != null) Styles.ApplyTextBoxStyle(PortText);
                 if (BdText != null) Styles.ApplyTextBoxStyle(BdText);
                 if (IdText != null) Styles.ApplyTextBoxStyle(IdText);
@@ -55,7 +53,6 @@ namespace BaseData
 
                 if (EntryButton != null) Styles.ApplyButtonStyle(EntryButton);
                 if (AutoButton != null) Styles.ApplySecondaryButtonStyle(AutoButton);
-                if (CloseButton != null) Styles.ApplySecondaryButtonStyle(CloseButton);
             }
             catch (Exception ex)
             {
@@ -84,7 +81,7 @@ namespace BaseData
             price DECIMAL(10,2) CHECK (price > 0),
             unit VARCHAR(20) DEFAULT 'шт',
             stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0),
-            currency VARCHAR(3) DEFAULT 'RUB'  -- ← ДОБАВЛЕНО!
+            currency VARCHAR(3) DEFAULT 'RUB'
         );
 
         CREATE TABLE IF NOT EXISTS orders(
@@ -102,7 +99,7 @@ namespace BaseData
             good_id INTEGER REFERENCES goods(id) ON DELETE CASCADE,
             quantity INTEGER CHECK (quantity > 0),
             price DECIMAL(10,2) CHECK (price >= 0),
-            currency VARCHAR(3) DEFAULT 'RUB'  -- ← ОПЦИОНАЛЬНО, но рекомендуется
+            currency VARCHAR(3) DEFAULT 'RUB'
         );";
         }
         private void RecreateDatabaseStructure()
@@ -113,7 +110,6 @@ namespace BaseData
                 {
                     sqlConnection.Open();
 
-                    // Удаляем существующие таблицы (если они есть)
                     string dropScript = @"
                 DROP TABLE IF EXISTS order_items CASCADE;
                 DROP TABLE IF EXISTS orders CASCADE;
@@ -125,7 +121,6 @@ namespace BaseData
                         dropCommand.ExecuteNonQuery();
                     }
 
-                    // Создаем таблицы заново
                     using (NpgsqlCommand createCommand = new NpgsqlCommand(GetTableCreationScript(), sqlConnection))
                     {
                         createCommand.ExecuteNonQuery();
@@ -156,7 +151,6 @@ namespace BaseData
 
             if (AppSettings.TestConnection())
             {
-                // Пересоздаем структуру базы данных
                 RecreateDatabaseStructure();
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -169,8 +163,6 @@ namespace BaseData
             }
         }
 
-        private void button1_Click(object? sender, EventArgs e) => this.Close();
-
         private void Auto_Click(object? sender, EventArgs e)
         {
             if (PortText != null) PortText.Text = "5432";
@@ -181,7 +173,6 @@ namespace BaseData
 
         private void InitializeComponent()
         {
-            this.CloseButton = new Button();
             this.PortText = new TextBox();
             this.BdText = new TextBox();
             this.IdText = new TextBox();
@@ -196,77 +187,56 @@ namespace BaseData
 
             SuspendLayout();
 
-            // TitleLabel
             this.TitleLabel.Text = "Подключение к базе данных";
             this.TitleLabel.Dock = DockStyle.Top;
             this.TitleLabel.Height = 60;
             this.TitleLabel.TextAlign = ContentAlignment.MiddleCenter;
 
-            // CloseButton
-            this.CloseButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            this.CloseButton.Location = new Point(350, 350);
-            this.CloseButton.Size = new Size(100, 40);
-            this.CloseButton.TabIndex = 6;
-            this.CloseButton.Text = "Закрыть";
-            this.CloseButton.UseVisualStyleBackColor = true;
-            this.CloseButton.Click += button1_Click;
-
-            // PortText
             this.PortText.Location = new Point(300, 80);
             this.PortText.Size = new Size(150, 23);
 
-            // BdText
             this.BdText.Location = new Point(300, 120);
             this.BdText.Size = new Size(150, 23);
 
-            // IdText
             this.IdText.Location = new Point(300, 160);
             this.IdText.Size = new Size(150, 23);
 
-            // PasswordText
             this.PasswordText.Location = new Point(300, 200);
             this.PasswordText.PasswordChar = '*';
             this.PasswordText.Size = new Size(150, 23);
 
-            // PortLabel
             this.PortLabel.Location = new Point(100, 80);
             this.PortLabel.Size = new Size(80, 23);
             this.PortLabel.Text = "Порт";
             this.PortLabel.TextAlign = ContentAlignment.MiddleRight;
 
-            // BdLabel
             this.BdLabel.Location = new Point(100, 120);
             this.BdLabel.Size = new Size(80, 23);
             this.BdLabel.Text = "База данных";
             this.BdLabel.TextAlign = ContentAlignment.MiddleRight;
 
-            // IdLabel
             this.IdLabel.Location = new Point(100, 160);
             this.IdLabel.Size = new Size(80, 23);
             this.IdLabel.Text = "Пользователь";
             this.IdLabel.TextAlign = ContentAlignment.MiddleRight;
 
-            // PasswordLabel
             this.PasswordLabel.Location = new Point(100, 200);
             this.PasswordLabel.Size = new Size(80, 23);
             this.PasswordLabel.Text = "Пароль";
             this.PasswordLabel.TextAlign = ContentAlignment.MiddleRight;
 
-            // EntryButton
             this.EntryButton.Location = new Point(300, 250);
             this.EntryButton.Size = new Size(150, 50);
             this.EntryButton.Text = "Подключиться";
             this.EntryButton.UseVisualStyleBackColor = true;
             this.EntryButton.Click += EntryButton_Click;
 
-            // AutoButton
             this.AutoButton.Location = new Point(100, 250);
-            this.AutoButton.Size = new Size(150, 40);
+            this.AutoButton.Size = new Size(150, 50);
             this.AutoButton.Text = "Автозаполнение";
             this.AutoButton.UseVisualStyleBackColor = true;
             this.AutoButton.Click += Auto_Click;
 
-            // Form2
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.ClientSize = new Size(500, 400);
@@ -281,7 +251,6 @@ namespace BaseData
             this.Controls.Add(IdText!);
             this.Controls.Add(BdText!);
             this.Controls.Add(PortText!);
-            this.Controls.Add(CloseButton!);
             this.Name = "Form2";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Подключение к базе данных";
