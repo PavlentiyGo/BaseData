@@ -10,9 +10,10 @@ namespace BaseData
         private TabPage? clientsTabPage;
         private TabPage? goodsTabPage;
         private TabPage? sellsTabPage;
-
-        public Form3()
+        Log rch = new Log();
+        public Form3(Log log)
         {
+            rch = log;
             InitializeComponent();
             ApplyStyles();
         }
@@ -72,6 +73,7 @@ namespace BaseData
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка применения стилей: {ex.Message}");
+                rch.LogError($"Ошибка применения стилей: {ex.Message}");
             }
         }
 
@@ -93,6 +95,7 @@ namespace BaseData
             {
                 MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                rch.LogError($"Ошибка при загрузке данных: {ex.Message}");
             }
         }
 
@@ -102,7 +105,7 @@ namespace BaseData
 
             try
             {
-                Clients clients = new Clients();
+                Clients clients = new Clients(rch);
                 clients.Dock = DockStyle.Fill;
                 this.clientsTabPage.Controls.Clear();
                 this.clientsTabPage.Controls.Add(clients);
@@ -114,11 +117,13 @@ namespace BaseData
                 else
                 {
                     AddInfoLabelToTab(this.clientsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
+                    rch.LogInfo("Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                 }
             }
             catch (Exception ex)
             {
                 AddErrorLabelToTab(this.clientsTabPage, $"Ошибка загрузки клиентов: {ex.Message}");
+                rch.LogError($"Ошибка загрузки клиентов: {ex.Message}");
             }
         }
 
@@ -128,7 +133,7 @@ namespace BaseData
 
             try
             {
-                GoodsUC goods = new GoodsUC();
+                GoodsUC goods = new GoodsUC(rch);
                 goods.Dock = DockStyle.Fill;
                 this.goodsTabPage.Controls.Clear();
                 this.goodsTabPage.Controls.Add(goods);
@@ -140,11 +145,13 @@ namespace BaseData
                 else
                 {
                     AddInfoLabelToTab(this.goodsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
+                    rch.LogInfo("Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                 }
             }
             catch (Exception ex)
             {
                 AddErrorLabelToTab(this.goodsTabPage, $"Ошибка загрузки товаров: {ex.Message}");
+                rch.LogError($"Ошибка загрузки товаров: {ex.Message}");
             }
         }
 
@@ -166,11 +173,13 @@ namespace BaseData
                 else
                 {
                     AddInfoLabelToTab(this.sellsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
+                    rch.LogInfo("Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                 }
             }
             catch (Exception ex)
             {
                 AddErrorLabelToTab(this.sellsTabPage, $"Ошибка загрузки продаж: {ex.Message}");
+                rch.LogError($"Ошибка загрузки продаж: {ex.Message}");
             }
         }
 

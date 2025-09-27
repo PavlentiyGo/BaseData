@@ -5,9 +5,10 @@ namespace BaseData
 {
     public partial class Form1 : Form
     {
+        Log rch = new Log();
         public Form1()
         {
-            InitializeComponent();
+            rch = InitializeComponent();
             ApplyStyles();
 
             // Привязка событий к кнопкам
@@ -25,6 +26,7 @@ namespace BaseData
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка применения стилей: {ex.Message}");
+                rch.LogError($"Ошибка применения стилей: {ex.Message}");
             }
         }
 
@@ -33,12 +35,13 @@ namespace BaseData
         /// </summary>
         private void CreateButton_Click(object? sender, EventArgs e)
         {
-            using (Form2 form2 = new Form2())
+            using (Form2 form2 = new Form2(rch))
             {
                 if (form2.ShowDialog() == DialogResult.OK)
                 {
                     MessageBox.Show("Схема и таблицы успешно пересозданы",
                         "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    rch.LogInfo("Схема и таблицы успешно пересозданы");
                 }
             }
         }
@@ -52,10 +55,11 @@ namespace BaseData
             {
                 MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                rch.LogError("Сначала подключитесь к базе данных");
                 return;
             }
 
-            using (Form4 form4 = new Form4())
+            using (Form4 form4 = new Form4(rch))
             {
                 form4.ShowDialog();
             }
@@ -70,10 +74,11 @@ namespace BaseData
             {
                 MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                rch.LogError("Сначала подключитесь к базе данных");
                 return;
             }
 
-            Form3 form3 = new Form3();
+            Form3 form3 = new Form3(rch);
             form3.ShowDialog();
             form3.Dispose();
         }

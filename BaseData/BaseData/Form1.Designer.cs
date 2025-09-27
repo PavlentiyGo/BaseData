@@ -1,4 +1,6 @@
-﻿namespace BaseData
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace BaseData
 {
     partial class Form1
     {
@@ -12,9 +14,7 @@
             }
             base.Dispose(disposing);
         }
-
-        #region Windows Form Designer generated code
-        private void InitializeComponent()
+        private Log InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -36,20 +36,36 @@
             titleLabel.ForeColor = Styles.DarkColor;
             titleLabel.TextAlign = ContentAlignment.MiddleCenter;
             titleLabel.Dock = DockStyle.Top;
-            titleLabel.Height = 120;
+            titleLabel.Height = 100; // Уменьшил высоту заголовка
             titleLabel.BackColor = Color.Transparent;
 
             // Панель для кнопок
             TableLayoutPanel buttonPanel = new TableLayoutPanel();
-            buttonPanel.Dock = DockStyle.Fill;
+            buttonPanel.Dock = DockStyle.Top; // Изменил на Top
+            buttonPanel.Height = 400; // Фиксированная высота
             buttonPanel.RowCount = 4;
             buttonPanel.ColumnCount = 1;
             buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            buttonPanel.Padding = new Padding(100, 60, 100, 60);
+            buttonPanel.Padding = new Padding(100, 30, 100, 30); // Уменьшил вертикальные отступы
             buttonPanel.BackColor = Color.Transparent;
+
+            // RichTextBox для вывода информации
+            RichTextBox infoTextBox = new RichTextBox();
+            Log InfoTextBox = new Log();
+            InfoTextBox.rtb = infoTextBox;
+            InfoTextBox.rtb.Name = "InfoTextBox"; // Задаем имя для удобства
+            InfoTextBox.rtb.Dock = DockStyle.Fill;
+            InfoTextBox.rtb.Font = new Font("Consolas", 10F);
+            InfoTextBox.rtb.BackColor = Color.White;
+            InfoTextBox.rtb.ForeColor = Color.FromArgb(50, 50, 50);
+            InfoTextBox.rtb.BorderStyle = BorderStyle.FixedSingle;
+            InfoTextBox.rtb.Padding = new Padding(10);
+            InfoTextBox.rtb.Margin = new Padding(20, 10, 20, 20);
+            InfoTextBox.rtb.ReadOnly = true;
+            InfoTextBox.rtb.ScrollBars = RichTextBoxScrollBars.Vertical;
 
             // Создание кнопок
             CreateButton = new Button();
@@ -60,25 +76,25 @@
             // CreateButton
             CreateButton.Dock = DockStyle.Fill;
             CreateButton.Text = "Создать схему и таблицы";
-            CreateButton.Margin = new Padding(20);
+            CreateButton.Margin = new Padding(20, 8, 20, 8); // Уменьшил вертикальные отступы
             CreateButton.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
 
             // AddButton
             AddButton.Dock = DockStyle.Fill;
             AddButton.Text = "Внести данные";
-            AddButton.Margin = new Padding(20);
+            AddButton.Margin = new Padding(20, 8, 20, 8); // Уменьшил вертикальные отступы
             AddButton.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
 
             // GetButton
             GetButton.Dock = DockStyle.Fill;
             GetButton.Text = "Просмотр данных";
-            GetButton.Margin = new Padding(20);
+            GetButton.Margin = new Padding(20, 8, 20, 8); // Уменьшил вертикальные отступы
             GetButton.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
 
             // ExitButton
             exitButton.Dock = DockStyle.Fill;
             exitButton.Text = "Выход";
-            exitButton.Margin = new Padding(20);
+            exitButton.Margin = new Padding(20, 8, 20, 8); // Уменьшил вертикальные отступы
             exitButton.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
             exitButton.Click += (s, e) => Application.Exit();
 
@@ -89,8 +105,9 @@
             buttonPanel.Controls.Add(exitButton, 0, 3);
 
             // Компоновка
-            mainPanel.Controls.Add(buttonPanel);
-            mainPanel.Controls.Add(titleLabel);
+            mainPanel.Controls.Add(infoTextBox); // Сначала добавляем RichTextBox
+            mainPanel.Controls.Add(buttonPanel); // Затем панель с кнопками
+            mainPanel.Controls.Add(titleLabel); // И заголовок
 
             this.Controls.Add(mainPanel);
 
@@ -99,8 +116,8 @@
             Styles.ApplyButtonStyle(AddButton);
             Styles.ApplyButtonStyle(GetButton);
             Styles.ApplySecondaryButtonStyle(exitButton);
+            return InfoTextBox;
         }
-        #endregion
 
         private Button CreateButton;
         private Button AddButton;

@@ -18,17 +18,20 @@ namespace BaseData
         private Button? btnAddItem;
         private Button? btnCreateOrder;
         private Button? btnCancel;
+        private Log rch = new Log();
 
         // Курсы валют (можно вынести в настройки)
         private readonly decimal usdRate = 90.0m;
         private readonly decimal eurRate = 98.0m;
 
-        public AddSaleForm()
+        public AddSaleForm(Log log)
         {
+            rch = log;
             InitializeComponent();
             ApplyStyles();
             LoadClients();
             LoadGoods();
+            rch.LogInfo("Форма оформления продажи инициализирована");
         }
 
         private void ApplyStyles()
@@ -57,9 +60,12 @@ namespace BaseData
                 if (btnAddItem != null) Styles.ApplySecondaryButtonStyle(btnAddItem);
                 if (btnCreateOrder != null) Styles.ApplyButtonStyle(btnCreateOrder);
                 if (btnCancel != null) Styles.ApplySecondaryButtonStyle(btnCancel);
+
+                rch.LogInfo("Стили формы продажи применены успешно");
             }
             catch (Exception ex)
             {
+                rch.LogError($"Ошибка применения стилей формы продажи: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Ошибка применения стилей: {ex.Message}");
             }
         }
@@ -162,6 +168,16 @@ namespace BaseData
             this.btnAddItem.Font = new Font(Styles.MainFont, 10F, FontStyle.Bold);
             this.btnAddItem.Click += this.AddItemToOrder;
 
+            // === Кнопка "Отмена" ===
+            this.btnCancel.Text = "Отмена";
+            this.btnCancel.Size = new Size(160, 45);
+            this.btnCancel.Font = new Font(Styles.MainFont, 10F);
+            this.btnCancel.Click += (s, e) =>
+            {
+                rch.LogInfo("Форма оформления продажи закрыта по отмене");
+                this.Close();
+            };
+
             // === ТАБЛИЦА ЗАКАЗА - ВО ВСЮ ШИРИНУ С ВЫСОКИМИ ЗАГОЛОВКАМИ ===
             this.dgvOrderItems.Dock = DockStyle.Fill;
             this.dgvOrderItems.AllowUserToAddRows = false;
@@ -206,16 +222,11 @@ namespace BaseData
             this.dgvOrderItems.Columns["Stock"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             this.dgvOrderItems.Columns["Currency"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-            // === Кнопки внизу ===
+            // === Кнопка "Создать заказ" ===
             this.btnCreateOrder.Text = "Создать заказ";
             this.btnCreateOrder.Size = new Size(160, 45);
             this.btnCreateOrder.Font = new Font(Styles.MainFont, 10F, FontStyle.Bold);
             this.btnCreateOrder.Click += this.CreateOrder;
-
-            this.btnCancel.Text = "Отмена";
-            this.btnCancel.Size = new Size(160, 45);
-            this.btnCancel.Font = new Font(Styles.MainFont, 10F);
-            this.btnCancel.Click += (s, e) => this.Close();
 
             // === Размещение в сетке ===
             mainPanel.Controls.Add(lblClient, 0, 0);
@@ -267,12 +278,14 @@ namespace BaseData
             mainPanel.Dock = DockStyle.Fill;
 
             this.ResumeLayout(false);
+            rch.LogInfo("Компоненты формы продажи инициализированы");
         }
 
         private void LoadClients()
         {
             try
             {
+                rch.LogInfo("Начало загрузки списка клиентов");
                 if (this.cmbClients == null) return;
 
                 this.cmbClients.Items.Clear();
@@ -284,6 +297,7 @@ namespace BaseData
                     var command = new NpgsqlCommand("SELECT id, surname, name, middlename FROM clients ORDER BY surname, name", connection);
                     var reader = command.ExecuteReader();
 
+                    int count = 0;
                     while (reader.Read())
                     {
                         string middlename = reader.IsDBNull(3) ? "" : reader.GetString(3);
@@ -292,12 +306,16 @@ namespace BaseData
                             Id = reader.GetInt32(0),
                             Display = $"{reader.GetString(1)} {reader.GetString(2)} {middlename}".Trim()
                         });
+                        count++;
                     }
+                    rch.LogInfo($"Загружено клиентов: {count}");
                 }
                 this.cmbClients.SelectedIndex = 0;
+                rch.LogInfo("Список клиентов успешно загружен");
             }
             catch (Exception ex)
             {
+                rch.LogError($"Ошибка загрузки клиентов: {ex.Message}");
                 MessageBox.Show($"Ошибка загрузки клиентов: {ex.Message}");
             }
         }
@@ -306,6 +324,7 @@ namespace BaseData
         {
             try
             {
+                rch.LogInfo("Начало загрузки списка товаров");
                 if (this.cmbGoods == null) return;
 
                 this.cmbGoods.Items.Clear();
@@ -317,6 +336,7 @@ namespace BaseData
                     var command = new NpgsqlCommand("SELECT id, name, price, stock_quantity FROM goods WHERE stock_quantity > 0 ORDER BY name", connection);
                     var reader = command.ExecuteReader();
 
+                    int count = 0;
                     while (reader.Read())
                     {
                         this.cmbGoods.Items.Add(new GoodItem
@@ -324,26 +344,34 @@ namespace BaseData
                             Id = reader.GetInt32(0),
                             Display = $"{reader.GetString(1)} - {reader.GetDecimal(2):0.00} руб. (в наличии: {reader.GetInt32(3)})"
                         });
+                        count++;
                     }
+                    rch.LogInfo($"Загружено товаров: {count}");
                 }
                 this.cmbGoods.SelectedIndex = 0;
+                rch.LogInfo("Список товаров успешно загружен");
             }
             catch (Exception ex)
             {
+                rch.LogError($"Ошибка загрузки товаров: {ex.Message}");
                 MessageBox.Show($"Ошибка загрузки товаров: {ex.Message}");
             }
         }
 
         private void AddItemToOrder(object? sender, EventArgs e)
         {
+            rch.LogInfo("Попытка добавления товара в заказ");
+
             if (this.cmbGoods?.SelectedItem is not GoodItem good || good.Id == 0)
             {
+                rch.LogWarning("Не выбран товар для добавления в заказ");
                 MessageBox.Show("Выберите товар");
                 return;
             }
 
             if (this.txtQuantity == null || !int.TryParse(this.txtQuantity.Text, out int quantity) || quantity <= 0)
             {
+                rch.LogWarning($"Некорректное количество товара: {txtQuantity?.Text}");
                 MessageBox.Show("Укажите корректное количество");
                 return;
             }
@@ -351,6 +379,7 @@ namespace BaseData
             var goodInfo = GetGoodInfo(good.Id);
             if (goodInfo.Stock < quantity)
             {
+                rch.LogWarning($"Недостаточно товара ID {good.Id}. Запрошено: {quantity}, в наличии: {goodInfo.Stock}");
                 MessageBox.Show($"Недостаточно товара на складе. В наличии: {goodInfo.Stock}");
                 return;
             }
@@ -371,6 +400,7 @@ namespace BaseData
                         row.Cells["Quantity"].Value = currentQty + quantity;
                         row.Cells["Price"].Value = priceInCurrency * (currentQty + quantity);
                         exists = true;
+                        rch.LogInfo($"Товар ID {good.Id} обновлен в заказе. Новое количество: {currentQty + quantity}");
                         break;
                     }
                 }
@@ -385,70 +415,93 @@ namespace BaseData
                         goodInfo.Stock,
                         currency
                     );
+                    rch.LogInfo($"Товар ID {good.Id} добавлен в заказ. Количество: {quantity}, Цена: {totalLine} {currency}");
                 }
             }
 
             this.txtQuantity.Text = "1";
+            rch.LogInfo("Товар успешно добавлен в заказ");
         }
 
         private decimal ConvertToCurrency(decimal priceInRubles, string currency)
         {
-            return currency switch
+            decimal result = currency switch
             {
                 "USD" => priceInRubles / usdRate,
                 "EUR" => priceInRubles / eurRate,
                 _ => priceInRubles
             };
+            rch.LogInfo($"Конвертация цены: {priceInRubles} RUB -> {result} {currency}");
+            return result;
         }
 
         private decimal ConvertToRubles(decimal price, string currency)
         {
-            return currency switch
+            decimal result = currency switch
             {
                 "USD" => price * usdRate,
                 "EUR" => price * eurRate,
                 _ => price
             };
+            rch.LogInfo($"Конвертация цены: {price} {currency} -> {result} RUB");
+            return result;
         }
 
         private (decimal Price, int Stock) GetGoodInfo(int goodId)
         {
-            using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
+            try
             {
-                connection.Open();
-                var command = new NpgsqlCommand("SELECT price, stock_quantity FROM goods WHERE id = @id", connection);
-                command.Parameters.AddWithValue("id", goodId);
-                var reader = command.ExecuteReader();
-
-                if (reader.Read())
+                using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
                 {
-                    return (reader.GetDecimal(0), reader.GetInt32(1));
+                    connection.Open();
+                    var command = new NpgsqlCommand("SELECT price, stock_quantity FROM goods WHERE id = @id", connection);
+                    command.Parameters.AddWithValue("id", goodId);
+                    var reader = command.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        var result = (reader.GetDecimal(0), reader.GetInt32(1));
+                        rch.LogInfo($"Получена информация о товаре ID {goodId}: цена {result.Item1}, остаток {result.Item2}");
+                        return result;
+                    }
+                    rch.LogWarning($"Товар ID {goodId} не найден в базе данных");
+                    return (0, 0);
                 }
+            }
+            catch (Exception ex)
+            {
+                rch.LogError($"Ошибка получения информации о товаре ID {goodId}: {ex.Message}");
                 return (0, 0);
             }
         }
 
         private void CreateOrder(object? sender, EventArgs e)
         {
+            rch.LogInfo("Начало создания заказа");
+
             if (this.cmbClients?.SelectedItem is not ClientItem client || client.Id == 0)
             {
+                rch.LogWarning("Не выбран клиент для создания заказа");
                 MessageBox.Show("Выберите клиента");
                 return;
             }
 
             if (this.dgvOrderItems == null || this.dgvOrderItems.Rows.Count == 0)
             {
+                rch.LogWarning("Попытка создания заказа без товаров");
                 MessageBox.Show("Добавьте хотя бы один товар в заказ");
                 return;
             }
 
             if (this.dtDeliveryDate.Value < this.dtOrderDate.Value)
             {
+                rch.LogWarning("Дата доставки раньше даты заказа");
                 MessageBox.Show("Дата доставки не может быть раньше даты заказа");
                 return;
             }
 
             decimal totalAmountRub = 0;
+            int itemCount = 0;
 
             // Проверка остатков и расчёт общей суммы в рублях
             foreach (DataGridViewRow row in this.dgvOrderItems.Rows)
@@ -463,17 +516,21 @@ namespace BaseData
 
                 if (quantity > stock)
                 {
+                    rch.LogError($"Недостаточно товара ID {goodId} для заказа. Запрошено: {quantity}, в наличии: {stock}");
                     MessageBox.Show($"Недостаточно товара '{row.Cells["GoodName"].Value}' на складе");
                     return;
                 }
 
                 decimal totalInRub = ConvertToRubles(totalLine, currency);
                 totalAmountRub += totalInRub;
+                itemCount++;
             }
 
             decimal discount = totalAmountRub > 5000 ? 2.0m : 0.0m;
             decimal finalAmount = totalAmountRub * (1 - discount / 100);
             bool makeConstant = totalAmountRub > 5000;
+
+            rch.LogInfo($"Расчет заказа: товаров {itemCount}, сумма {totalAmountRub:RUB}, скидка {discount}%, итого {finalAmount:RUB}");
 
             try
             {
@@ -482,6 +539,8 @@ namespace BaseData
                     connection.Open();
                     using (var transaction = connection.BeginTransaction())
                     {
+                        rch.LogInfo("Начало транзакции создания заказа");
+
                         // Создание заказа
                         var orderCommand = new NpgsqlCommand(@"
                             INSERT INTO orders (client_id, order_date, delivery_date, total_amount, discount) 
@@ -495,8 +554,10 @@ namespace BaseData
                         orderCommand.Parameters.AddWithValue("discount", discount);
 
                         int orderId = Convert.ToInt32(orderCommand.ExecuteScalar());
+                        rch.LogInfo($"Создан заказ ID: {orderId} для клиента ID: {client.Id}");
 
                         // Добавление позиций и обновление остатков
+                        int itemsAdded = 0;
                         foreach (DataGridViewRow row in this.dgvOrderItems.Rows)
                         {
                             if (row.Cells["GoodId"].Value == null) continue;
@@ -525,6 +586,9 @@ namespace BaseData
                             updateStockCommand.Parameters.AddWithValue("quantity", quantity);
                             updateStockCommand.Parameters.AddWithValue("good_id", goodId);
                             updateStockCommand.ExecuteNonQuery();
+
+                            itemsAdded++;
+                            rch.LogInfo($"Добавлена позиция заказа: товар ID {goodId}, количество {quantity}, цена {pricePerUnit} {currency}");
                         }
 
                         // Обновление статуса клиента
@@ -534,9 +598,11 @@ namespace BaseData
                                 UPDATE clients SET constclient = true WHERE id = @client_id", connection, transaction);
                             updateClientCommand.Parameters.AddWithValue("client_id", client.Id);
                             updateClientCommand.ExecuteNonQuery();
+                            rch.LogInfo($"Клиент ID {client.Id} установлен как постоянный");
                         }
 
                         transaction.Commit();
+                        rch.LogInfo($"Заказ №{orderId} успешно создан. Позиций: {itemsAdded}, Итоговая сумма: {finalAmount:0.00} руб.");
                         MessageBox.Show($"Заказ №{orderId} успешно создан!\nОбщая сумма: {finalAmount:0.00} руб.\nСкидка: {discount}%");
                         this.DialogResult = DialogResult.OK;
                         this.Close();
@@ -545,8 +611,15 @@ namespace BaseData
             }
             catch (Exception ex)
             {
+                rch.LogError($"Ошибка создания заказа: {ex.Message}");
                 MessageBox.Show($"Ошибка создания заказа: {ex.Message}");
             }
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            rch.LogInfo($"Форма оформления продажи закрыта. Причина: {e.CloseReason}");
+            base.OnFormClosed(e);
         }
     }
 

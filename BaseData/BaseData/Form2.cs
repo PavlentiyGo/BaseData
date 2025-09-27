@@ -20,9 +20,11 @@ namespace BaseData
         private Button? EntryButton;
         private Button? AutoButton;
         private Label? TitleLabel;
+        Log rch = new Log();
 
-        public Form2()
+        public Form2(Log log)
         {
+            rch = log;
             InitializeComponent();
             ApplyStyles();
         }
@@ -58,6 +60,7 @@ namespace BaseData
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка применения стилей: {ex.Message}");
+                rch.LogError($"Ошибка применения стилей: {ex.Message}");
             }
         }
 
@@ -133,6 +136,7 @@ namespace BaseData
                 {
                     MessageBox.Show($"Ошибка пересоздания БД: {ex.Message}", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    rch.LogError($"Ошибка пересоздания БД: {ex.Message}");
                 }
             }
         }
@@ -144,6 +148,7 @@ namespace BaseData
             {
                 MessageBox.Show("Пожалуйста, заполните все поля", "Внимание",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                rch.LogWarning("Пожалуйста, заполните все поля");
                 return;
             }
 
@@ -160,6 +165,7 @@ namespace BaseData
             {
                 MessageBox.Show("Не удалось подключиться к БД", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                rch.LogError("Не удалось подключиться к БД");
             }
         }
 
@@ -168,9 +174,9 @@ namespace BaseData
         private void Auto_Click(object? sender, EventArgs e)
         {
             if (PortText != null) PortText.Text = "5432";
-            if (BdText != null) BdText.Text = "newdata";
+            if (BdText != null) BdText.Text = "Internet-shop(Project)";
             if (IdText != null) IdText.Text = "postgres";
-            if (PasswordText != null) PasswordText.Text = "Al7xsemenov@";
+            if (PasswordText != null) PasswordText.Text = "WE<3ANGELINA";
         }
 
         private void InitializeComponent()

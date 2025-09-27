@@ -6,8 +6,10 @@ namespace BaseData
 {
     public partial class Form4 : Form
     {
-        public Form4()
+        Log rch = new Log();
+        public Form4(Log log)
         {
+            rch = log;
             InitializeComponent();
             ApplyStyles();
         }
@@ -21,6 +23,7 @@ namespace BaseData
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка применения стилей: {ex.Message}");
+                rch.LogError($"Ошибка применения стилей: {ex.Message}");
             }
         }
 
@@ -76,7 +79,7 @@ namespace BaseData
             {
                 if (AppSettings.IsConnectionStringSet)
                 {
-                    AddClientForm form = new AddClientForm();
+                    AddClientForm form = new AddClientForm(rch);
                     form.ShowDialog();
                     form.Dispose();
                 }
@@ -84,6 +87,7 @@ namespace BaseData
                 {
                     MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    rch.LogWarning("Сначала подключитесь к базе данных");
                 }
             };
 
@@ -100,7 +104,7 @@ namespace BaseData
             {
                 if (AppSettings.IsConnectionStringSet)
                 {
-                    AddProductForm form = new AddProductForm();
+                    AddProductForm form = new AddProductForm(rch);
                     form.ShowDialog();
                     form.Dispose();
                 }
@@ -108,6 +112,7 @@ namespace BaseData
                 {
                     MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    rch.LogWarning("Сначала подключитесь к базе данных");
                 }
             };
 
@@ -124,7 +129,7 @@ namespace BaseData
             {
                 if (AppSettings.IsConnectionStringSet)
                 {
-                    AddSaleForm form = new AddSaleForm();
+                    AddSaleForm form = new AddSaleForm(rch);
                     form.ShowDialog();
                     form.Dispose();
                 }
@@ -132,6 +137,7 @@ namespace BaseData
                 {
                     MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    rch.LogWarning("Сначала подключитесь к базе данных");
                 }
             };
 

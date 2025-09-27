@@ -17,19 +17,26 @@ namespace BaseData
         private Button? btnAdd;
         private Button? btnCancel;
         private int? _clientId;
+        Log rch = new Log();
 
-        public AddClientForm()
+        public AddClientForm(Log log)
         {
+            rch = log;
             InitializeComponent();
             ApplyStyles();
+            rch.LogInfo("Форма добавления клиента инициализирована");
         }
 
-        public AddClientForm(int clientId) : this()
+        public AddClientForm(int clientId, Log log)
         {
             _clientId = clientId;
+            rch = log;
+            InitializeComponent();
             if (btnAdd != null) btnAdd.Text = "Сохранить";
             this.Text = "Редактировать клиента";
+            ApplyStyles();
             LoadClientData(clientId);
+            rch.LogInfo($"Форма редактирования клиента ID {clientId} инициализирована");
         }
 
         private void ApplyStyles()
@@ -53,9 +60,11 @@ namespace BaseData
                     chkConstClient.ForeColor = Styles.DarkColor;
                     chkConstClient.Font = new Font(Styles.MainFont, 9F);
                 }
+                rch.LogInfo("Стили применены успешно");
             }
             catch (Exception ex)
             {
+                rch.LogError($"Ошибка применения стилей: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Ошибка применения стилей: {ex.Message}");
             }
         }
@@ -109,7 +118,11 @@ namespace BaseData
             btnAdd.Click += BtnAdd_Click;
 
             btnCancel = new Button() { Text = "Отмена", Size = new Size(100, 45) };
-            btnCancel.Click += (s, e) => this.Close();
+            btnCancel.Click += (s, e) =>
+            {
+                rch.LogInfo("Форма добавления клиента закрыта по отмене");
+                this.Close();
+            };
 
             Styles.ApplyLabelStyle(lblSurname);
             Styles.ApplyLabelStyle(lblName, true);
@@ -164,12 +177,14 @@ namespace BaseData
             this.Controls.Add(titleLabel);
 
             this.ResumeLayout(false);
+            rch.LogInfo("Компоненты формы инициализированы");
         }
 
         private void LoadClientData(int clientId)
         {
             try
             {
+                rch.LogInfo($"Начало загрузки данных клиента ID: {clientId}");
                 using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
                 {
                     connection.Open();
@@ -188,24 +203,36 @@ namespace BaseData
                         txtPhone!.Text = reader.IsDBNull(4) ? "" : reader.GetString(4);
                         txtEmail!.Text = reader.GetString(5);
                         chkConstClient!.Checked = reader.GetBoolean(6);
+                        rch.LogInfo($"Данные клиента ID {clientId} успешно загружены");
+                    }
+                    else
+                    {
+                        rch.LogError($"Клиент с ID {clientId} не найден в базе данных");
+                        MessageBox.Show("Клиент не найден");
+                        this.Close();
                     }
                 }
             }
             catch (Exception ex)
             {
+                rch.LogError($"Ошибка загрузки данных клиента ID {clientId}: {ex.Message}");
                 MessageBox.Show($"Ошибка загрузки данных клиента: {ex.Message}");
             }
         }
 
         private void BtnAdd_Click(object? sender, EventArgs e)
         {
+            rch.LogInfo("Нажата кнопка добавления/сохранения клиента");
+
             if (_clientId.HasValue)
             {
+                rch.LogInfo($"Режим редактирования клиента ID: {_clientId.Value}");
                 UpdateClient(_clientId.Value, txtSurname!.Text, txtName!.Text, txtMiddleName!.Text,
                     txtLocation!.Text, txtPhone!.Text, txtEmail!.Text, chkConstClient!.Checked);
             }
             else
             {
+                rch.LogInfo("Режим добавления нового клиента");
                 AddClient(txtSurname!.Text, txtName!.Text, txtMiddleName!.Text,
                     txtLocation!.Text, txtPhone!.Text, txtEmail!.Text, chkConstClient!.Checked);
             }
@@ -213,26 +240,33 @@ namespace BaseData
 
         private void AddClient(string surname, string name, string middlename, string location, string phone, string email, bool constClient)
         {
+            rch.LogInfo("Начало процедуры добавления клиента");
+
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email))
             {
+                rch.LogWarning("Попытка добавления клиента без обязательных полей (Имя, Email)");
                 MessageBox.Show("Заполните обязательные поля (Имя, Email)");
                 return;
             }
 
             if (!IsValidEmail(email))
             {
+                rch.LogWarning($"Некорректный email адрес: {email}");
                 MessageBox.Show("Введите корректный email адрес");
                 return;
             }
 
             if (!string.IsNullOrEmpty(phone) && !IsValidPhone(phone))
             {
+                rch.LogWarning($"Некорректный номер телефона: {phone}");
                 MessageBox.Show("Введите корректный номер телефона");
                 return;
             }
 
             try
             {
+                rch.LogInfo($"Добавление клиента: {surname} {name} {middlename}, email: {email}");
+
                 using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
                 {
                     connection.Open();
@@ -249,17 +283,21 @@ namespace BaseData
                     command.Parameters.AddWithValue("email", email.Trim().ToLower());
                     command.Parameters.AddWithValue("constclient", constClient);
 
-                    command.ExecuteNonQuery();
+                    int result = command.ExecuteNonQuery();
+                    rch.LogInfo($"Клиент успешно добавлен. Затронуто строк: {result}");
                     MessageBox.Show("Клиент успешно добавлен");
+                    rch.LogInfo($"Клиент {name} {surname} (email: {email}) добавлен в базу данных");
                     this.Close();
                 }
             }
             catch (NpgsqlException ex) when (ex.SqlState == "23505")
             {
+                rch.LogError($"Попытка добавить клиента с существующим email: {email}. Ошибка: {ex.Message}");
                 MessageBox.Show("Клиент с таким email уже существует");
             }
             catch (Exception ex)
             {
+                rch.LogError($"Ошибка добавления клиента: {ex.Message}");
                 MessageBox.Show($"Ошибка добавления клиента: {ex.Message}");
             }
         }
@@ -267,26 +305,33 @@ namespace BaseData
         private void UpdateClient(int clientId, string surname, string name, string middlename,
             string location, string phone, string email, bool constClient)
         {
+            rch.LogInfo($"Начало обновления клиента ID: {clientId}");
+
             if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email))
             {
+                rch.LogWarning($"Попытка обновления клиента ID {clientId} без обязательных полей");
                 MessageBox.Show("Заполните обязательные поля (Имя, Email)");
                 return;
             }
 
             if (!IsValidEmail(email))
             {
+                rch.LogWarning($"Некорректный email адрес при обновлении: {email}");
                 MessageBox.Show("Введите корректный email адрес");
                 return;
             }
 
             if (!string.IsNullOrEmpty(phone) && !IsValidPhone(phone))
             {
+                rch.LogWarning($"Некорректный номер телефона при обновлении: {phone}");
                 MessageBox.Show("Введите корректный номер телефона");
                 return;
             }
 
             try
             {
+                rch.LogInfo($"Обновление клиента ID {clientId}: {surname} {name} {middlename}, email: {email}");
+
                 using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
                 {
                     connection.Open();
@@ -305,17 +350,29 @@ namespace BaseData
                     command.Parameters.AddWithValue("email", email.Trim().ToLower());
                     command.Parameters.AddWithValue("constclient", constClient);
 
-                    command.ExecuteNonQuery();
-                    MessageBox.Show("Данные клиента успешно обновлены");
+                    int result = command.ExecuteNonQuery();
+
+                    if (result > 0)
+                    {
+                        rch.LogInfo($"Данные клиента ID {clientId} успешно обновлены. Затронуто строк: {result}");
+                        MessageBox.Show("Данные клиента успешно обновлены");
+                    }
+                    else
+                    {
+                        rch.LogWarning($"Клиент ID {clientId} не найден для обновления");
+                        MessageBox.Show("Клиент не найден");
+                    }
                     this.Close();
                 }
             }
             catch (NpgsqlException ex) when (ex.SqlState == "23505")
             {
+                rch.LogError($"Конфликт email при обновлении клиента ID {clientId}: {email}. Ошибка: {ex.Message}");
                 MessageBox.Show("Клиент с таким email уже существует");
             }
             catch (Exception ex)
             {
+                rch.LogError($"Ошибка обновления клиента ID {clientId}: {ex.Message}");
                 MessageBox.Show($"Ошибка обновления клиента: {ex.Message}");
             }
         }
@@ -325,21 +382,47 @@ namespace BaseData
             try
             {
                 var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
+                bool isValid = addr.Address == email;
+                if (!isValid)
+                {
+                    rch.LogWarning($"Email validation failed for: {email}");
+                }
+                return isValid;
             }
-            catch
+            catch (Exception ex)
             {
+                rch.LogWarning($"Email validation error for {email}: {ex.Message}");
                 return false;
             }
         }
 
         private bool IsValidPhone(string phone)
         {
-            if (string.IsNullOrWhiteSpace(phone))
-                return true;
+            try
+            {
+                if (string.IsNullOrWhiteSpace(phone))
+                    return true;
 
-            string cleaned = System.Text.RegularExpressions.Regex.Replace(phone, @"[^\d+]", "");
-            return System.Text.RegularExpressions.Regex.IsMatch(cleaned, @"^(\+?\d{10,15})$");
+                string cleaned = System.Text.RegularExpressions.Regex.Replace(phone, @"[^\d+]", "");
+                bool isValid = System.Text.RegularExpressions.Regex.IsMatch(cleaned, @"^(\+?\d{10,15})$");
+
+                if (!isValid)
+                {
+                    rch.LogWarning($"Phone validation failed for: {phone} (cleaned: {cleaned})");
+                }
+                return isValid;
+            }
+            catch (Exception ex)
+            {
+                rch.LogError($"Phone validation error for {phone}: {ex.Message}");
+                return false;
+            }
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            rch.LogInfo($"Форма добавления/редактирования клиента закрыта. Причина: {e.CloseReason}");
+            base.OnFormClosed(e);
         }
     }
 }

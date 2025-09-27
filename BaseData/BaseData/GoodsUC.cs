@@ -14,9 +14,10 @@ namespace BaseData
         private Button? btnEdit;
         private Button? btnAdd;
         private DataGridView? dataGridView1;
-
-        public GoodsUC()
+        Log rch = new Log();
+        public GoodsUC(Log log)
         {
+            rch = log;
             InitializeComponent();
             ApplyDataGridViewStyle();
         }
@@ -47,7 +48,7 @@ namespace BaseData
             {
                 if (AppSettings.IsConnectionStringSet)
                 {
-                    var form = new AddProductForm();
+                    var form = new AddProductForm(rch);
                     form.FormClosed += (sender, e) => RefreshData();
                     form.ShowDialog();
                 }
@@ -183,7 +184,7 @@ namespace BaseData
                 return;
             }
 
-            using (var form = new AddProductForm(goodId))
+            using (var form = new AddProductForm(goodId, rch))
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
