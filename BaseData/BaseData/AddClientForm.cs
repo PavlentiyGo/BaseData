@@ -199,6 +199,13 @@ namespace BaseData
 
         private void BtnAdd_Click(object? sender, EventArgs e)
         {
+            // Добавлена проверка имени на цифры
+            if (!IsValidName(txtName!.Text))
+            {
+                MessageBox.Show("Имя не должно содержать цифр");
+                return;
+            }
+
             if (_clientId.HasValue)
             {
                 UpdateClient(_clientId.Value, txtSurname!.Text, txtName!.Text, txtMiddleName!.Text,
@@ -219,6 +226,12 @@ namespace BaseData
                 return;
             }
 
+            if (!IsValidName(name))
+            {
+                MessageBox.Show("Имя не должно содержать цифр");
+                return;
+            }
+
             if (!IsValidEmail(email))
             {
                 MessageBox.Show("Введите корректный email адрес");
@@ -231,6 +244,12 @@ namespace BaseData
                 return;
             }
 
+            // Если фамилия пустая, используем пустую строку вместо NULL
+            if (string.IsNullOrEmpty(surname))
+            {
+                surname = "";
+            }
+
             try
             {
                 using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
@@ -241,7 +260,8 @@ namespace BaseData
                 VALUES (@surname, @name, @middlename, @location, @phone, @email, @constclient)",
                             connection);
 
-                    command.Parameters.AddWithValue("surname", string.IsNullOrEmpty(surname) ? (object)DBNull.Value : surname.Trim());
+                    // Всегда передаем фамилию как строку (даже пустую)
+                    command.Parameters.AddWithValue("surname", surname.Trim());
                     command.Parameters.AddWithValue("name", name.Trim());
                     command.Parameters.AddWithValue("middlename", string.IsNullOrEmpty(middlename) ? (object)DBNull.Value : middlename.Trim());
                     command.Parameters.AddWithValue("location", string.IsNullOrEmpty(location) ? (object)DBNull.Value : location.Trim());
@@ -273,6 +293,12 @@ namespace BaseData
                 return;
             }
 
+            if (!IsValidName(name))
+            {
+                MessageBox.Show("Имя не должно содержать цифр");
+                return;
+            }
+
             if (!IsValidEmail(email))
             {
                 MessageBox.Show("Введите корректный email адрес");
@@ -285,19 +311,26 @@ namespace BaseData
                 return;
             }
 
+            // Если фамилия пустая, используем пустую строку вместо NULL
+            if (string.IsNullOrEmpty(surname))
+            {
+                surname = "";
+            }
+
             try
             {
                 using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
                 {
                     connection.Open();
                     var command = new NpgsqlCommand(@"
-                    UPDATE clients 
-                    SET surname = @surname, name = @name, middlename = @middlename, 
-                        location = @location, phone = @phone, email = @email, constclient = @constclient
-                    WHERE id = @id", connection);
+                UPDATE clients 
+                SET surname = @surname, name = @name, middlename = @middlename, 
+                    location = @location, phone = @phone, email = @email, constclient = @constclient
+                WHERE id = @id", connection);
 
                     command.Parameters.AddWithValue("id", clientId);
-                    command.Parameters.AddWithValue("surname", string.IsNullOrEmpty(surname) ? (object)DBNull.Value : surname.Trim());
+                    // Всегда передаем фамилию как строку (даже пустую)
+                    command.Parameters.AddWithValue("surname", surname.Trim());
                     command.Parameters.AddWithValue("name", name.Trim());
                     command.Parameters.AddWithValue("middlename", string.IsNullOrEmpty(middlename) ? (object)DBNull.Value : middlename.Trim());
                     command.Parameters.AddWithValue("location", string.IsNullOrEmpty(location) ? (object)DBNull.Value : location.Trim());
@@ -340,6 +373,13 @@ namespace BaseData
 
             string cleaned = System.Text.RegularExpressions.Regex.Replace(phone, @"[^\d+]", "");
             return System.Text.RegularExpressions.Regex.IsMatch(cleaned, @"^(\+?\d{10,15})$");
+        }
+
+        // Новый метод проверки имени на цифры
+        private bool IsValidName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return true;
+            return !System.Text.RegularExpressions.Regex.IsMatch(name, @"\d");
         }
     }
 }
