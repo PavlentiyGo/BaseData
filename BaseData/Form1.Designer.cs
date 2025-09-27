@@ -23,40 +23,36 @@ namespace BaseData
             this.BackColor = System.Drawing.Color.FromArgb(255, 248, 240);
             this.Padding = new System.Windows.Forms.Padding(40);
 
-            // Создание главной панели
             Panel mainPanel = new Panel();
             mainPanel.Dock = DockStyle.Fill;
             mainPanel.BackColor = Color.Transparent;
             mainPanel.Padding = new Padding(30);
 
-            // Заголовок
             Label titleLabel = new Label();
             titleLabel.Text = "Управление базой данных магазина";
             titleLabel.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
             titleLabel.ForeColor = Styles.DarkColor;
             titleLabel.TextAlign = ContentAlignment.MiddleCenter;
             titleLabel.Dock = DockStyle.Top;
-            titleLabel.Height = 100; // Уменьшил высоту заголовка
+            titleLabel.Height = 100;
             titleLabel.BackColor = Color.Transparent;
 
-            // Панель для кнопок
             TableLayoutPanel buttonPanel = new TableLayoutPanel();
-            buttonPanel.Dock = DockStyle.Top; // Изменил на Top
-            buttonPanel.Height = 400; // Фиксированная высота
+            buttonPanel.Dock = DockStyle.Top;
+            buttonPanel.Height = 400;
             buttonPanel.RowCount = 4;
             buttonPanel.ColumnCount = 1;
             buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             buttonPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            buttonPanel.Padding = new Padding(100, 30, 100, 30); // Уменьшил вертикальные отступы
+            buttonPanel.Padding = new Padding(100, 30, 100, 30);
             buttonPanel.BackColor = Color.Transparent;
 
-            // RichTextBox для вывода информации
             RichTextBox infoTextBox = new RichTextBox();
             Log InfoTextBox = new Log();
             InfoTextBox.rtb = infoTextBox;
-            InfoTextBox.rtb.Name = "InfoTextBox"; // Задаем имя для удобства
+            InfoTextBox.rtb.Name = "InfoTextBox";
             InfoTextBox.rtb.Dock = DockStyle.Fill;
             InfoTextBox.rtb.Font = new Font("Consolas", 10F);
             InfoTextBox.rtb.BackColor = Color.White;
@@ -67,55 +63,51 @@ namespace BaseData
             InfoTextBox.rtb.ReadOnly = true;
             InfoTextBox.rtb.ScrollBars = RichTextBoxScrollBars.Vertical;
 
-            // Создание кнопок
             CreateButton = new Button();
             AddButton = new Button();
             GetButton = new Button();
             Button exitButton = new Button();
 
-            // CreateButton
             CreateButton.Dock = DockStyle.Fill;
             CreateButton.Text = "Создать схему и таблицы";
-            CreateButton.Margin = new Padding(20, 8, 20, 8); // Уменьшил вертикальные отступы
+            CreateButton.Margin = new Padding(20, 8, 20, 8);
             CreateButton.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            CreateButton.Height = 80;
 
-            // AddButton
             AddButton.Dock = DockStyle.Fill;
             AddButton.Text = "Внести данные";
-            AddButton.Margin = new Padding(20, 8, 20, 8); // Уменьшил вертикальные отступы
+            AddButton.Margin = new Padding(20, 8, 20, 8);
             AddButton.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            AddButton.Height = 80;
 
-            // GetButton
             GetButton.Dock = DockStyle.Fill;
             GetButton.Text = "Просмотр данных";
-            GetButton.Margin = new Padding(20, 8, 20, 8); // Уменьшил вертикальные отступы
+            GetButton.Margin = new Padding(20, 8, 20, 8);
             GetButton.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            GetButton.Height = 80;
 
-            // ExitButton
             exitButton.Dock = DockStyle.Fill;
             exitButton.Text = "Выход";
-            exitButton.Margin = new Padding(20, 8, 20, 8); // Уменьшил вертикальные отступы
+            exitButton.Margin = new Padding(20, 8, 20, 8);
             exitButton.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+            exitButton.Height = 80;
             exitButton.Click += (s, e) => Application.Exit();
 
-            // Добавляем кнопки на панель
             buttonPanel.Controls.Add(CreateButton, 0, 0);
             buttonPanel.Controls.Add(AddButton, 0, 1);
             buttonPanel.Controls.Add(GetButton, 0, 2);
             buttonPanel.Controls.Add(exitButton, 0, 3);
 
-            // Компоновка
-            mainPanel.Controls.Add(infoTextBox); // Сначала добавляем RichTextBox
-            mainPanel.Controls.Add(buttonPanel); // Затем панель с кнопками
-            mainPanel.Controls.Add(titleLabel); // И заголовок
+            mainPanel.Controls.Add(infoTextBox);
+            mainPanel.Controls.Add(buttonPanel);
+            mainPanel.Controls.Add(titleLabel);
 
             this.Controls.Add(mainPanel);
 
-            // Применяем стили
             Styles.ApplyButtonStyle(CreateButton);
             Styles.ApplyButtonStyle(AddButton);
             Styles.ApplyButtonStyle(GetButton);
-            Styles.ApplySecondaryButtonStyle(exitButton);
+            Styles.ApplyButtonStyle(exitButton);
             return InfoTextBox;
         }
 
