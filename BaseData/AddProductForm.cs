@@ -1,7 +1,8 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using Npgsql;
+using System;
 using System.Drawing;
-using Npgsql;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace BaseData
 {
@@ -231,7 +232,6 @@ namespace BaseData
 
             if (!ValidateInput(name, priceText, stockText))
                 return;
-
             try
             {
                 decimal price = decimal.Parse(priceText);
@@ -336,7 +336,18 @@ namespace BaseData
                 MessageBox.Show("Введите название товара");
                 return false;
             }
-
+            if (name.Length > 20)
+            {
+                rch.LogWarning("Слишком длинное название товара");
+                MessageBox.Show("Название товара не может быть больше 20 символов");
+                return false;
+            }
+            if (!Regex.IsMatch(name, @"^[а-яА-ЯёЁ0-9\s\-]+$"))
+            {
+                rch.LogWarning("Товар должен иметь русские буквы и не содержать другие");
+                MessageBox.Show("Товар не может называться без русских букв и содержать другие");
+                return false;
+            }
             if (!decimal.TryParse(priceText, out decimal price) || price <= 0)
             {
                 rch.LogWarning($"Некорректная цена товара: {priceText}");
@@ -359,6 +370,31 @@ namespace BaseData
         {
             rch.LogInfo($"Форма добавления/редактирования товара закрыта. Причина: {e.CloseReason}");
             base.OnFormClosed(e);
+        }
+        public static bool IsRussianLetter(char c)
+        {
+            return (c >= 'а' && c <= 'я') || (c >= 'А' && c <= 'Я') || c == 'ё' || c == 'Ё';
+        }
+
+        public static bool IsEnglishLetter(char c)
+        {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+        }
+        bool RusNotEng(string name)
+        {
+            bool flag = false;
+            foreach (char c in name)
+            { 
+                if (IsRussianLetter(c))
+                {
+                    flag = true;
+                }
+                if (IsEnglishLetter(c))
+                {
+                    return false;
+                }
+            }
+            return flag;
         }
     }
 }

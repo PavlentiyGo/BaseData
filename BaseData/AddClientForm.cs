@@ -1,21 +1,22 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using Npgsql;
+using System;
 using System.Drawing;
-using Npgsql;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace BaseData
 {
     public partial class AddClientForm : Form
     {
-        private TextBox? txtSurname;
-        private TextBox? txtName;
-        private TextBox? txtMiddleName;
-        private TextBox? txtLocation;
-        private TextBox? txtPhone;
-        private TextBox? txtEmail;
-        private CheckBox? chkConstClient;
-        private Button? btnAdd;
-        private Button? btnCancel;
+        private System.Windows.Forms.TextBox txtSurname;
+        private System.Windows.Forms.TextBox txtName;
+        private System.Windows.Forms.TextBox txtMiddleName;
+        private System.Windows.Forms.TextBox txtLocation;
+        private System.Windows.Forms.TextBox txtPhone;
+        private System.Windows.Forms.TextBox txtEmail;
+        private CheckBox chkConstClient;
+        private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Button btnCancel;
         private int? _clientId;
         Log rch = new Log();
 
@@ -94,37 +95,56 @@ namespace BaseData
                 Height = 40
             };
 
-            Label lblSurname = new Label() { Text = "Фамилия:", TextAlign = ContentAlignment.MiddleRight };
-            txtSurname = new TextBox();
+            Label lblSurname = new Label() { Text = "Фамилия:*", TextAlign = ContentAlignment.MiddleRight };
+            txtSurname = new System.Windows.Forms.TextBox();
 
             Label lblName = new Label() { Text = "Имя:*", TextAlign = ContentAlignment.MiddleRight };
-            txtName = new TextBox();
+            txtName = new System.Windows.Forms.TextBox();
 
             Label lblMiddleName = new Label() { Text = "Отчество:", TextAlign = ContentAlignment.MiddleRight };
-            txtMiddleName = new TextBox();
+            txtMiddleName = new System.Windows.Forms.TextBox();
 
             Label lblLocation = new Label() { Text = "Адрес:", TextAlign = ContentAlignment.MiddleRight };
-            txtLocation = new TextBox();
+            txtLocation = new System.Windows.Forms.TextBox();
 
             Label lblPhone = new Label() { Text = "Телефон:", TextAlign = ContentAlignment.MiddleRight };
-            txtPhone = new TextBox();
-
+            txtPhone = new System.Windows.Forms.TextBox();
+            string placeholder = "11 цифр без +7 или 8";
+            txtPhone.Text = placeholder;
+            txtPhone.ForeColor = Color.Gray;
+            txtPhone.Enter += (s, e) =>
+            {
+                if (txtPhone.Text == placeholder)
+                {
+                    txtPhone.Text = "";
+                    txtPhone.ForeColor = Color.Black;
+                }
+            };
+            txtPhone.Leave += (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(txtPhone.Text))
+                {
+                    txtPhone.Text = placeholder;
+                    txtPhone.ForeColor = Color.Gray;
+                }
+            };
             Label lblEmail = new Label() { Text = "Email:*", TextAlign = ContentAlignment.MiddleRight };
-            txtEmail = new TextBox();
+            txtEmail = new System.Windows.Forms.TextBox();
 
             chkConstClient = new CheckBox() { Text = "Постоянный клиент" };
 
-            btnAdd = new Button() { Text = "Добавить", Size = new Size(120, 45) };
+            btnAdd = new System.Windows.Forms.Button() { Text = "Добавить", Size = new Size(120, 45) };
             btnAdd.Click += BtnAdd_Click;
 
-            btnCancel = new Button() { Text = "Отмена", Size = new Size(120, 45) };
+            btnCancel = new System.Windows.Forms.Button() { Text = "Отмена", Size = new Size(120, 45) };
             btnCancel.Click += (s, e) =>
             {
                 rch.LogInfo("Форма добавления клиента закрыта по отмене");
                 this.Close();
             };
 
-            Styles.ApplyLabelStyle(lblSurname);
+
+            Styles.ApplyLabelStyle(lblSurname, true);
             Styles.ApplyLabelStyle(lblName, true);
             Styles.ApplyLabelStyle(lblMiddleName);
             Styles.ApplyLabelStyle(lblLocation);
@@ -239,38 +259,12 @@ namespace BaseData
         private void AddClient(string surname, string name, string middlename, string location, string phone, string email, bool constClient)
         {
             rch.LogInfo("Начало процедуры добавления клиента");
-
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(email))
+            (bool isValid, string errorMessage) = ValidatorClient.ValidateClientData(surname, name, middlename, location, phone, email, constClient);
+            if (!isValid)
             {
-                rch.LogWarning("Попытка добавления клиента без обязательных полей (Имя, Email)");
-                MessageBox.Show("Заполните обязательные поля (Имя, Email)");
+                rch.LogWarning(errorMessage);
+                MessageBox.Show(errorMessage);
                 return;
-            }
-
-            if (!IsValidName(name))
-            {
-                MessageBox.Show("Имя не должно содержать цифр");
-                return;
-            }
-
-            if (!IsValidEmail(email))
-            {
-                rch.LogWarning($"Некорректный email адрес: {email}");
-                MessageBox.Show("Введите корректный email адрес");
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(phone) && !IsValidPhone(phone))
-            {
-                rch.LogWarning($"Некорректный номер телефона: {phone}");
-                MessageBox.Show("Введите корректный номер телефона");
-                return;
-            }
-
-            // Если фамилия пустая, используем пустую строку вместо NULL
-            if (string.IsNullOrEmpty(surname))
-            {
-                surname = "";
             }
 
             try
@@ -448,8 +442,6 @@ namespace BaseData
             rch.LogInfo($"Форма добавления/редактирования клиента закрыта. Причина: {e.CloseReason}");
             base.OnFormClosed(e);
         }
-
-        // Новый метод проверки имени на цифры
         private bool IsValidName(string name)
         {
             if (string.IsNullOrEmpty(name)) return true;

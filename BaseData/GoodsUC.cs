@@ -12,7 +12,6 @@ namespace BaseData
         private Button? btnRefresh;
         private Button? btnDelete;
         private Button? btnEdit;
-        private Button? btnAdd;
         private DataGridView? dataGridView1;
         Log rch = new Log();
         public GoodsUC(Log log)
@@ -27,7 +26,6 @@ namespace BaseData
             this.btnRefresh = new Button();
             this.btnDelete = new Button();
             this.btnEdit = new Button();
-            this.btnAdd = new Button();
             this.dataGridView1 = new DataGridView();
 
             SuspendLayout();
@@ -41,27 +39,9 @@ namespace BaseData
             Size buttonSize = new Size(140, 40);
             int buttonSpacing = 15;
 
-            this.btnAdd.Text = "Добавить товар";
-            this.btnAdd.Size = buttonSize;
-            this.btnAdd.Location = new Point(10, 10);
-            this.btnAdd.Click += (s, e) =>
-            {
-                if (AppSettings.IsConnectionStringSet)
-                {
-                    var form = new AddProductForm(rch);
-                    form.FormClosed += (sender, e) => RefreshData();
-                    form.ShowDialog();
-                }
-                else
-                {
-                    MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            };
-
             this.btnRefresh.Text = "Обновить";
             this.btnRefresh.Size = buttonSize;
-            this.btnRefresh.Location = new Point(btnAdd.Right + buttonSpacing, 10);
+            this.btnRefresh.Location = new Point(buttonSpacing, 10);
             this.btnRefresh.Click += (s, e) => RefreshData();
 
             this.btnEdit.Text = "Редактировать";
@@ -94,7 +74,6 @@ namespace BaseData
             this.dataGridView1.ColumnHeadersHeight = 35;
             this.dataGridView1.RowHeadersVisible = false;
 
-            buttonPanel.Controls.Add(this.btnAdd);
             buttonPanel.Controls.Add(this.btnRefresh);
             buttonPanel.Controls.Add(this.btnEdit);
             buttonPanel.Controls.Add(this.btnDelete);
@@ -144,11 +123,6 @@ namespace BaseData
             {
                 Styles.ApplySecondaryButtonStyle(btnEdit);
                 btnEdit.Font = new Font(btnEdit.Font.FontFamily, 9F, FontStyle.Regular);
-            }
-            if (btnAdd != null)
-            {
-                Styles.ApplyButtonStyle(btnAdd);
-                btnAdd.Font = new Font(btnAdd.Font.FontFamily, 9F, FontStyle.Regular);
             }
             if (btnDelete != null)
             {

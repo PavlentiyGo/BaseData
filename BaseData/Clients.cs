@@ -28,7 +28,6 @@ namespace BaseData
             this.refreshButton = new Button();
             this.deleteButton = new Button();
             this.editButton = new Button();
-            this.addButton = new Button();
             this.dataGrid = new DataGridView();
 
             SuspendLayout();
@@ -44,29 +43,10 @@ namespace BaseData
             Size buttonSize = new Size(140, 40); // Увеличена высота кнопок до 40px
             int buttonSpacing = 15; // Расстояние между кнопками
 
-            // addButton
-            this.addButton.Text = "Добавить клиента";
-            this.addButton.Size = buttonSize;
-            this.addButton.Location = new Point(10, 10);
-            this.addButton.Click += (s, e) =>
-            {
-                if (AppSettings.IsConnectionStringSet)
-                {
-                    var form = new AddClientForm(rch);
-                    form.FormClosed += (sender, e) => RefreshData();
-                    form.ShowDialog();
-                }
-                else
-                {
-                    MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            };
-
             // refreshButton
             this.refreshButton.Text = "Обновить";
             this.refreshButton.Size = buttonSize;
-            this.refreshButton.Location = new Point(addButton.Right + buttonSpacing, 10);
+            this.refreshButton.Location = new Point( buttonSpacing, 10);
             this.refreshButton.Click += (s, e) => RefreshData();
 
             // editButton
@@ -103,7 +83,6 @@ namespace BaseData
             this.dataGrid.RowHeadersVisible = false;
 
             // Добавляем кнопки на панель
-            buttonPanel.Controls.Add(this.addButton);
             buttonPanel.Controls.Add(this.refreshButton);
             buttonPanel.Controls.Add(this.editButton);
             buttonPanel.Controls.Add(this.deleteButton);

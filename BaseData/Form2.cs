@@ -19,6 +19,7 @@ namespace BaseData
         private Button? EntryButton;
         private Button? AutoButton;
         private Label? TitleLabel;
+        private Button? ResetButton;
         Log rch = new Log();
 
         public Form2(Log log)
@@ -53,6 +54,7 @@ namespace BaseData
 
                 if (EntryButton != null) Styles.ApplyButtonStyle(EntryButton);
                 if (AutoButton != null) Styles.ApplySecondaryButtonStyle(AutoButton);
+                if (ResetButton != null) Styles.ApplyButtonStyle(ResetButton);
             }
             catch (Exception ex)
             {
@@ -66,18 +68,18 @@ namespace BaseData
             return @"
         CREATE TABLE IF NOT EXISTS clients(
             id SERIAL PRIMARY KEY,
-            surname VARCHAR(255) NOT NULL,
-            name VARCHAR(255) NOT NULL,
-            middlename VARCHAR(255),
+            surname VARCHAR(20) NOT NULL,
+            name VARCHAR(15) NOT NULL,
+            middlename VARCHAR(20),
             location VARCHAR(255),
-            phone VARCHAR(20),
+            phone VARCHAR(10),
             email VARCHAR(255) UNIQUE,
             constclient BOOLEAN DEFAULT false
         );
 
         CREATE TABLE IF NOT EXISTS goods(
             id SERIAL PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
+            name VARCHAR(20) NOT NULL,
             price DECIMAL(10,2) CHECK (price > 0),
             unit VARCHAR(20) DEFAULT 'шт',
             stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0),
@@ -102,7 +104,7 @@ namespace BaseData
             currency VARCHAR(3) DEFAULT 'RUB'
         );";
         }
-        private void RecreateDatabaseStructure()
+        private void RecreateDatabaseStructure_Click(object? sender, EventArgs e)
         {
             using (NpgsqlConnection sqlConnection = new NpgsqlConnection(AppSettings.SqlConnection))
             {
@@ -125,7 +127,8 @@ namespace BaseData
                     {
                         createCommand.ExecuteNonQuery();
                     }
-
+                    rch.LogInfo($"Бд пересоздана");
+                    MessageBox.Show("Бд была пересоздана");
                 }
                 catch (Exception ex)
                 {
@@ -138,6 +141,11 @@ namespace BaseData
 
         private void EntryButton_Click(object? sender, EventArgs e)
         {
+            if (AppSettings.SqlConnection != "")
+            {
+                MessageBox.Show("Вы уже подключены к базе данных");
+                return;
+            }
             if (string.IsNullOrEmpty(PortText?.Text) || string.IsNullOrEmpty(BdText?.Text) ||
                 string.IsNullOrEmpty(IdText?.Text) || string.IsNullOrEmpty(PasswordText?.Text))
             {
@@ -151,7 +159,6 @@ namespace BaseData
 
             if (AppSettings.TestConnection())
             {
-                RecreateDatabaseStructure();
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -170,6 +177,7 @@ namespace BaseData
             if (IdText != null) IdText.Text = "postgres";
             if (PasswordText != null) PasswordText.Text = "WE<3ANGELINA";
         }
+       
 
         private void InitializeComponent()
         {
@@ -184,6 +192,7 @@ namespace BaseData
             this.EntryButton = new Button();
             this.AutoButton = new Button();
             this.TitleLabel = new Label();
+            this.ResetButton = new Button();
 
             SuspendLayout();
 
@@ -237,6 +246,12 @@ namespace BaseData
             this.AutoButton.UseVisualStyleBackColor = true;
             this.AutoButton.Click += Auto_Click;
 
+            this.ResetButton.Location = new Point(190, 330);
+            this.ResetButton.Size = new Size(150, 50);
+            this.ResetButton.Text = "Пересоздать";
+            this.ResetButton.UseVisualStyleBackColor = true;
+            this.ResetButton.Click += RecreateDatabaseStructure_Click;
+
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.ClientSize = new Size(500, 400);
@@ -251,6 +266,7 @@ namespace BaseData
             this.Controls.Add(IdText!);
             this.Controls.Add(BdText!);
             this.Controls.Add(PortText!);
+            this.Controls.Add(ResetButton!);
             this.Name = "Form2";
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Подключение к базе данных";
