@@ -79,16 +79,17 @@ namespace BaseData
 
         CREATE TABLE IF NOT EXISTS goods(
             id SERIAL PRIMARY KEY,
-            name VARCHAR(20) NOT NULL,
+            name VARCHAR(20) UNIQUE,
             price DECIMAL(10,2) CHECK (price > 0),
             unit VARCHAR(20) DEFAULT 'шт',
             stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0),
             currency VARCHAR(3) DEFAULT 'RUB'
+            
         );
 
         CREATE TABLE IF NOT EXISTS orders(
             id SERIAL PRIMARY KEY,
-            client_id INTEGER REFERENCES clients(id) ON DELETE CASCADE,
+            client_id INTEGER REFERENCES clients(id) ON DELETE RESTRICT,
             order_date DATE NOT NULL DEFAULT CURRENT_DATE,
             delivery_date DATE,
             total_amount DECIMAL(10,2) DEFAULT 0,
@@ -98,7 +99,7 @@ namespace BaseData
         CREATE TABLE IF NOT EXISTS order_items(
             id SERIAL PRIMARY KEY,
             order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE,
-            good_id INTEGER REFERENCES goods(id) ON DELETE CASCADE,
+            good_id INTEGER REFERENCES goods(id) ON DELETE RESTRICT,
             quantity INTEGER CHECK (quantity > 0),
             price DECIMAL(10,2) CHECK (price >= 0),
             currency VARCHAR(3) DEFAULT 'RUB'

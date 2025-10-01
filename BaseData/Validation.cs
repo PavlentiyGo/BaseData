@@ -32,8 +32,8 @@ public class ValidatorClient
             return (false, "Отчество должно содержать только буквы русского алфавита");
         if (middlename.Length > 20)
             return (false, "Отчество не может быть длиннее 20 символов");
-        if ((!IsDigitsOnly(phone) || phone.Length!=10) && !string.IsNullOrWhiteSpace(phone))
-            return (false, "Телефон должен содержать только 11 цифр");
+        if ((!IsDigitsOnly(phone) || phone.Length!=10 || !string.IsNullOrWhiteSpace(phone)) && phone != "10 цифр без +7 или 8")
+            return (false, "Телефон должен содержать только 10 цифр");
 
         if (string.IsNullOrWhiteSpace(email))
             return (false, "Email не может быть пустым");

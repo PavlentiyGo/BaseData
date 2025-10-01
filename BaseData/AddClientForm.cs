@@ -109,9 +109,9 @@ namespace BaseData
 
             Label lblPhone = new Label() { Text = "Телефон:", TextAlign = ContentAlignment.MiddleRight };
             txtPhone = new System.Windows.Forms.TextBox();
-            string placeholder = "11 цифр без +7 или 8";
+            string placeholder = "10 цифр без +7 или 8";
             txtPhone.Text = placeholder;
-            txtPhone.ForeColor = Color.Gray;
+            txtPhone.ForeColor = Color.Gray; 
             txtPhone.Enter += (s, e) =>
             {
                 if (txtPhone.Text == placeholder)
@@ -266,7 +266,10 @@ namespace BaseData
                 MessageBox.Show(errorMessage);
                 return;
             }
-
+            if (phone == "10 цифр без +7 или 8")
+            {
+                phone = "";
+            }
             try
             {
                 rch.LogInfo($"Добавление клиента: {surname} {name} {middlename}, email: {email}");
