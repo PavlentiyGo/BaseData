@@ -72,7 +72,7 @@ namespace BaseData
             name VARCHAR(15) NOT NULL,
             middlename VARCHAR(20),
             location VARCHAR(255),
-            phone VARCHAR(10),
+            phone VARCHAR(11),
             email VARCHAR(255) UNIQUE,
             constclient BOOLEAN DEFAULT false
         );

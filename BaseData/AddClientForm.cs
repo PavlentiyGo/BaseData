@@ -273,7 +273,7 @@ namespace BaseData
             try
             {
                 rch.LogInfo($"Добавление клиента: {surname} {name} {middlename}, email: {email}");
-
+                phone = "8" + phone;
                 using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
                 {
                     connection.Open();
