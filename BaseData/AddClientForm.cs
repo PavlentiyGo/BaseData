@@ -259,6 +259,10 @@ namespace BaseData
         private void AddClient(string surname, string name, string middlename, string location, string phone, string email, bool constClient)
         {
             rch.LogInfo("Начало процедуры добавления клиента");
+            surname = surname.TrimEnd();
+            name = name.TrimEnd();
+            middlename = middlename.TrimEnd();
+            email = email.TrimEnd();
             (bool isValid, string errorMessage) = ValidatorClient.ValidateClientData(surname, name, middlename, location, phone, email, constClient);
             if (!isValid)
             {
@@ -273,7 +277,10 @@ namespace BaseData
             try
             {
                 rch.LogInfo($"Добавление клиента: {surname} {name} {middlename}, email: {email}");
-                phone = "8" + phone;
+                if (phone != "")
+                {
+                    phone = "8" + phone;
+                }
                 using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
                 {
                     connection.Open();
