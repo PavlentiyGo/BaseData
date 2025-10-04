@@ -342,12 +342,6 @@ namespace BaseData
                 MessageBox.Show("Название товара не может быть больше 20 символов");
                 return false;
             }
-            if (!Regex.IsMatch(name, @"^[а-яА-ЯёЁ0-9\s\-]+$"))
-            {
-                rch.LogWarning("Товар должен иметь русские буквы и не содержать другие");
-                MessageBox.Show("Товар не может называться без русских букв и содержать другие");
-                return false;
-            }
             if (!decimal.TryParse(priceText, out decimal price) || price <= 0)
             {
                 rch.LogWarning($"Некорректная цена товара: {priceText}");

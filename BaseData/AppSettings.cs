@@ -6,6 +6,7 @@ namespace BaseData
     public static class AppSettings
     {
         public static string? SqlConnection = "";
+        public static bool connect = false;
 
         public static bool IsConnectionStringSet => !string.IsNullOrEmpty(SqlConnection);
 

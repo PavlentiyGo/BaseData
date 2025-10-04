@@ -1,8 +1,9 @@
 ﻿using Npgsql;
 using System;
 using System.Data;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
 
 namespace BaseData
 {
@@ -109,6 +110,13 @@ namespace BaseData
         {
             using (NpgsqlConnection sqlConnection = new NpgsqlConnection(AppSettings.SqlConnection))
             {
+                Encoding utf8Encoding = Encoding.UTF8;
+                if (!AppSettings.connect)
+                {
+                    MessageBox.Show("Сначала подключитесь к Базе данных");
+                    rch.LogInfo("Сначала подключитесь к Базе данных");
+                    return;
+                }
                 try
                 {
                     sqlConnection.Open();
@@ -162,6 +170,8 @@ namespace BaseData
             {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
+                AppSettings.connect = true;
+
             }
             else
             {

@@ -15,21 +15,14 @@ public class ValidatorClient
         if (string.IsNullOrWhiteSpace(surname))
             return (false, "Фамилия не может быть пустой");
 
-        if (!IsRussianLettersOnly(surname))
-            return (false, "Фамилия должна содержать только буквы русского алфавита");
         if (surname.Length > 20)
             return (false, "Фамилия не может быть длиннее 20 символов");
 
         if (string.IsNullOrWhiteSpace(name))
             return (false, "Имя не может быть пустым");
 
-        if (!IsRussianLettersOnly(name))
-            return (false, "Имя должно содержать только буквы русского алфавита");
         if (name.Length > 15)
             return (false, "Имя не может быть длиннее 15 символов");
-
-        if (!IsRussianLettersOnly(middlename) && !string.IsNullOrWhiteSpace(middlename))
-            return (false, "Отчество должно содержать только буквы русского алфавита");
         if (middlename.Length > 20)
             return (false, "Отчество не может быть длиннее 20 символов");
         if (!IsDigitsOnly(phone) || phone.Length != 10){
