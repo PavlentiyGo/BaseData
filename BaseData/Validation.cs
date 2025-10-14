@@ -25,11 +25,13 @@ public class ValidatorClient
             return (false, "Имя не может быть длиннее 15 символов");
         if (middlename.Length > 20)
             return (false, "Отчество не может быть длиннее 20 символов");
-        if (!IsDigitsOnly(phone) || phone.Length != 10){
-            if (phone != "10 цифр без +7 или 8")
+        if (phone != "")
+        {
+            char plus = phone[0];
+            if (!IsDigitsOnly(phone[1..]) || phone.Length >= 16 || plus != '+')
             {
-                return (false, "Телефон должен содержать только 10 цифр");
-            } 
+                return (false, "Телефон не должен быть больше 15 цифр и должен начинаться с +");
+            }
         }
         if (string.IsNullOrWhiteSpace(email))
             return (false, "Email не может быть пустым");

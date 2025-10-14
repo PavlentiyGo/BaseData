@@ -73,7 +73,7 @@ namespace BaseData
             name VARCHAR(15) NOT NULL,
             middlename VARCHAR(20),
             location VARCHAR(255),
-            phone VARCHAR(11),
+            phone VARCHAR(16),
             email VARCHAR(255) UNIQUE,
             constclient BOOLEAN DEFAULT false
         );
@@ -150,7 +150,7 @@ namespace BaseData
 
         private void EntryButton_Click(object? sender, EventArgs e)
         {
-            if (AppSettings.SqlConnection != "")
+            if (AppSettings.connect)
             {
                 MessageBox.Show("Вы уже подключены к базе данных");
                 return;

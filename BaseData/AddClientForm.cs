@@ -109,25 +109,25 @@ namespace BaseData
 
             Label lblPhone = new Label() { Text = "Телефон:", TextAlign = ContentAlignment.MiddleRight };
             txtPhone = new System.Windows.Forms.TextBox();
-            string placeholder = "10 цифр без +7 или 8";
-            txtPhone.Text = placeholder;
-            txtPhone.ForeColor = Color.Gray; 
-            txtPhone.Enter += (s, e) =>
-            {
-                if (txtPhone.Text == placeholder)
-                {
-                    txtPhone.Text = "";
-                    txtPhone.ForeColor = Color.Black;
-                }
-            };
-            txtPhone.Leave += (s, e) =>
-            {
-                if (string.IsNullOrWhiteSpace(txtPhone.Text))
-                {
-                    txtPhone.Text = placeholder;
-                    txtPhone.ForeColor = Color.Gray;
-                }
-            };
+            //string placeholder = "10 цифр без +7 или 8";
+            //txtPhone.Text = placeholder;
+            //txtPhone.ForeColor = Color.Gray; 
+            //txtPhone.Enter += (s, e) =>
+            //{
+            //    if (txtPhone.Text == placeholder)
+            //    {
+            //        txtPhone.Text = "";
+            //        txtPhone.ForeColor = Color.Black;
+            //    }
+            //};
+            //txtPhone.Leave += (s, e) =>
+            //{
+            //    if (string.IsNullOrWhiteSpace(txtPhone.Text))
+            //    {
+            //        txtPhone.Text = placeholder;
+            //        txtPhone.ForeColor = Color.Gray;
+            //    }
+            //};
             Label lblEmail = new Label() { Text = "Email:*", TextAlign = ContentAlignment.MiddleRight };
             txtEmail = new System.Windows.Forms.TextBox();
 
@@ -259,10 +259,10 @@ namespace BaseData
         private void AddClient(string surname, string name, string middlename, string location, string phone, string email, bool constClient)
         {
             rch.LogInfo("Начало процедуры добавления клиента");
-            surname = surname.TrimEnd();
-            name = name.TrimEnd();
-            middlename = middlename.TrimEnd();
-            email = email.TrimEnd();
+            //surname = surname.TrimEnd();
+            //name = name.TrimEnd();
+            //middlename = middlename.TrimEnd();
+            //email = email.TrimEnd();
             (bool isValid, string errorMessage) = ValidatorClient.ValidateClientData(surname, name, middlename, location, phone, email, constClient);
             if (!isValid)
             {
@@ -270,17 +270,9 @@ namespace BaseData
                 MessageBox.Show(errorMessage);
                 return;
             }
-            if (phone == "10 цифр без +7 или 8")
-            {
-                phone = "";
-            }
             try
             {
                 rch.LogInfo($"Добавление клиента: {surname} {name} {middlename}, email: {email}");
-                if (phone != "")
-                {
-                    phone = "8" + phone;
-                }
                 using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
                 {
                     connection.Open();

@@ -307,7 +307,7 @@ namespace BaseData
                 using (var connection = new NpgsqlConnection(AppSettings.SqlConnection))
                 {
                     connection.Open();
-                    var command = new NpgsqlCommand("SELECT id, name, price, stock_quantity FROM goods WHERE stock_quantity > 0 ORDER BY name", connection);
+                    var command = new NpgsqlCommand("SELECT id, name, price, stock_quantity, currency FROM goods WHERE stock_quantity > 0 ORDER BY name", connection);
                     var reader = command.ExecuteReader();
 
                     int count = 0;
@@ -316,7 +316,7 @@ namespace BaseData
                         this.cmbGoods.Items.Add(new GoodItem
                         {
                             Id = reader.GetInt32(0),
-                            Display = $"{reader.GetString(1)} - {reader.GetDecimal(2):0.00} руб. (в наличии: {reader.GetInt32(3)})"
+                            Display = $"{reader.GetString(1)} - {reader.GetDecimal(2):0.00} {reader.GetString(4)} . (в наличии: {reader.GetInt32(3)})"
                         });
                         count++;
                     }
