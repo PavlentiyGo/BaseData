@@ -109,25 +109,6 @@ namespace BaseData
 
             Label lblPhone = new Label() { Text = "Телефон:", TextAlign = ContentAlignment.MiddleRight };
             txtPhone = new System.Windows.Forms.TextBox();
-            //string placeholder = "10 цифр без +7 или 8";
-            //txtPhone.Text = placeholder;
-            //txtPhone.ForeColor = Color.Gray; 
-            //txtPhone.Enter += (s, e) =>
-            //{
-            //    if (txtPhone.Text == placeholder)
-            //    {
-            //        txtPhone.Text = "";
-            //        txtPhone.ForeColor = Color.Black;
-            //    }
-            //};
-            //txtPhone.Leave += (s, e) =>
-            //{
-            //    if (string.IsNullOrWhiteSpace(txtPhone.Text))
-            //    {
-            //        txtPhone.Text = placeholder;
-            //        txtPhone.ForeColor = Color.Gray;
-            //    }
-            //};
             Label lblEmail = new Label() { Text = "Email:*", TextAlign = ContentAlignment.MiddleRight };
             txtEmail = new System.Windows.Forms.TextBox();
 

@@ -13,6 +13,7 @@ namespace BaseData
         private Button? deleteButton;
         private Button? editButton;
         private Button? addButton;
+        private Button? changeTableButton;
         private DataGridView? dataGrid;
         Log rch = new Log();
 
@@ -28,19 +29,20 @@ namespace BaseData
             this.refreshButton = new Button();
             this.deleteButton = new Button();
             this.editButton = new Button();
+            this.changeTableButton = new Button();
             this.dataGrid = new DataGridView();
-
+            
             SuspendLayout();
 
             // Панель для кнопок
             Panel buttonPanel = new Panel();
             buttonPanel.Dock = DockStyle.Top;
-            buttonPanel.Height = 60; // Увеличена высота панели
+            buttonPanel.Height = 80; // Увеличена высота панели
             buttonPanel.Padding = new Padding(10, 12, 10, 12); // Увеличены отступы
             buttonPanel.BackColor = Color.Transparent;
 
             // Общие настройки для кнопок
-            Size buttonSize = new Size(140, 40); // Увеличена высота кнопок до 40px
+            Size buttonSize = new Size(140, 60); // Увеличена высота кнопок до 40px
             int buttonSpacing = 15; // Расстояние между кнопками
 
             // refreshButton
@@ -60,6 +62,12 @@ namespace BaseData
             this.deleteButton.Size = buttonSize;
             this.deleteButton.Location = new Point(editButton.Right + buttonSpacing, 10);
             this.deleteButton.Click += DeleteSelectedClient;
+
+            this.changeTableButton.Text = "Изменить\nтаблицу";
+            this.changeTableButton.Size = buttonSize;
+            this.changeTableButton.Location = new Point(deleteButton.Right + buttonSpacing, 10);
+            this.changeTableButton.Click += ChangeTableClick;
+
 
             // dataGrid
             this.dataGrid.AllowUserToAddRows = false;
@@ -86,6 +94,7 @@ namespace BaseData
             buttonPanel.Controls.Add(this.refreshButton);
             buttonPanel.Controls.Add(this.editButton);
             buttonPanel.Controls.Add(this.deleteButton);
+            buttonPanel.Controls.Add(this.changeTableButton);
 
             // UserControl
             this.AutoScaleDimensions = new SizeF(7F, 15F);
@@ -143,6 +152,11 @@ namespace BaseData
             {
                 Styles.ApplyDangerButtonStyle(deleteButton);
                 deleteButton.Font = new Font(deleteButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (changeTableButton != null)
+            {
+                Styles.ApplySecondaryButtonStyle(changeTableButton);
+                changeTableButton.Font = new Font(changeTableButton.Font.FontFamily, 9F, FontStyle.Regular);
             }
         }
 
@@ -315,6 +329,11 @@ namespace BaseData
             {
                 // Игнорируем ошибки настройки колонок
             }
+        }
+        private void ChangeTableClick(object? sender, EventArgs e)
+        {
+            ClientTableChange table = new ClientTableChange(rch);
+            table.ShowDialog();
         }
     }
 }
