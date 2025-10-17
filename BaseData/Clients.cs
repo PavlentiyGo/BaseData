@@ -102,7 +102,7 @@ namespace BaseData
             this.BackColor = Color.White;
             this.Controls.Add(this.dataGrid);
             this.Controls.Add(buttonPanel);
-            this.Name = "Clients";
+            this.Name = MetaInformation.tables[0];
             this.Size = new Size(800, 500);
 
             ResumeLayout(false);
@@ -217,7 +217,7 @@ namespace BaseData
                     using (var connection = new NpgsqlConnection(currentConnectionString))
                     {
                         connection.Open();
-                        var command = new NpgsqlCommand("DELETE FROM clients WHERE id = @id", connection);
+                        var command = new NpgsqlCommand($"DELETE FROM {MetaInformation.tables[0]} WHERE id = @id", connection);
                         command.Parameters.AddWithValue("id", clientId);
 
                         int rowsAffected = command.ExecuteNonQuery();
@@ -266,7 +266,8 @@ namespace BaseData
 
                     if (sqlConnection.State == ConnectionState.Open)
                     {
-                        string query = "SELECT id, surname, name, middlename, location, phone, email, constclient FROM clients ORDER BY id";
+                        string query = $"SELECT id, surname, name, middlename, location, phone, email, constclient FROM {MetaInformation.tables[0]} ORDER BY id";
+                        
                         using (NpgsqlCommand command = new NpgsqlCommand(query, sqlConnection))
                         {
                             using (NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command))

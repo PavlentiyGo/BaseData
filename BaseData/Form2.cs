@@ -162,7 +162,7 @@ namespace BaseData
             }
 
             AppSettings.SqlConnection = $"Server=localhost;Port={PortText.Text};Database={BdText.Text};User Id={IdText.Text};Password={PasswordText.Text};";
-
+            MetaInformation meta = new MetaInformation();
             if (AppSettings.TestConnection())
             {
                 this.DialogResult = DialogResult.OK;

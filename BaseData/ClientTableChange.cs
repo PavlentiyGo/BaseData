@@ -57,7 +57,6 @@ namespace BaseData
                 log.LogWarning("Столбец должен быть назван английскими буквами");
                 return;
             }
-            MetaInformation meta = new MetaInformation();
             log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[0]}");
             Request($"ALTER TABLE {MetaInformation.tables[0]} ADD COLUMN {column} {type}");
         }
