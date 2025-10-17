@@ -34,7 +34,7 @@
             RenameTable = new Button();
             SetConstraint = new Button();
             label1 = new Label();
-            comboBox2 = new ComboBox();
+            DeleteBox = new ComboBox();
             label2 = new Label();
             textBox1 = new TextBox();
             label3 = new Label();
@@ -66,6 +66,7 @@
             DeleteColumn.Text = "Удалить столбец";
             DeleteColumn.UseVisualStyleBackColor = true;
             DeleteColumn.Click += DeleteColumn_Click;
+            DeleteBox.DataSource = MetaInformation.columnsClients;
             // 
             // ChangeTableData
             // 
@@ -106,13 +107,13 @@
             label1.Text = "Название столбца";
             label1.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // comboBox2
+            // DeleteBox
             // 
-            comboBox2.FormattingEnabled = true;
-            comboBox2.Location = new Point(138, 173);
-            comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(121, 23);
-            comboBox2.TabIndex = 8;
+            DeleteBox.FormattingEnabled = true;
+            DeleteBox.Location = new Point(138, 173);
+            DeleteBox.Name = "DeleteBox";
+            DeleteBox.Size = new Size(121, 23);
+            DeleteBox.TabIndex = 8;
             // 
             // label2
             // 
@@ -213,7 +214,7 @@
             Controls.Add(label3);
             Controls.Add(textBox1);
             Controls.Add(label2);
-            Controls.Add(comboBox2);
+            Controls.Add(DeleteBox);
             Controls.Add(label1);
             Controls.Add(SetConstraint);
             Controls.Add(RenameTable);
@@ -237,7 +238,7 @@
         private Button RenameTable;
         private Button SetConstraint;
         private Label label1;
-        private ComboBox comboBox2;
+        private ComboBox DeleteBox;
         private Label label2;
         private TextBox textBox1;
         private Label label3;

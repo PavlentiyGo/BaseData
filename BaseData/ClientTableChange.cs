@@ -38,7 +38,16 @@ namespace BaseData
 
         private void DeleteColumn_Click(object sender, EventArgs e)
         {
-
+            string deleteColumn = DeleteBox.Text;
+            if (string.IsNullOrEmpty(deleteColumn))
+            {
+                MessageBox.Show("Выберите удаляемый столбец");
+                log.LogWarning("Выберите удаляемый столбец");
+                return;
+            }
+            Request($"ALTER TABLE {MetaInformation.tables[0]} DROP COLUMN {deleteColumn}");
+            log.LogInfo($"Столбец {deleteColumn} был удалён из таблицы {MetaInformation.tables[0]}");
+            MetaInformation.RefreshData();
         }
 
         private void AddColumn_Click(object sender, EventArgs e)
@@ -59,6 +68,8 @@ namespace BaseData
             }
             log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[0]}");
             Request($"ALTER TABLE {MetaInformation.tables[0]} ADD COLUMN {column} {type}");
+            DataGridViewTextBoxColumn column1 = new DataGridViewTextBoxColumn();
+            MetaInformation.RefreshData();
         }
         private void Request(string request)
         {

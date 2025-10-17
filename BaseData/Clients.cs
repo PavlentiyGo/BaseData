@@ -14,7 +14,7 @@ namespace BaseData
         private Button? editButton;
         private Button? addButton;
         private Button? changeTableButton;
-        private DataGridView? dataGrid;
+        public static DataGridView dataGrid;
         Log rch = new Log();
 
         public Clients(Log log)
@@ -30,7 +30,7 @@ namespace BaseData
             this.deleteButton = new Button();
             this.editButton = new Button();
             this.changeTableButton = new Button();
-            this.dataGrid = new DataGridView();
+            dataGrid = new DataGridView();
             
             SuspendLayout();
 
@@ -70,25 +70,25 @@ namespace BaseData
 
 
             // dataGrid
-            this.dataGrid.AllowUserToAddRows = false;
-            this.dataGrid.AllowUserToDeleteRows = false;
-            this.dataGrid.Dock = DockStyle.Fill;
-            this.dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGrid.BackgroundColor = Color.White;
-            this.dataGrid.BorderStyle = BorderStyle.FixedSingle;
-            this.dataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGrid.Location = new Point(0, 60);
-            this.dataGrid.Margin = new Padding(10);
-            this.dataGrid.Name = "dataGrid";
-            this.dataGrid.ReadOnly = true;
-            this.dataGrid.TabIndex = 4;
-            this.dataGrid.CellDoubleClick += DataGrid_CellDoubleClick;
-            this.dataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            this.dataGrid.EnableHeadersVisualStyles = false;
-            this.dataGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
-            this.dataGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            this.dataGrid.ColumnHeadersHeight = 35;
-            this.dataGrid.RowHeadersVisible = false;
+            dataGrid.AllowUserToAddRows = false;
+            dataGrid.AllowUserToDeleteRows = false;
+            dataGrid.Dock = DockStyle.Fill;
+            dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGrid.BackgroundColor = Color.White;
+            dataGrid.BorderStyle = BorderStyle.FixedSingle;
+            dataGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGrid.Location = new Point(0, 60);
+            dataGrid.Margin = new Padding(10);
+            dataGrid.Name = "dataGrid";
+            dataGrid.ReadOnly = true;
+            dataGrid.TabIndex = 4;
+            dataGrid.CellDoubleClick += DataGrid_CellDoubleClick;
+            dataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGrid.EnableHeadersVisualStyles = false;
+            dataGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
+            dataGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dataGrid.ColumnHeadersHeight = 35;
+            dataGrid.RowHeadersVisible = false;
 
             // Добавляем кнопки на панель
             buttonPanel.Controls.Add(this.refreshButton);
@@ -100,7 +100,7 @@ namespace BaseData
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.White;
-            this.Controls.Add(this.dataGrid);
+            this.Controls.Add(dataGrid);
             this.Controls.Add(buttonPanel);
             this.Name = MetaInformation.tables[0];
             this.Size = new Size(800, 500);
@@ -112,14 +112,14 @@ namespace BaseData
         {
             try
             {
-                if (this.dataGrid != null)
+                if (dataGrid != null)
                 {
-                    Styles.ApplyDataGridViewStyle(this.dataGrid);
+                    Styles.ApplyDataGridViewStyle(dataGrid);
 
                     // Дополнительные стили для улучшения внешнего вида
-                    this.dataGrid.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
-                    this.dataGrid.DefaultCellStyle.Padding = new Padding(3);
-                    this.dataGrid.RowTemplate.Height = 30;
+                    dataGrid.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
+                    dataGrid.DefaultCellStyle.Padding = new Padding(3);
+                    dataGrid.RowTemplate.Height = 30;
                 }
             }
             catch (Exception ex)
@@ -251,7 +251,7 @@ namespace BaseData
 
         private void RefreshData()
         {
-            if (this.dataGrid == null) return;
+            if (dataGrid == null) return;
 
             try
             {
@@ -266,8 +266,10 @@ namespace BaseData
 
                     if (sqlConnection.State == ConnectionState.Open)
                     {
-                        string query = $"SELECT id, surname, name, middlename, location, phone, email, constclient FROM {MetaInformation.tables[0]} ORDER BY id";
-                        
+
+                        string columnList = string.Join(", ", MetaInformation.columnsClients);
+                        string query = $"SELECT {columnList} FROM {MetaInformation.tables[0]} ORDER BY id";
+
                         using (NpgsqlCommand command = new NpgsqlCommand(query, sqlConnection))
                         {
                             using (NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command))
@@ -275,7 +277,7 @@ namespace BaseData
                                 DataTable data = new DataTable();
                                 adapter.Fill(data);
 
-                                this.dataGrid.DataSource = data;
+                                dataGrid.DataSource = data;
                                 SafeConfigureDataGridViewColumns();
                             }
                         }
@@ -288,43 +290,44 @@ namespace BaseData
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
+        
         private void SafeConfigureDataGridViewColumns()
         {
             try
             {
-                if (this.dataGrid?.Columns == null || this.dataGrid.Columns.Count == 0)
+                if (dataGrid?.Columns == null || dataGrid.Columns.Count == 0)
                     return;
 
-                foreach (DataGridViewColumn column in this.dataGrid.Columns)
+                foreach (DataGridViewColumn column in dataGrid.Columns)
                 {
                     if (column?.Name == null) continue;
 
                     string columnName = column.Name.ToLower();
 
-                    if (columnName == "id")
-                    {
-                        column.HeaderText = "ID";
-                        column.Width = 50;
-                    }
-                    else if (columnName == "surname") column.HeaderText = "Фамилия";
-                    else if (columnName == "name") column.HeaderText = "Имя";
-                    else if (columnName == "middlename") column.HeaderText = "Отчество";
-                    else if (columnName == "location") column.HeaderText = "Адрес";
-                    else if (columnName == "phone") column.HeaderText = "Телефон";
-                    else if (columnName == "email") column.HeaderText = "Email";
-                    else if (columnName == "constclient")
-                    {
-                        column.HeaderText = "Постоянный";
-                        column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    }
+                    //if (columnName == "id")
+                    //{
+                    //    column.HeaderText = "ID";
+                    //    column.Width = 50;
+                    //}
+                    //else if (columnName == "surname") column.HeaderText = "Фамилия";
+                    //else if (columnName == "name") column.HeaderText = "Имя";
+                    //else if (columnName == "middlename") column.HeaderText = "Отчество";
+                    //else if (columnName == "location") column.HeaderText = "Адрес";
+                    //else if (columnName == "phone") column.HeaderText = "Телефон";
+                    //else if (columnName == "email") column.HeaderText = "Email";
+                    //else if (columnName == "constclient")
+                    //{
+                    //    column.HeaderText = "Постоянный";
+                    //    column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    //}
+                    column.HeaderText = columnName;
 
                     // Улучшаем внешний вид колонок
                     column.DefaultCellStyle.Padding = new Padding(5, 3, 5, 3);
                 }
 
                 // Автоматическое изменение размера колонок после загрузки данных
-                this.dataGrid.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
+                dataGrid.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
             }
             catch
             {

@@ -10,9 +10,11 @@ namespace BaseData
     internal class MetaInformation
     {
         public static string[] tables = new string[4];
+        public static string[] columnsClients;
         public MetaInformation()
         {
             tables = GetTableNamesArray();
+            columnsClients = GetColumnNames(AppSettings.SqlConnection, tables[0]);
         }
 
         public void OuputNames()
@@ -56,5 +58,42 @@ namespace BaseData
 
         return tables; // ← обычный return string[4]
     }
-}
+    static string[] GetColumnNames(string connectionString, string table, string schema = "public")
+        {
+            var columns = new List<string>();
+
+            using (var conn = new NpgsqlConnection(connectionString))
+            {
+                conn.Open();
+
+                string sql = @"
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = @schema
+              AND table_name = @table
+            ORDER BY ordinal_position;";
+
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("schema", schema);
+                    cmd.Parameters.AddWithValue("table", table);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            columns.Add(reader.GetString(0));
+                        }
+                    }
+                }
+            }
+
+            return columns.ToArray();
+        }
+    public static void RefreshData()
+        {
+            tables = GetTableNamesArray();
+            columnsClients = GetColumnNames(AppSettings.SqlConnection, tables[0]);
+        }
+    }
 }
