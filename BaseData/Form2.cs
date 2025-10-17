@@ -121,11 +121,8 @@ namespace BaseData
                 {
                     sqlConnection.Open();
 
-                    string dropScript = @"
-                DROP TABLE IF EXISTS order_items CASCADE;
-                DROP TABLE IF EXISTS orders CASCADE;
-                DROP TABLE IF EXISTS goods CASCADE;
-                DROP TABLE IF EXISTS clients CASCADE;";
+                    string dropScript = $"DROP SCHEMA IF EXISTS public CASCADE;" +
+            $"CREATE SCHEMA public;";
 
                     using (NpgsqlCommand dropCommand = new NpgsqlCommand(dropScript, sqlConnection))
                     {
