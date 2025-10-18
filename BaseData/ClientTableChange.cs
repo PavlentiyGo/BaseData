@@ -15,13 +15,15 @@ namespace BaseData
     public partial class ClientTableChange : Form
     {
         Log log;
-        public ClientTableChange(Log rch)
+        private int TableNum;
+        public ClientTableChange(Log rch, int tableNum)
         {
+            TableNum = tableNum;
             log = rch;
             InitializeComponent();
+            AddInfo(tableNum);
             Styles.ApplyFormStyle(this);
         }
-
         private void SetConstraint_Click(object sender, EventArgs e)
         {
 
@@ -34,21 +36,29 @@ namespace BaseData
             string newColumnName = NewColumnName.Text;
             if (!string.IsNullOrEmpty(newTableName))
             {
-                Request($"ALTER TABLE {MetaInformation.tables[0]} RENAME TO {newTableName}");
+                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} RENAME TO {newTableName}");
             }
             if (!string.IsNullOrEmpty(oldColumnName) && !string.IsNullOrEmpty(newColumnName))
             {
-                Request($"ALTER TABLE {MetaInformation.tables[0]} RENAME COLUMN {oldColumnName} TO {newColumnName}");
-             
+                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} RENAME COLUMN {oldColumnName} TO {newColumnName}");
+
             }
             MetaInformation.RefreshData();
-            MessageBox.Show(MetaInformation.tables[0]);
+            MessageBox.Show(MetaInformation.tables[TableNum]);
             if (string.IsNullOrEmpty(oldColumnName) ^ string.IsNullOrEmpty(newColumnName))
             {
                 MessageBox.Show("Необходимо полностью заполнить новые имена таблиц или столбцов");
                 log.LogWarning("Необходимо полностью заполнить новые имена таблиц или столбцов");
                 return;
             }
+            if (TableNum == 0)
+            {
+                Clients.RefreshData();
+            }
+            else if (TableNum == 1)
+            {
+            }
+            this.Close();
         }
 
         private void ChangeTableData_Click(object sender, EventArgs e)
@@ -58,9 +68,11 @@ namespace BaseData
                 log.LogWarning("Введите столбец для изменения и новый тип данных для него");
                 return;
             }
-            Request($"ALTER TABLE {MetaInformation.tables[0]} ALTER COLUMN {ChangeDataColumn.Text} TYPE {ChangeTypeData.Text}");
+            Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ALTER COLUMN {ChangeDataColumn.Text} TYPE {ChangeTypeData.Text}");
             MetaInformation.RefreshData();
-            log.LogInfo($"Тип в столбеце {ChangeDataColumn.Text} в таблице {MetaInformation.tables[0]} был изменён на {ChangeTypeData.Text}");
+            log.LogInfo($"Тип в столбеце {ChangeDataColumn.Text} в таблице {MetaInformation.tables[TableNum]} был изменён на {ChangeTypeData.Text}");
+            Clients.RefreshData();
+            this.Close();
         }
 
         private void DeleteColumn_Click(object sender, EventArgs e)
@@ -72,9 +84,11 @@ namespace BaseData
                 log.LogWarning("Выберите удаляемый столбец");
                 return;
             }
-            Request($"ALTER TABLE {MetaInformation.tables[0]} DROP COLUMN {deleteColumn}");
-            log.LogInfo($"Столбец {deleteColumn} был удалён из таблицы {MetaInformation.tables[0]}");
+            Request($"ALTER TABLE {MetaInformation.tables[TableNum]} DROP COLUMN {deleteColumn}");
+            log.LogInfo($"Столбец {deleteColumn} был удалён из таблицы {MetaInformation.tables[TableNum]}");
             MetaInformation.RefreshData();
+            Clients.RefreshData();
+            this.Close();
         }
 
         private void AddColumn_Click(object sender, EventArgs e)
@@ -93,9 +107,11 @@ namespace BaseData
                 log.LogWarning("Столбец должен быть назван английскими буквами");
                 return;
             }
-            log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[0]}");
-            Request($"ALTER TABLE {MetaInformation.tables[0]} ADD COLUMN {column} {type}");
+            log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[TableNum]}");
+            Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD COLUMN {column} {type}");
             MetaInformation.RefreshData();
+            Clients.RefreshData();
+            this.Close();
         }
         private void Request(string request)
         {
@@ -105,18 +121,43 @@ namespace BaseData
             command.ExecuteNonQuery();
             connect.Close();
         }
-    public static bool ContainsOnlyEnglishLetters(string input)
+
+        public void AddInfo(int tableNum)
         {
-            if (string.IsNullOrWhiteSpace(input))
-                return false;
-
-            foreach (char c in input)
+            if (tableNum == 0)
             {
-                if (c < 'A' || (c > 'Z' && c < 'a') || c > 'z')
-                    return false;
+                string[] columns = MetaInformation.columnsClients;
+                DeleteBox.Items.AddRange(columns);
+                ChangeDataColumn.Items.AddRange(columns);
+                OldColumnName.Items.AddRange(columns);
             }
-
-            return true;
+            else if (tableNum == 1)
+            {
+                string[] columns = MetaInformation.columnsGoods;
+                DeleteBox.Items.AddRange(columns);
+                ChangeDataColumn.Items.AddRange(columns);
+                OldColumnName.Items.AddRange(columns);
+            }
+            else if (tableNum == 3)
+            {
+                string[] columns = MetaInformation.columnsOrders;
+                DeleteBox.Items.AddRange(columns);
+                ChangeDataColumn.Items.AddRange(columns);
+                OldColumnName.Items.AddRange(columns);
+            }
         }
-    }
+        public static bool ContainsOnlyEnglishLetters(string input)
+            {
+                if (string.IsNullOrWhiteSpace(input))
+                    return false;
+
+                foreach (char c in input)
+                {
+                    if (c < 'A' || (c > 'Z' && c < 'a') || c > 'z')
+                        return false;
+                }
+
+                return true;
+            }
+        }
 }

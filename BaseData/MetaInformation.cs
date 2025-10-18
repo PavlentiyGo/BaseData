@@ -11,10 +11,14 @@ namespace BaseData
     {
         public static string[] tables = new string[4];
         public static string[] columnsClients;
+        public static string[] columnsGoods;
+        public static string[] columnsOrders;
         public MetaInformation()
         {
             tables = GetTableNamesArray();
             columnsClients = GetColumnNames(AppSettings.SqlConnection, tables[0]);
+            columnsGoods = GetColumnNames(AppSettings.SqlConnection, tables[1]);
+            columnsOrders = GetColumnNames(AppSettings.SqlConnection, tables[3]);
         }
 
         public void OuputNames()

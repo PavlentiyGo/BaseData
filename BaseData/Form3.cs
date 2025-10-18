@@ -161,7 +161,7 @@ namespace BaseData
 
             try
             {
-                SellsUC sells = new SellsUC();
+                SellsUC sells = new SellsUC(rch);
                 sells.Dock = DockStyle.Fill;
                 this.sellsTabPage.Controls.Clear();
                 this.sellsTabPage.Controls.Add(sells);

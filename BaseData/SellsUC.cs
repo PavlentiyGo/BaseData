@@ -13,11 +13,15 @@ namespace BaseData
         private Button? btnDelete;
         private Button? btnViewDetails;
         private DataGridView? dataGridView1;
+        private Button? changeTableButton;
+        Log rch;
 
-        public SellsUC()
+        public SellsUC(Log log)
         {
+            rch = log;
             InitializeComponent();
             ApplyDataGridViewStyle();
+            this.rch = rch;
         }
 
         private void InitializeComponent()
@@ -26,18 +30,19 @@ namespace BaseData
             this.btnDelete = new Button();
             this.btnViewDetails = new Button();
             this.dataGridView1 = new DataGridView();
+            this.changeTableButton = new Button();
 
             SuspendLayout();
 
             // Панель для кнопок
             Panel buttonPanel = new Panel();
             buttonPanel.Dock = DockStyle.Top;
-            buttonPanel.Height = 60; // Увеличена высота панели
+            buttonPanel.Height = 80; // Увеличена высота панели
             buttonPanel.Padding = new Padding(10, 12, 10, 12); // Увеличены отступы
             buttonPanel.BackColor = Color.Transparent;
 
             // Общие настройки для кнопок
-            Size buttonSize = new Size(140, 40); // Увеличена высота кнопок до 40px
+            Size buttonSize = new Size(140, 60); // Увеличена высота кнопок до 40px
             int buttonSpacing = 15; // Расстояние между кнопками
 
             // btnRefresh
@@ -57,6 +62,11 @@ namespace BaseData
             this.btnDelete.Size = buttonSize;
             this.btnDelete.Location = new Point(btnViewDetails.Right + buttonSpacing, 10);
             this.btnDelete.Click += DeleteSelectedOrder;
+
+            this.changeTableButton.Text = "Изменить\nтаблицу";
+            this.changeTableButton.Size = buttonSize;
+            this.changeTableButton.Location = new Point(btnDelete.Right + buttonSpacing, 10);
+            this.changeTableButton.Click += ChangeTableClick;
 
             // dataGridView1
             this.dataGridView1.AllowUserToAddRows = false;
@@ -82,7 +92,7 @@ namespace BaseData
             buttonPanel.Controls.Add(this.btnRefresh);
             buttonPanel.Controls.Add(this.btnViewDetails);
             buttonPanel.Controls.Add(this.btnDelete);
-
+            buttonPanel.Controls.Add(this.changeTableButton);
             // UserControl
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
@@ -90,7 +100,7 @@ namespace BaseData
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(buttonPanel);
             this.Name = "SellsUC";
-            this.Size = new Size(800, 500);
+            this.Size = new Size(800, 600);
 
             ResumeLayout(false);
         }
@@ -136,6 +146,11 @@ namespace BaseData
             {
                 Styles.ApplyDangerButtonStyle(btnDelete);
                 btnDelete.Font = new Font(btnDelete.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (changeTableButton != null)
+            {
+                Styles.ApplySecondaryButtonStyle(changeTableButton);
+                changeTableButton.Font = new Font(changeTableButton.Font.FontFamily, 9F, FontStyle.Regular);
             }
         }
 
@@ -354,6 +369,11 @@ namespace BaseData
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+        private void ChangeTableClick(object? sender, EventArgs e)
+        {
+            ClientTableChange table = new ClientTableChange(rch, 3);
+            table.ShowDialog();
         }
     }
 }

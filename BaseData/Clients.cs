@@ -8,7 +8,7 @@ namespace BaseData
 {
     public class Clients : UserControl
     {
-        private string? currentConnectionString;
+        static private string currentConnectionString;
         private Button? refreshButton;
         private Button? deleteButton;
         private Button? editButton;
@@ -249,7 +249,7 @@ namespace BaseData
             RefreshData();
         }
 
-        private void RefreshData()
+        public static void RefreshData()
         {
             if (dataGrid == null) return;
 
@@ -292,7 +292,7 @@ namespace BaseData
             }
         }
         
-        private void SafeConfigureDataGridViewColumns()
+        static private void SafeConfigureDataGridViewColumns()
         {
             try
             {
@@ -304,23 +304,6 @@ namespace BaseData
                     if (column?.Name == null) continue;
 
                     string columnName = column.Name.ToLower();
-
-                    //if (columnName == "id")
-                    //{
-                    //    column.HeaderText = "ID";
-                    //    column.Width = 50;
-                    //}
-                    //else if (columnName == "surname") column.HeaderText = "Фамилия";
-                    //else if (columnName == "name") column.HeaderText = "Имя";
-                    //else if (columnName == "middlename") column.HeaderText = "Отчество";
-                    //else if (columnName == "location") column.HeaderText = "Адрес";
-                    //else if (columnName == "phone") column.HeaderText = "Телефон";
-                    //else if (columnName == "email") column.HeaderText = "Email";
-                    //else if (columnName == "constclient")
-                    //{
-                    //    column.HeaderText = "Постоянный";
-                    //    column.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    //}
                     column.HeaderText = columnName;
 
                     // Улучшаем внешний вид колонок
@@ -337,7 +320,7 @@ namespace BaseData
         }
         private void ChangeTableClick(object? sender, EventArgs e)
         {
-            ClientTableChange table = new ClientTableChange(rch);
+            ClientTableChange table = new ClientTableChange(rch,0);
             table.ShowDialog();
         }
     }

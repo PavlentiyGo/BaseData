@@ -13,6 +13,7 @@ namespace BaseData
         private Button? btnDelete;
         private Button? btnEdit;
         private DataGridView? dataGridView1;
+        private Button? changeTableButton;
         Log rch = new Log();
         public GoodsUC(Log log)
         {
@@ -26,17 +27,18 @@ namespace BaseData
             this.btnRefresh = new Button();
             this.btnDelete = new Button();
             this.btnEdit = new Button();
+            this.changeTableButton = new Button();
             this.dataGridView1 = new DataGridView();
 
             SuspendLayout();
 
             Panel buttonPanel = new Panel();
             buttonPanel.Dock = DockStyle.Top;
-            buttonPanel.Height = 60;
+            buttonPanel.Height = 80;
             buttonPanel.Padding = new Padding(10, 12, 10, 12);
             buttonPanel.BackColor = Color.Transparent;
 
-            Size buttonSize = new Size(140, 40);
+            Size buttonSize = new Size(140, 60);
             int buttonSpacing = 15;
 
             this.btnRefresh.Text = "Обновить";
@@ -53,6 +55,11 @@ namespace BaseData
             this.btnDelete.Size = buttonSize;
             this.btnDelete.Location = new Point(btnEdit.Right + buttonSpacing, 10);
             this.btnDelete.Click += DeleteSelectedGood;
+
+            this.changeTableButton.Text = "Изменить\nтаблицу";
+            this.changeTableButton.Size = buttonSize;
+            this.changeTableButton.Location = new Point(btnDelete.Right + buttonSpacing, 10);
+            this.changeTableButton.Click += ChangeTableClick;
 
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
@@ -77,6 +84,7 @@ namespace BaseData
             buttonPanel.Controls.Add(this.btnRefresh);
             buttonPanel.Controls.Add(this.btnEdit);
             buttonPanel.Controls.Add(this.btnDelete);
+            buttonPanel.Controls.Add(this.changeTableButton);
 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
@@ -128,6 +136,11 @@ namespace BaseData
             {
                 Styles.ApplyDangerButtonStyle(btnDelete);
                 btnDelete.Font = new Font(btnDelete.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (changeTableButton != null)
+            {
+                Styles.ApplySecondaryButtonStyle(changeTableButton);
+                changeTableButton.Font = new Font(changeTableButton.Font.FontFamily, 9F, FontStyle.Regular);
             }
         }
 
@@ -269,5 +282,11 @@ namespace BaseData
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void ChangeTableClick(object? sender, EventArgs e)
+        {
+            ClientTableChange table = new ClientTableChange(rch, 1);
+            table.ShowDialog();
+        }
     }
+
 }

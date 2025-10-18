@@ -74,7 +74,6 @@
             DeleteColumn.Text = "Удалить столбец";
             DeleteColumn.UseVisualStyleBackColor = true;
             DeleteColumn.Click += DeleteColumn_Click;
-            DeleteBox.DataSource = MetaInformation.columnsClients;
             // 
             // ChangeTableData
             // 
@@ -85,7 +84,6 @@
             ChangeTableData.Text = "Изменить данные столбца";
             ChangeTableData.UseVisualStyleBackColor = true;
             ChangeTableData.Click += ChangeTableData_Click;
-            ChangeDataColumn.DataSource = MetaInformation.columnsClients;
             // 
             // RenameTable
             // 
@@ -118,6 +116,7 @@
             // 
             // DeleteBox
             // 
+            DeleteBox.DropDownStyle = ComboBoxStyle.DropDownList;
             DeleteBox.FormattingEnabled = true;
             DeleteBox.Location = new Point(138, 173);
             DeleteBox.Name = "DeleteBox";
@@ -160,6 +159,7 @@
             // 
             // comboBox3
             // 
+            comboBox3.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox3.FormattingEnabled = true;
             comboBox3.Location = new Point(182, 428);
             comboBox3.Name = "comboBox3";
@@ -177,6 +177,7 @@
             // 
             // comboBox4
             // 
+            comboBox4.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox4.FormattingEnabled = true;
             comboBox4.Location = new Point(182, 469);
             comboBox4.Name = "comboBox4";
@@ -194,6 +195,7 @@
             // 
             // AddColumnTypeBox
             // 
+            AddColumnTypeBox.DropDownStyle = ComboBoxStyle.DropDownList;
             AddColumnTypeBox.FormattingEnabled = true;
             AddColumnTypeBox.Items.AddRange(new object[] { "boolean", "smallint", "integer", "bigint", "serial", "bigserial", "decimal", "text", "varchar", "char", "timestamp", "uuid" });
             AddColumnTypeBox.Location = new Point(230, 71);
@@ -210,6 +212,7 @@
             // 
             // OldColumnName
             // 
+            OldColumnName.DropDownStyle = ComboBoxStyle.DropDownList;
             OldColumnName.FormattingEnabled = true;
             OldColumnName.Location = new Point(265, 318);
             OldColumnName.Name = "OldColumnName";
@@ -243,6 +246,7 @@
             // 
             // ChangeDataColumn
             // 
+            ChangeDataColumn.DropDownStyle = ComboBoxStyle.DropDownList;
             ChangeDataColumn.FormattingEnabled = true;
             ChangeDataColumn.Location = new Point(36, 246);
             ChangeDataColumn.Name = "ChangeDataColumn";
@@ -269,6 +273,7 @@
             // 
             // ChangeTypeData
             // 
+            ChangeTypeData.DropDownStyle = ComboBoxStyle.DropDownList;
             ChangeTypeData.FormattingEnabled = true;
             ChangeTypeData.Items.AddRange(new object[] { "boolean", "smallint", "integer", "bigint", "serial", "bigserial", "decimal", "text", "varchar", "char", "timestamp", "uuid" });
             ChangeTypeData.Location = new Point(203, 246);
@@ -313,6 +318,7 @@
             Text = "ClientTableChange";
             ResumeLayout(false);
             PerformLayout();
+
         }
 
         #endregion
