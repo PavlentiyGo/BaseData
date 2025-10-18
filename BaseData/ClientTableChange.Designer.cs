@@ -49,6 +49,10 @@
             label7 = new Label();
             label8 = new Label();
             NewColumnName = new TextBox();
+            ChangeDataColumn = new ComboBox();
+            label9 = new Label();
+            label10 = new Label();
+            ChangeTypeData = new ComboBox();
             SuspendLayout();
             // 
             // AddColumn
@@ -70,6 +74,7 @@
             DeleteColumn.Text = "Удалить столбец";
             DeleteColumn.UseVisualStyleBackColor = true;
             DeleteColumn.Click += DeleteColumn_Click;
+            DeleteBox.DataSource = MetaInformation.columnsClients;
             // 
             // ChangeTableData
             // 
@@ -80,6 +85,7 @@
             ChangeTableData.Text = "Изменить данные столбца";
             ChangeTableData.UseVisualStyleBackColor = true;
             ChangeTableData.Click += ChangeTableData_Click;
+            ChangeDataColumn.DataSource = MetaInformation.columnsClients;
             // 
             // RenameTable
             // 
@@ -117,7 +123,6 @@
             DeleteBox.Name = "DeleteBox";
             DeleteBox.Size = new Size(121, 23);
             DeleteBox.TabIndex = 8;
-            DeleteBox.DataSource = MetaInformation.columnsClients;
             // 
             // label2
             // 
@@ -190,7 +195,7 @@
             // AddColumnTypeBox
             // 
             AddColumnTypeBox.FormattingEnabled = true;
-            AddColumnTypeBox.Items.AddRange(new object[] { "boolean", "smallint", "integer", "bigint", "serial", "bigserial", "numeric", "decimal", "real", "double precision", "text", "varchar", "char", "date", "time", "timestamp", "timestamptz", "interval", "json", "jsonb", "uuid", "bytea", "inet" });
+            AddColumnTypeBox.Items.AddRange(new object[] { "boolean", "smallint", "integer", "bigint", "serial", "bigserial", "decimal", "text", "varchar", "char", "timestamp", "uuid" });
             AddColumnTypeBox.Location = new Point(230, 71);
             AddColumnTypeBox.Name = "AddColumnTypeBox";
             AddColumnTypeBox.Size = new Size(121, 23);
@@ -210,7 +215,6 @@
             OldColumnName.Name = "OldColumnName";
             OldColumnName.Size = new Size(100, 23);
             OldColumnName.TabIndex = 19;
-            OldColumnName.DataSource = MetaInformation.columnsClients;
             // 
             // label7
             // 
@@ -237,11 +241,50 @@
             NewColumnName.Size = new Size(100, 23);
             NewColumnName.TabIndex = 22;
             // 
+            // ChangeDataColumn
+            // 
+            ChangeDataColumn.FormattingEnabled = true;
+            ChangeDataColumn.Location = new Point(36, 246);
+            ChangeDataColumn.Name = "ChangeDataColumn";
+            ChangeDataColumn.Size = new Size(109, 23);
+            ChangeDataColumn.TabIndex = 23;
+            // 
+            // label9
+            // 
+            label9.Location = new Point(36, 202);
+            label9.Name = "label9";
+            label9.Size = new Size(109, 41);
+            label9.TabIndex = 24;
+            label9.Text = "Название столбца";
+            label9.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label10
+            // 
+            label10.Location = new Point(203, 202);
+            label10.Name = "label10";
+            label10.Size = new Size(109, 41);
+            label10.TabIndex = 25;
+            label10.Text = "Изменить тип данных";
+            label10.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // ChangeTypeData
+            // 
+            ChangeTypeData.FormattingEnabled = true;
+            ChangeTypeData.Items.AddRange(new object[] { "boolean", "smallint", "integer", "bigint", "serial", "bigserial", "decimal", "text", "varchar", "char", "timestamp", "uuid" });
+            ChangeTypeData.Location = new Point(203, 246);
+            ChangeTypeData.Name = "ChangeTypeData";
+            ChangeTypeData.Size = new Size(109, 23);
+            ChangeTypeData.TabIndex = 26;
+            // 
             // ClientTableChange
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(584, 561);
+            Controls.Add(ChangeTypeData);
+            Controls.Add(label10);
+            Controls.Add(label9);
+            Controls.Add(ChangeDataColumn);
             Controls.Add(NewColumnName);
             Controls.Add(label8);
             Controls.Add(label7);
@@ -295,5 +338,9 @@
         private Label label7;
         private Label label8;
         private TextBox NewColumnName;
+        private ComboBox ChangeDataColumn;
+        private Label label9;
+        private Label label10;
+        private ComboBox ChangeTypeData;
     }
 }

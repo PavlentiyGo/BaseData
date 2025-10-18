@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -52,7 +53,14 @@ namespace BaseData
 
         private void ChangeTableData_Click(object sender, EventArgs e)
         {
-
+            if (string.IsNullOrEmpty(ChangeDataColumn.Text) || string.IsNullOrEmpty(ChangeTypeData.Text)){
+                MessageBox.Show("Введите столбец для изменения и новый тип данных для него");
+                log.LogWarning("Введите столбец для изменения и новый тип данных для него");
+                return;
+            }
+            Request($"ALTER TABLE {MetaInformation.tables[0]} ALTER COLUMN {ChangeDataColumn.Text} TYPE {ChangeTypeData.Text}");
+            MetaInformation.RefreshData();
+            log.LogInfo($"Тип в столбеце {ChangeDataColumn.Text} в таблице {MetaInformation.tables[0]} был изменён на {ChangeTypeData.Text}");
         }
 
         private void DeleteColumn_Click(object sender, EventArgs e)
