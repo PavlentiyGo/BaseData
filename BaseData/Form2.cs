@@ -85,7 +85,6 @@ namespace BaseData
             unit VARCHAR(20) DEFAULT 'шт',
             stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0),
             currency VARCHAR(3) DEFAULT 'RUB'
-            
         );
 
         CREATE TABLE IF NOT EXISTS orders(

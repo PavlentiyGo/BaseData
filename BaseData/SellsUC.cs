@@ -307,15 +307,15 @@ namespace BaseData
                 using (var connection = new NpgsqlConnection(currentConnectionString))
                 {
                     connection.Open();
-                    var query = @"
-                        SELECT o.id as ""Номер заказа"", 
-                               c.surname || ' ' || c.name as ""Клиент"",
-                               o.order_date as ""Дата заказа"",
-                               o.delivery_date as ""Дата доставки"",
-                               o.total_amount as ""Сумма"",
-                               o.discount as ""Скидка %""
+                    var query = @$"
+                        SELECT o.id, 
+                               c.surname || ' ' || c.name as ""client"",
+                               o.order_date,
+                               o.delivery_date,
+                               o.total_amount,
+                               o.discount
                         FROM orders o
-                        JOIN clients c ON o.client_id = c.id
+                        JOIN {MetaInformation.tables[0]} c ON o.client_id = c.id
                         ORDER BY o.order_date DESC";
 
                     var adapter = new NpgsqlDataAdapter(query, connection);

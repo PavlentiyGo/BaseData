@@ -286,6 +286,7 @@ namespace BaseData
             }
             catch (Exception ex)
             {
+                MessageBox.Show("Abob");
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

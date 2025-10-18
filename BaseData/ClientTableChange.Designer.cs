@@ -36,7 +36,7 @@
             label1 = new Label();
             DeleteBox = new ComboBox();
             label2 = new Label();
-            textBox1 = new TextBox();
+            NewTableName = new TextBox();
             label3 = new Label();
             label4 = new Label();
             comboBox3 = new ComboBox();
@@ -45,6 +45,10 @@
             label6 = new Label();
             AddColumnTypeBox = new ComboBox();
             AddColumnText = new TextBox();
+            OldColumnName = new ComboBox();
+            label7 = new Label();
+            label8 = new Label();
+            NewColumnName = new TextBox();
             SuspendLayout();
             // 
             // AddColumn
@@ -66,7 +70,6 @@
             DeleteColumn.Text = "Удалить столбец";
             DeleteColumn.UseVisualStyleBackColor = true;
             DeleteColumn.Click += DeleteColumn_Click;
-            DeleteBox.DataSource = MetaInformation.columnsClients;
             // 
             // ChangeTableData
             // 
@@ -84,13 +87,13 @@
             RenameTable.Name = "RenameTable";
             RenameTable.Size = new Size(151, 77);
             RenameTable.TabIndex = 3;
-            RenameTable.Text = "Переименовать таблицу";
+            RenameTable.Text = "Переименовать таблицу или столбец";
             RenameTable.UseVisualStyleBackColor = true;
             RenameTable.Click += RenameTable_Click;
             // 
             // SetConstraint
             // 
-            SetConstraint.Location = new Point(378, 388);
+            SetConstraint.Location = new Point(378, 428);
             SetConstraint.Name = "SetConstraint";
             SetConstraint.Size = new Size(151, 64);
             SetConstraint.TabIndex = 4;
@@ -114,6 +117,7 @@
             DeleteBox.Name = "DeleteBox";
             DeleteBox.Size = new Size(121, 23);
             DeleteBox.TabIndex = 8;
+            DeleteBox.DataSource = MetaInformation.columnsClients;
             // 
             // label2
             // 
@@ -124,25 +128,25 @@
             label2.Text = "Название столбца";
             label2.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // textBox1
+            // NewTableName
             // 
-            textBox1.Location = new Point(138, 359);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(121, 23);
-            textBox1.TabIndex = 10;
+            NewTableName.Location = new Point(45, 359);
+            NewTableName.Name = "NewTableName";
+            NewTableName.Size = new Size(100, 23);
+            NewTableName.TabIndex = 10;
             // 
             // label3
             // 
-            label3.Location = new Point(147, 315);
+            label3.Location = new Point(45, 305);
             label3.Name = "label3";
             label3.Size = new Size(100, 41);
             label3.TabIndex = 11;
-            label3.Text = "Название столбца";
+            label3.Text = "Новое имя таблицы";
             label3.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // label4
             // 
-            label4.Location = new Point(66, 388);
+            label4.Location = new Point(56, 428);
             label4.Name = "label4";
             label4.Size = new Size(110, 23);
             label4.TabIndex = 12;
@@ -152,14 +156,14 @@
             // comboBox3
             // 
             comboBox3.FormattingEnabled = true;
-            comboBox3.Location = new Point(182, 388);
+            comboBox3.Location = new Point(182, 428);
             comboBox3.Name = "comboBox3";
             comboBox3.Size = new Size(121, 23);
             comboBox3.TabIndex = 13;
             // 
             // label5
             // 
-            label5.Location = new Point(66, 417);
+            label5.Location = new Point(56, 468);
             label5.Name = "label5";
             label5.Size = new Size(110, 23);
             label5.TabIndex = 14;
@@ -169,7 +173,7 @@
             // comboBox4
             // 
             comboBox4.FormattingEnabled = true;
-            comboBox4.Location = new Point(182, 417);
+            comboBox4.Location = new Point(182, 469);
             comboBox4.Name = "comboBox4";
             comboBox4.Size = new Size(121, 23);
             comboBox4.TabIndex = 15;
@@ -199,11 +203,49 @@
             AddColumnText.Size = new Size(120, 23);
             AddColumnText.TabIndex = 18;
             // 
+            // OldColumnName
+            // 
+            OldColumnName.FormattingEnabled = true;
+            OldColumnName.Location = new Point(265, 318);
+            OldColumnName.Name = "OldColumnName";
+            OldColumnName.Size = new Size(100, 23);
+            OldColumnName.TabIndex = 19;
+            OldColumnName.DataSource = MetaInformation.columnsClients;
+            // 
+            // label7
+            // 
+            label7.Location = new Point(159, 341);
+            label7.Name = "label7";
+            label7.Size = new Size(100, 41);
+            label7.TabIndex = 20;
+            label7.Text = "Новое имя столбца";
+            label7.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label8
+            // 
+            label8.Location = new Point(159, 300);
+            label8.Name = "label8";
+            label8.Size = new Size(100, 41);
+            label8.TabIndex = 21;
+            label8.Text = "Старое имя столбца";
+            label8.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // NewColumnName
+            // 
+            NewColumnName.Location = new Point(265, 359);
+            NewColumnName.Name = "NewColumnName";
+            NewColumnName.Size = new Size(100, 23);
+            NewColumnName.TabIndex = 22;
+            // 
             // ClientTableChange
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(584, 561);
+            Controls.Add(NewColumnName);
+            Controls.Add(label8);
+            Controls.Add(label7);
+            Controls.Add(OldColumnName);
             Controls.Add(AddColumnText);
             Controls.Add(AddColumnTypeBox);
             Controls.Add(label6);
@@ -212,7 +254,7 @@
             Controls.Add(comboBox3);
             Controls.Add(label4);
             Controls.Add(label3);
-            Controls.Add(textBox1);
+            Controls.Add(NewTableName);
             Controls.Add(label2);
             Controls.Add(DeleteBox);
             Controls.Add(label1);
@@ -240,7 +282,7 @@
         private Label label1;
         private ComboBox DeleteBox;
         private Label label2;
-        private TextBox textBox1;
+        private TextBox NewTableName;
         private Label label3;
         private Label label4;
         private ComboBox comboBox3;
@@ -249,5 +291,9 @@
         private Label label6;
         private ComboBox AddColumnTypeBox;
         private TextBox AddColumnText;
+        private ComboBox OldColumnName;
+        private Label label7;
+        private Label label8;
+        private TextBox NewColumnName;
     }
 }

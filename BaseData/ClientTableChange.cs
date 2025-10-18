@@ -28,7 +28,26 @@ namespace BaseData
 
         private void RenameTable_Click(object sender, EventArgs e)
         {
-
+            string newTableName = NewTableName.Text;
+            string oldColumnName = OldColumnName.Text;
+            string newColumnName = NewColumnName.Text;
+            if (!string.IsNullOrEmpty(newTableName))
+            {
+                Request($"ALTER TABLE {MetaInformation.tables[0]} RENAME TO {newTableName}");
+            }
+            if (!string.IsNullOrEmpty(oldColumnName) && !string.IsNullOrEmpty(newColumnName))
+            {
+                Request($"ALTER TABLE {MetaInformation.tables[0]} RENAME COLUMN {oldColumnName} TO {newColumnName}");
+             
+            }
+            MetaInformation.RefreshData();
+            MessageBox.Show(MetaInformation.tables[0]);
+            if (string.IsNullOrEmpty(oldColumnName) ^ string.IsNullOrEmpty(newColumnName))
+            {
+                MessageBox.Show("Необходимо полностью заполнить новые имена таблиц или столбцов");
+                log.LogWarning("Необходимо полностью заполнить новые имена таблиц или столбцов");
+                return;
+            }
         }
 
         private void ChangeTableData_Click(object sender, EventArgs e)
@@ -68,7 +87,6 @@ namespace BaseData
             }
             log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[0]}");
             Request($"ALTER TABLE {MetaInformation.tables[0]} ADD COLUMN {column} {type}");
-            DataGridViewTextBoxColumn column1 = new DataGridViewTextBoxColumn();
             MetaInformation.RefreshData();
         }
         private void Request(string request)

@@ -32,7 +32,7 @@ namespace BaseData
             this.mainTabControl.Location = new Point(0, 0);
             this.mainTabControl.Size = new Size(1000, 700);
 
-            this.clientsTabPage.Text = "Клиенты";
+            this.clientsTabPage.Text = MetaInformation.tables[0];
             this.clientsTabPage.Padding = new Padding(10);
             this.clientsTabPage.BackColor = Styles.LightColor;
 
