@@ -59,12 +59,14 @@ namespace BaseData
 
         private void ChangeTableData_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(ChangeDataColumn.Text) || string.IsNullOrEmpty(ChangeTypeData.Text)){
+            if (string.IsNullOrEmpty(ChangeDataColumn.Text) || string.IsNullOrEmpty(ChangeTypeData.Text))
+            {
                 MessageBox.Show("Введите столбец для изменения и новый тип данных для него");
                 log.LogWarning("Введите столбец для изменения и новый тип данных для него");
                 return;
             }
-            if (CanChangeColumnType(ChangeDataColumn.Text, ChangeTypeData.Text)){
+            if (CanChangeColumnType(ChangeDataColumn.Text, ChangeTypeData.Text))
+            {
                 Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ALTER COLUMN {ChangeDataColumn.Text} TYPE {ChangeTypeData.Text}");
                 MetaInformation.RefreshData();
                 log.LogInfo($"Тип в столбеце {ChangeDataColumn.Text} в таблице {MetaInformation.tables[TableNum]} был изменён на {ChangeTypeData.Text}");
@@ -113,7 +115,7 @@ namespace BaseData
             }
             log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[TableNum]}");
             Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD COLUMN {column} {type}");
-            MetaInformation.RefreshData(); 
+            MetaInformation.RefreshData();
             RefreshTables();
             this.Close();
         }
@@ -151,18 +153,18 @@ namespace BaseData
             }
         }
         public static bool ContainsOnlyEnglishLetters(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return false;
+
+            foreach (char c in input)
             {
-                if (string.IsNullOrWhiteSpace(input))
+                if (c < 'A' || (c > 'Z' && c < 'a') || c > 'z')
                     return false;
-
-                foreach (char c in input)
-                {
-                    if (c < 'A' || (c > 'Z' && c < 'a') || c > 'z')
-                        return false;
-                }
-
-                return true;
             }
+
+            return true;
+        }
         private void RefreshTables()
         {
             if (TableNum == 0)
@@ -218,9 +220,16 @@ namespace BaseData
             }
             catch (PostgresException)
             {
-                transaction.Rollback(); 
+                transaction.Rollback();
                 return false;
             }
+        }
+
+        private void DeleteConstraintBtn_Click(object sender, EventArgs e)
+        {
+            DeleteConstraints del = new DeleteConstraints(TableNum);
+            del.ShowDialog();
+            this.Close();
         }
     }
 }

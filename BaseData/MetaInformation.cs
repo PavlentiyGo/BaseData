@@ -28,41 +28,41 @@ namespace BaseData
                 MessageBox.Show(table);
             }
         }
-    public static string[] GetTableNamesArray(string schemaName = "public")
-    {
-        string connectionString = AppSettings.SqlConnection;
-        const string sql = @"
+        public static string[] GetTableNamesArray(string schemaName = "public")
+        {
+            string connectionString = AppSettings.SqlConnection;
+            const string sql = @"
         SELECT table_name
         FROM information_schema.tables
         WHERE table_schema = @schema
           AND table_type = 'BASE TABLE'
         ORDER BY table_name;";
 
-        using var conn = new NpgsqlConnection(connectionString);
-        conn.Open();
+            using var conn = new NpgsqlConnection(connectionString);
+            conn.Open();
 
-        using var cmd = new NpgsqlCommand(sql, conn);
-        cmd.Parameters.AddWithValue("schema", schemaName);
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("schema", schemaName);
 
-        var tables = new string[4];
-        int index = 0;
+            var tables = new string[4];
+            int index = 0;
 
-        using var reader = cmd.ExecuteReader(); // ← синхронное выполнение
-        while (reader.Read()) // ← синхронное чтение
-        {
-            if (index >= 4)
-                throw new InvalidOperationException($"В схеме '{schemaName}' больше 4 таблиц.");
+            using var reader = cmd.ExecuteReader(); // ← синхронное выполнение
+            while (reader.Read()) // ← синхронное чтение
+            {
+                if (index >= 4)
+                    throw new InvalidOperationException($"В схеме '{schemaName}' больше 4 таблиц.");
 
-            tables[index] = reader.GetString(0);
-            index++;
+                tables[index] = reader.GetString(0);
+                index++;
+            }
+
+            if (index != 4)
+                throw new InvalidOperationException($"Найдено {index} таблиц, ожидалось 4.");
+
+            return tables; // ← обычный return string[4]
         }
-
-        if (index != 4)
-            throw new InvalidOperationException($"Найдено {index} таблиц, ожидалось 4.");
-
-        return tables; // ← обычный return string[4]
-    }
-    static string[] GetColumnNames(string connectionString, string table, string schema = "public")
+        static string[] GetColumnNames(string connectionString, string table, string schema = "public")
         {
             var columns = new List<string>();
 
@@ -93,7 +93,7 @@ namespace BaseData
             }
             return columns.ToArray();
         }
-    public static void RefreshData(bool flag = false)
+        public static void RefreshData(bool flag = false)
         {
             if (flag)
             {
@@ -102,6 +102,34 @@ namespace BaseData
             columnsClients = GetColumnNames(AppSettings.SqlConnection, tables[0]);
             columnsGoods = GetColumnNames(AppSettings.SqlConnection, tables[1]);
             columnsOrders = GetColumnNames(AppSettings.SqlConnection, tables[3]);
+        }
+
+        public static string[] GetConstraintNames(string tableName, string schema = "public")
+        {
+            string connectionString = AppSettings.SqlConnection;
+            var constraints = new List<string>();
+
+            using var conn = new NpgsqlConnection(connectionString);
+            conn.Open();
+
+            // Запрос к information_schema для получения имён ограничений
+            string sql = @"
+        SELECT constraint_name
+        FROM information_schema.table_constraints
+        WHERE table_schema = @schema
+          AND table_name = @table;";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("schema", schema);
+            cmd.Parameters.AddWithValue("table", tableName);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                constraints.Add(reader["constraint_name"].ToString());
+            }
+
+            return constraints.ToArray();
         }
     }
 }

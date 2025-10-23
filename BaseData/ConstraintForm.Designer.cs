@@ -47,7 +47,7 @@
             label1.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 204);
             label1.Location = new Point(12, 9);
             label1.Name = "label1";
-            label1.Size = new Size(375, 34);
+            label1.Size = new Size(341, 34);
             label1.TabIndex = 0;
             label1.Text = "Ограничения для колонки: ";
             // 

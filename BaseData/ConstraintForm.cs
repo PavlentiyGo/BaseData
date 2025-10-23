@@ -36,44 +36,52 @@ namespace BaseData
 
         private void SaveBtn_Click(object sender, EventArgs e)
         {
-            string column = comboBox1.Text;
-            if (column == "")
+            try
             {
-                MessageBox.Show("Необходимо выбрать колонку на которую задаются ограничения");
-                return;
-            }
-            if (CheckCheckBox.Checked)
-            {
-                if (CheckTextBox.Text != "")
+                string column = comboBox1.Text;
+                if (column == "")
                 {
-                    MessageBox.Show("Необходимо заполнить check, если он выбран");
+                    MessageBox.Show("Необходимо выбрать колонку на которую задаются ограничения");
                     return;
                 }
-                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT CHECK ({CheckTextBox.Text});");
-                MessageBox.Show("Check установлен");
-            }
-            if (NotNullCheckBox.Checked)
-            {
-                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ALTER COLUMN {column} SET NOT NULL");
-                MessageBox.Show("Not Null установлен");
-            }
-            if (UniqueCheckBox.Checked)
-            {
-                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT UNIQUE {column}");
-                MessageBox.Show("Unique установлен");
-            }
-            if (ForeignKeyCheckBox.Checked)
-            {
-                if (TableComboBox.Text == "" || ColumnComboBox.Text=="")
+                if (CheckCheckBox.Checked)
                 {
-                    MessageBox.Show("Необходимо заполнить Таблица и Столбец, если Foreign Key выбран");
-                    return;
+                    if (CheckTextBox.Text == "")
+                    {
+                        MessageBox.Show("Необходимо заполнить check, если он выбран");
+                        return;
+                    }
+                    Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT check_{MetaInformation.tables[TableNum]}_{column} CHECK ({CheckTextBox.Text});");
+                    MessageBox.Show("Check установлен");
                 }
-                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT FOREIGN KEY ({column}) REFERENCES {TableComboBox.Text}({ColumnComboBox.Text})");
-                MessageBox.Show("Foreign key установлен");
+                if (ForeignKeyCheckBox.Checked)
+                {
+                    if (TableComboBox.Text == "" || ColumnComboBox.Text == "")
+                    {
+                        MessageBox.Show("Необходимо заполнить Таблица и Столбец, если Foreign Key выбран");
+                        return;
+                    }
+                    Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT fk_{MetaInformation.tables[TableNum]}_{column} FOREIGN KEY ({column}) REFERENCES {TableComboBox.Text}({ColumnComboBox.Text})");
+                    MessageBox.Show("Foreign key установлен");
+                }
+                if (NotNullCheckBox.Checked)
+                {
+                    Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ALTER COLUMN {column} SET NOT NULL");
+                    MessageBox.Show("Not Null установлен");
+                }
+                MessageBox.Show($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT unique_{MetaInformation.tables[TableNum]}_{column} UNIQUE {column}");
+                if (UniqueCheckBox.Checked)
+                {
+                    Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT unique_{MetaInformation.tables[TableNum]}_{column} UNIQUE ({column})");
+                    MessageBox.Show("Unique установлен");
+                }
+                this.Close();
+            }
+            catch (Exception ex)
+            {
 
+                MessageBox.Show(ex.Message);
             }
-            this.Close();
         }
         private void Request(string request)
         {

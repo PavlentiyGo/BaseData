@@ -49,6 +49,7 @@
             label9 = new Label();
             label10 = new Label();
             ChangeTypeData = new ComboBox();
+            DeleteConstraintBtn = new Button();
             SuspendLayout();
             // 
             // AddColumn
@@ -93,7 +94,7 @@
             // 
             // SetConstraint
             // 
-            SetConstraint.Location = new Point(173, 423);
+            SetConstraint.Location = new Point(45, 424);
             SetConstraint.Name = "SetConstraint";
             SetConstraint.Size = new Size(192, 101);
             SetConstraint.TabIndex = 4;
@@ -241,11 +242,22 @@
             ChangeTypeData.Size = new Size(109, 23);
             ChangeTypeData.TabIndex = 26;
             // 
+            // DeleteConstraintBtn
+            // 
+            DeleteConstraintBtn.Location = new Point(328, 424);
+            DeleteConstraintBtn.Name = "DeleteConstraintBtn";
+            DeleteConstraintBtn.Size = new Size(192, 101);
+            DeleteConstraintBtn.TabIndex = 27;
+            DeleteConstraintBtn.Text = "Удалить ограничение";
+            DeleteConstraintBtn.UseVisualStyleBackColor = true;
+            DeleteConstraintBtn.Click += DeleteConstraintBtn_Click;
+            // 
             // ClientTableChange
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(584, 561);
+            Controls.Add(DeleteConstraintBtn);
             Controls.Add(ChangeTypeData);
             Controls.Add(label10);
             Controls.Add(label9);
@@ -300,5 +312,6 @@
         private Label label9;
         private Label label10;
         private ComboBox ChangeTypeData;
+        private Button DeleteConstraintBtn;
     }
 }
