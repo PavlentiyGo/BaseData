@@ -44,20 +44,13 @@ namespace BaseData
 
             }
             MetaInformation.RefreshData();
-            MessageBox.Show(MetaInformation.tables[TableNum]);
             if (string.IsNullOrEmpty(oldColumnName) ^ string.IsNullOrEmpty(newColumnName))
             {
                 MessageBox.Show("Необходимо полностью заполнить новые имена таблиц или столбцов");
                 log.LogWarning("Необходимо полностью заполнить новые имена таблиц или столбцов");
                 return;
             }
-            if (TableNum == 0)
-            {
-                Clients.RefreshData();
-            }
-            else if (TableNum == 1)
-            {
-            }
+            RefreshTables();
             this.Close();
         }
 
@@ -71,7 +64,7 @@ namespace BaseData
             Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ALTER COLUMN {ChangeDataColumn.Text} TYPE {ChangeTypeData.Text}");
             MetaInformation.RefreshData();
             log.LogInfo($"Тип в столбеце {ChangeDataColumn.Text} в таблице {MetaInformation.tables[TableNum]} был изменён на {ChangeTypeData.Text}");
-            Clients.RefreshData();
+            RefreshTables();
             this.Close();
         }
 
@@ -84,10 +77,16 @@ namespace BaseData
                 log.LogWarning("Выберите удаляемый столбец");
                 return;
             }
-            Request($"ALTER TABLE {MetaInformation.tables[TableNum]} DROP COLUMN {deleteColumn}");
+            if (deleteColumn == "id"|| deleteColumn == "client_id")
+            {
+                MessageBox.Show("Для стабильной работы программы выбранный столбец нельзя удалять");
+                log.LogWarning("Для стабильной работы программы выбранный столбец нельзя удалять");
+                return;
+            }
+            Request($"ALTER TABLE {MetaInformation.tables[TableNum]} DROP COLUMN {deleteColumn} CASCADE");
             log.LogInfo($"Столбец {deleteColumn} был удалён из таблицы {MetaInformation.tables[TableNum]}");
             MetaInformation.RefreshData();
-            Clients.RefreshData();
+            RefreshTables();
             this.Close();
         }
 
@@ -110,7 +109,7 @@ namespace BaseData
             log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[TableNum]}");
             Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD COLUMN {column} {type}");
             MetaInformation.RefreshData();
-            Clients.RefreshData();
+            RefreshTables();
             this.Close();
         }
         private void Request(string request)
@@ -159,5 +158,20 @@ namespace BaseData
 
                 return true;
             }
+        private void RefreshTables()
+        {
+            if (TableNum == 0)
+            {
+                Clients.RefreshData();
+            }
+            else if (TableNum == 1)
+            {
+                GoodsUC.RefreshData();
+            }
+            else if (TableNum == 3)
+            {
+                SellsUC.RefreshData();
+            }
         }
+    }
 }

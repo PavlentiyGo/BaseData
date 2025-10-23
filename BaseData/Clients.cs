@@ -14,7 +14,7 @@ namespace BaseData
         private Button? editButton;
         private Button? addButton;
         private Button? changeTableButton;
-        public static DataGridView dataGrid;
+        private static DataGridView dataGrid;
         Log rch = new Log();
 
         public Clients(Log log)

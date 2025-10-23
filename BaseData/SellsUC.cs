@@ -8,11 +8,11 @@ namespace BaseData
 {
     public class SellsUC : UserControl
     {
-        private string? currentConnectionString;
+        private static string currentConnectionString;
         private Button? btnRefresh;
         private Button? btnDelete;
         private Button? btnViewDetails;
-        private DataGridView? dataGridView1;
+        private static DataGridView dataGridView1;
         private Button? changeTableButton;
         Log rch;
 
@@ -29,7 +29,7 @@ namespace BaseData
             this.btnRefresh = new Button();
             this.btnDelete = new Button();
             this.btnViewDetails = new Button();
-            this.dataGridView1 = new DataGridView();
+            dataGridView1 = new DataGridView();
             this.changeTableButton = new Button();
 
             SuspendLayout();
@@ -69,24 +69,24 @@ namespace BaseData
             this.changeTableButton.Click += ChangeTableClick;
 
             // dataGridView1
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.Dock = DockStyle.Fill;
-            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.BackgroundColor = Color.White;
-            this.dataGridView1.BorderStyle = BorderStyle.FixedSingle;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new Point(0, 60);
-            this.dataGridView1.Margin = new Padding(10);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.TabIndex = 3;
-            this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.EnableHeadersVisualStyles = false;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            this.dataGridView1.ColumnHeadersHeight = 35;
-            this.dataGridView1.RowHeadersVisible = false;
+            dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.AllowUserToDeleteRows = false;
+            dataGridView1.Dock = DockStyle.Fill;
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView1.BackgroundColor = Color.White;
+            dataGridView1.BorderStyle = BorderStyle.FixedSingle;
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(0, 60);
+            dataGridView1.Margin = new Padding(10);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.ReadOnly = true;
+            dataGridView1.TabIndex = 3;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridView1.EnableHeadersVisualStyles = false;
+            dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dataGridView1.ColumnHeadersHeight = 35;
+            dataGridView1.RowHeadersVisible = false;
 
             // Добавляем кнопки на панель
             buttonPanel.Controls.Add(this.btnRefresh);
@@ -97,7 +97,7 @@ namespace BaseData
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.White;
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(dataGridView1);
             this.Controls.Add(buttonPanel);
             this.Name = "SellsUC";
             this.Size = new Size(800, 600);
@@ -109,16 +109,16 @@ namespace BaseData
         {
             try
             {
-                if (this.dataGridView1 != null)
+                if (dataGridView1 != null)
                 {
-                    Styles.ApplyDataGridViewStyle(this.dataGridView1);
+                    Styles.ApplyDataGridViewStyle(dataGridView1);
 
                     // Дополнительные стили для улучшения внешнего вида
-                    this.dataGridView1.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
-                    this.dataGridView1.DefaultCellStyle.Padding = new Padding(3);
-                    this.dataGridView1.RowTemplate.Height = 30;
-                    this.dataGridView1.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-                    this.dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    dataGridView1.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
+                    dataGridView1.DefaultCellStyle.Padding = new Padding(3);
+                    dataGridView1.RowTemplate.Height = 30;
+                    dataGridView1.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                    dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 }
             }
             catch (Exception ex)
@@ -308,59 +308,42 @@ namespace BaseData
             RefreshData();
         }
 
-        private void RefreshData()
+        static public void RefreshData()
         {
-            if (this.dataGridView1 == null) return;
+            if (dataGridView1 == null) return;
 
             try
             {
                 if (string.IsNullOrEmpty(currentConnectionString))
-                {
                     return;
-                }
+
+                // Исключаем client_id, так как он заменяется на ФИО клиента
+                var orderColumnsForSelect = MetaInformation.columnsOrders
+                    .Where(col => col != "client_id")
+                    .Select(col => $"o.{col}")
+                    .ToArray();
+
+                var selectList = string.Join(", ", orderColumnsForSelect) +
+                                 ", c.surname || ' ' || c.name AS \"client_id\"";
+
+                var query = $@"
+            SELECT {selectList}
+            FROM {MetaInformation.tables[3]} o
+            JOIN {MetaInformation.tables[0]} c ON o.client_id = c.id
+            ORDER BY o.order_date DESC";
 
                 using (var connection = new NpgsqlConnection(currentConnectionString))
                 {
                     connection.Open();
-                    var query = @$"
-                        SELECT o.id, 
-                               c.surname || ' ' || c.name as ""client"",
-                               o.order_date,
-                               o.delivery_date,
-                               o.total_amount,
-                               o.discount
-                        FROM orders o
-                        JOIN {MetaInformation.tables[0]} c ON o.client_id = c.id
-                        ORDER BY o.order_date DESC";
-
                     var adapter = new NpgsqlDataAdapter(query, connection);
                     var dataTable = new DataTable();
                     adapter.Fill(dataTable);
 
-                    this.dataGridView1.DataSource = dataTable;
+                    dataGridView1.DataSource = dataTable;
 
-                    // Настраиваем формат отображения
-                    if (dataGridView1.Columns.Contains("Дата заказа"))
-                    {
-                        dataGridView1.Columns["Дата заказа"]!.DefaultCellStyle.Format = "dd.MM.yyyy";
-                        dataGridView1.Columns["Дата заказа"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    }
-                    if (dataGridView1.Columns.Contains("Дата доставки"))
-                    {
-                        dataGridView1.Columns["Дата доставки"]!.DefaultCellStyle.Format = "dd.MM.yyyy";
-                        dataGridView1.Columns["Дата доставки"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    }
-                    if (dataGridView1.Columns.Contains("Сумма"))
-                    {
-                        dataGridView1.Columns["Сумма"]!.DefaultCellStyle.Format = "N2";
-                        dataGridView1.Columns["Сумма"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                    }
-                    if (dataGridView1.Columns.Contains("Скидка %"))
-                    {
-                        dataGridView1.Columns["Скидка %"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    }
+                    // Настройка форматов по фактическим именам столбцов (как в БД)
+                    FormatDataGridViewColumns();
 
-                    // Автоматическое изменение размера колонок после загрузки данных
                     dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
                 }
             }
@@ -369,6 +352,41 @@ namespace BaseData
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        // Выносим форматирование в отдельный метод для читаемости
+        private static void FormatDataGridViewColumns()
+        {
+            var dgv = dataGridView1;
+            if (dgv == null) return;
+
+            // Даты
+            if (dgv.Columns.Contains("order_date"))
+            {
+                dgv.Columns["order_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
+                dgv.Columns["order_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+            if (dgv.Columns.Contains("delivery_date"))
+            {
+                dgv.Columns["delivery_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
+                dgv.Columns["delivery_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            // Сумма
+            if (dgv.Columns.Contains("total_amount"))
+            {
+                dgv.Columns["total_amount"].DefaultCellStyle.Format = "N2";
+                dgv.Columns["total_amount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
+
+            // Скидка
+            if (dgv.Columns.Contains("discount"))
+            {
+                dgv.Columns["discount"].DefaultCellStyle.Format = "N2"; // или "P" если хранится как доля (0.1 = 10%)
+                dgv.Columns["discount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+
+            // Заголовки на русском (опционально)
         }
         private void ChangeTableClick(object? sender, EventArgs e)
         {

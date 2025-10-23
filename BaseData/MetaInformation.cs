@@ -97,6 +97,8 @@ namespace BaseData
         {
             tables = GetTableNamesArray();
             columnsClients = GetColumnNames(AppSettings.SqlConnection, tables[0]);
+            columnsGoods = GetColumnNames(AppSettings.SqlConnection, tables[1]);
+            columnsOrders = GetColumnNames(AppSettings.SqlConnection, tables[3]);
         }
     }
 }

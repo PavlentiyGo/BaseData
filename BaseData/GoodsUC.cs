@@ -8,11 +8,11 @@ namespace BaseData
 {
     public class GoodsUC : UserControl
     {
-        private string? currentConnectionString;
+        static private string currentConnectionString;
         private Button? btnRefresh;
         private Button? btnDelete;
         private Button? btnEdit;
-        private DataGridView? dataGridView1;
+        private static DataGridView dataGridView1;
         private Button? changeTableButton;
         Log rch = new Log();
         public GoodsUC(Log log)
@@ -28,7 +28,7 @@ namespace BaseData
             this.btnDelete = new Button();
             this.btnEdit = new Button();
             this.changeTableButton = new Button();
-            this.dataGridView1 = new DataGridView();
+            dataGridView1 = new DataGridView();
 
             SuspendLayout();
 
@@ -61,25 +61,25 @@ namespace BaseData
             this.changeTableButton.Location = new Point(btnDelete.Right + buttonSpacing, 10);
             this.changeTableButton.Click += ChangeTableClick;
 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.Dock = DockStyle.Fill;
-            this.dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.BackgroundColor = Color.White;
-            this.dataGridView1.BorderStyle = BorderStyle.FixedSingle;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new Point(0, 60);
-            this.dataGridView1.Margin = new Padding(10);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.TabIndex = 4;
-            this.dataGridView1.CellDoubleClick += DataGridView1_CellDoubleClick;
-            this.dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.EnableHeadersVisualStyles = false;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            this.dataGridView1.ColumnHeadersHeight = 35;
-            this.dataGridView1.RowHeadersVisible = false;
+            dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.AllowUserToDeleteRows = false;
+            dataGridView1.Dock = DockStyle.Fill;
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView1.BackgroundColor = Color.White;
+            dataGridView1.BorderStyle = BorderStyle.FixedSingle;
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(0, 60);
+            dataGridView1.Margin = new Padding(10);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.ReadOnly = true;
+            dataGridView1.TabIndex = 4;
+            dataGridView1.CellDoubleClick += DataGridView1_CellDoubleClick;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridView1.EnableHeadersVisualStyles = false;
+            dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dataGridView1.ColumnHeadersHeight = 35;
+            dataGridView1.RowHeadersVisible = false;
 
             buttonPanel.Controls.Add(this.btnRefresh);
             buttonPanel.Controls.Add(this.btnEdit);
@@ -89,7 +89,7 @@ namespace BaseData
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.White;
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(dataGridView1);
             this.Controls.Add(buttonPanel);
             this.Name = "GoodsUC";
             this.Size = new Size(800, 500);
@@ -101,15 +101,15 @@ namespace BaseData
         {
             try
             {
-                if (this.dataGridView1 != null)
+                if (dataGridView1 != null)
                 {
-                    Styles.ApplyDataGridViewStyle(this.dataGridView1);
+                    Styles.ApplyDataGridViewStyle(dataGridView1);
 
-                    this.dataGridView1.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
-                    this.dataGridView1.DefaultCellStyle.Padding = new Padding(3);
-                    this.dataGridView1.RowTemplate.Height = 30;
-                    this.dataGridView1.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-                    this.dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    dataGridView1.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
+                    dataGridView1.DefaultCellStyle.Padding = new Padding(3);
+                    dataGridView1.RowTemplate.Height = 30;
+                    dataGridView1.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                    dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 }
             }
             catch (Exception ex)
@@ -201,7 +201,7 @@ namespace BaseData
                     using (var connection = new NpgsqlConnection(currentConnectionString))
                     {
                         connection.Open();
-                        var command = new NpgsqlCommand("DELETE FROM goods WHERE id = @id", connection);
+                        var command = new NpgsqlCommand($"DELETE FROM {MetaInformation.tables[1]} WHERE id = @id", connection);
                         command.Parameters.AddWithValue("id", goodId);
 
                         int rowsAffected = command.ExecuteNonQuery();
@@ -233,9 +233,9 @@ namespace BaseData
             RefreshData();
         }
 
-        private void RefreshData()
+        public static void RefreshData()
         {
-            if (this.dataGridView1 == null) return;
+            if (dataGridView1 == null) return;
 
             try
             {
@@ -250,7 +250,8 @@ namespace BaseData
 
                     if (sqlConnection.State == ConnectionState.Open)
                     {
-                        string query = "SELECT id, name, price, unit, stock_quantity FROM goods ORDER BY id";
+                        string columnList = string.Join(", ", MetaInformation.columnsGoods);
+                        string query = $"SELECT {columnList} FROM {MetaInformation.tables[1]} ORDER BY id";
                         using (NpgsqlCommand command = new NpgsqlCommand(query, sqlConnection))
                         {
                             using (NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command))
@@ -258,7 +259,7 @@ namespace BaseData
                                 DataTable data = new DataTable();
                                 adapter.Fill(data);
 
-                                this.dataGridView1.DataSource = data;
+                                dataGridView1.DataSource = data;
 
                                 if (dataGridView1.Columns.Contains("price"))
                                 {
