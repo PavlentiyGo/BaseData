@@ -55,7 +55,7 @@
             // 
             comboBox1.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(393, 20);
+            comboBox1.Location = new Point(359, 20);
             comboBox1.Name = "comboBox1";
             comboBox1.Size = new Size(197, 23);
             comboBox1.TabIndex = 1;
@@ -111,7 +111,7 @@
             // TableLabel
             // 
             TableLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            TableLabel.Location = new Point(139, 186);
+            TableLabel.Location = new Point(130, 186);
             TableLabel.Name = "TableLabel";
             TableLabel.Size = new Size(61, 19);
             TableLabel.TabIndex = 7;
@@ -122,16 +122,17 @@
             // 
             TableComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             TableComboBox.FormattingEnabled = true;
-            TableComboBox.Location = new Point(206, 182);
+            TableComboBox.Location = new Point(197, 182);
             TableComboBox.Name = "TableComboBox";
-            TableComboBox.Size = new Size(121, 23);
+            TableComboBox.Size = new Size(98, 23);
             TableComboBox.TabIndex = 8;
             TableComboBox.Visible = false;
+            TableComboBox.SelectedIndexChanged += TableComboBox_SelectedIndexChanged;
             // 
             // ColumnLabel
             // 
             ColumnLabel.Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            ColumnLabel.Location = new Point(342, 185);
+            ColumnLabel.Location = new Point(313, 185);
             ColumnLabel.Name = "ColumnLabel";
             ColumnLabel.Size = new Size(61, 19);
             ColumnLabel.TabIndex = 9;
@@ -142,15 +143,15 @@
             // 
             ColumnComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             ColumnComboBox.FormattingEnabled = true;
-            ColumnComboBox.Location = new Point(409, 181);
+            ColumnComboBox.Location = new Point(380, 182);
             ColumnComboBox.Name = "ColumnComboBox";
-            ColumnComboBox.Size = new Size(121, 23);
+            ColumnComboBox.Size = new Size(100, 23);
             ColumnComboBox.TabIndex = 10;
             ColumnComboBox.Visible = false;
             // 
             // SaveBtn
             // 
-            SaveBtn.Location = new Point(235, 224);
+            SaveBtn.Location = new Point(242, 231);
             SaveBtn.Name = "SaveBtn";
             SaveBtn.Size = new Size(192, 85);
             SaveBtn.TabIndex = 11;

@@ -42,21 +42,36 @@ namespace BaseData
                 MessageBox.Show("Необходимо выбрать колонку на которую задаются ограничения");
                 return;
             }
+            if (CheckCheckBox.Checked)
+            {
+                if (CheckTextBox.Text != "")
+                {
+                    MessageBox.Show("Необходимо заполнить check, если он выбран");
+                    return;
+                }
+                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT CHECK ({CheckTextBox.Text});");
+                MessageBox.Show("Check установлен");
+            }
             if (NotNullCheckBox.Checked)
             {
                 Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ALTER COLUMN {column} SET NOT NULL");
-                MessageBox.Show("NotNull установлено");
+                MessageBox.Show("Not Null установлен");
             }
             if (UniqueCheckBox.Checked)
             {
                 Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT UNIQUE {column}");
-            }
-            if (CheckCheckBox.Checked)
-            {
-
+                MessageBox.Show("Unique установлен");
             }
             if (ForeignKeyCheckBox.Checked)
             {
+                if (TableComboBox.Text == "" || ColumnComboBox.Text=="")
+                {
+                    MessageBox.Show("Необходимо заполнить Таблица и Столбец, если Foreign Key выбран");
+                    return;
+                }
+                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD CONSTRAINT FOREIGN KEY ({column}) REFERENCES {TableComboBox.Text}({ColumnComboBox.Text})");
+                MessageBox.Show("Foreign key установлен");
+
             }
             this.Close();
         }
@@ -76,49 +91,45 @@ namespace BaseData
                 string[] columns = MetaInformation.columnsClients;
                 comboBox1.Items.AddRange(columns);
                 string[] table = { MetaInformation.tables[1], MetaInformation.tables[3] };
-
                 TableComboBox.Items.AddRange(table);
             }
             else if (tableNum == 1)
             {
-                string[] table = { MetaInformation.tables[1], MetaInformation.tables[3] };
-                //string[] columns = 5{;
-                //comboBox1.Items.AddRange(columns);
-                //TableComboBox.Items.AddRange(columns);
-                //ColumnComboBox.Items.AddRange(columns);
+                string[] columns = MetaInformation.columnsGoods;
+                comboBox1.Items.AddRange(columns);
+                string[] table = { MetaInformation.tables[0], MetaInformation.tables[3] };
+                TableComboBox.Items.AddRange(table);
             }
             else if (tableNum == 3)
             {
                 string[] columns = MetaInformation.columnsOrders;
                 comboBox1.Items.AddRange(columns);
-                TableComboBox.Items.AddRange(columns);
-                ColumnComboBox.Items.AddRange(columns);
+                string[] table = { MetaInformation.tables[0], MetaInformation.tables[1] };
+                TableComboBox.Items.AddRange(table);
             }
-        }
-        private string[] RemoveAt(string[] array, int index)
-        {
-            if (index < 0 || index >= array.Length)
-                return array; // или бросить исключение
-
-            var list = new List<string>(array);
-            list.RemoveAt(index);
-            return list.ToArray();
         }
         private void TableComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ColumnComboBox.Items.Clear();
 
             string? selectedTable = TableComboBox.SelectedItem as string;
-            if (selectedTable == null) return;
+            if (string.IsNullOrEmpty(selectedTable))
+                return;
 
-            string[] columnsToLoad = new string[0];
+            string[]? columnsToLoad = selectedTable switch
+            {
+                _ when selectedTable == MetaInformation.tables[0] => MetaInformation.columnsClients,
+                _ when selectedTable == MetaInformation.tables[1] => MetaInformation.columnsGoods,
+                _ when selectedTable == MetaInformation.tables[3] => MetaInformation.columnsOrders,
+                _ => null 
+            };
 
-            if (selectedTable == MetaInformation.tables[1])
-                columnsToLoad = MetaInformation.columnsGoods;
-            else if (selectedTable == MetaInformation.tables[3])
-                columnsToLoad = MetaInformation.columnsOrders;
-
-            ColumnComboBox.Items.AddRange(columnsToLoad);
+            if (columnsToLoad != null)
+            {
+                ColumnComboBox.Items.AddRange(columnsToLoad);
+                if (ColumnComboBox.Items.Count > 0)
+                    ColumnComboBox.SelectedIndex = 0;
+            }
         }
     }
 }
