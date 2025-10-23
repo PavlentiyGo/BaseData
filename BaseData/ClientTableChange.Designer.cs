@@ -38,10 +38,6 @@
             label2 = new Label();
             NewTableName = new TextBox();
             label3 = new Label();
-            label4 = new Label();
-            comboBox3 = new ComboBox();
-            label5 = new Label();
-            comboBox4 = new ComboBox();
             label6 = new Label();
             AddColumnTypeBox = new ComboBox();
             AddColumnText = new TextBox();
@@ -97,9 +93,9 @@
             // 
             // SetConstraint
             // 
-            SetConstraint.Location = new Point(378, 428);
+            SetConstraint.Location = new Point(173, 423);
             SetConstraint.Name = "SetConstraint";
-            SetConstraint.Size = new Size(151, 64);
+            SetConstraint.Size = new Size(192, 101);
             SetConstraint.TabIndex = 4;
             SetConstraint.Text = "Задать ограничения";
             SetConstraint.UseVisualStyleBackColor = true;
@@ -147,42 +143,6 @@
             label3.TabIndex = 11;
             label3.Text = "Новое имя таблицы";
             label3.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // label4
-            // 
-            label4.Location = new Point(56, 428);
-            label4.Name = "label4";
-            label4.Size = new Size(110, 23);
-            label4.TabIndex = 12;
-            label4.Text = "Название столбца";
-            label4.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // comboBox3
-            // 
-            comboBox3.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox3.FormattingEnabled = true;
-            comboBox3.Location = new Point(182, 428);
-            comboBox3.Name = "comboBox3";
-            comboBox3.Size = new Size(121, 23);
-            comboBox3.TabIndex = 13;
-            // 
-            // label5
-            // 
-            label5.Location = new Point(56, 468);
-            label5.Name = "label5";
-            label5.Size = new Size(110, 23);
-            label5.TabIndex = 14;
-            label5.Text = "Ограничение";
-            label5.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // comboBox4
-            // 
-            comboBox4.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboBox4.FormattingEnabled = true;
-            comboBox4.Location = new Point(182, 469);
-            comboBox4.Name = "comboBox4";
-            comboBox4.Size = new Size(121, 23);
-            comboBox4.TabIndex = 15;
             // 
             // label6
             // 
@@ -297,10 +257,6 @@
             Controls.Add(AddColumnText);
             Controls.Add(AddColumnTypeBox);
             Controls.Add(label6);
-            Controls.Add(comboBox4);
-            Controls.Add(label5);
-            Controls.Add(comboBox3);
-            Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(NewTableName);
             Controls.Add(label2);
@@ -333,10 +289,6 @@
         private Label label2;
         private TextBox NewTableName;
         private Label label3;
-        private Label label4;
-        private ComboBox comboBox3;
-        private Label label5;
-        private ComboBox comboBox4;
         private Label label6;
         private ComboBox AddColumnTypeBox;
         private TextBox AddColumnText;

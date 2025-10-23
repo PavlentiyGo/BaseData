@@ -26,7 +26,9 @@ namespace BaseData
         }
         private void SetConstraint_Click(object sender, EventArgs e)
         {
-
+            ConstraintForm constraintForm = new ConstraintForm(TableNum);
+            constraintForm.ShowDialog();
+            this.Close();
         }
 
         private void RenameTable_Click(object sender, EventArgs e)
@@ -111,8 +113,7 @@ namespace BaseData
             }
             log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[TableNum]}");
             Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD COLUMN {column} {type}");
-            MetaInformation.RefreshData();
-            
+            MetaInformation.RefreshData(); 
             RefreshTables();
             this.Close();
         }
