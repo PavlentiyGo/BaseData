@@ -9,7 +9,7 @@ namespace BaseData
     public class Clients : UserControl
     {
         static private string currentConnectionString;
-        private Button? refreshButton;
+        private Button? searchButton;
         private Button? deleteButton;
         private Button? editButton;
         private Button? addButton;
@@ -26,7 +26,7 @@ namespace BaseData
 
         private void InitializeComponent()
         {
-            this.refreshButton = new Button();
+            this.searchButton = new Button();
             this.deleteButton = new Button();
             this.editButton = new Button();
             this.changeTableButton = new Button();
@@ -46,15 +46,15 @@ namespace BaseData
             int buttonSpacing = 15; // Расстояние между кнопками
 
             // refreshButton
-            this.refreshButton.Text = "Обновить";
-            this.refreshButton.Size = buttonSize;
-            this.refreshButton.Location = new Point(buttonSpacing, 10);
-            this.refreshButton.Click += (s, e) => RefreshData();
+            this.searchButton.Text = "Поиск";
+            this.searchButton.Size = buttonSize;
+            this.searchButton.Location = new Point(buttonSpacing, 10);
+            this.searchButton.Click += BtnSearch_Click;
 
             // editButton
             this.editButton.Text = "Редактировать";
             this.editButton.Size = buttonSize;
-            this.editButton.Location = new Point(refreshButton.Right + buttonSpacing, 10);
+            this.editButton.Location = new Point(searchButton.Right + buttonSpacing, 10);
             this.editButton.Click += EditSelectedClient;
 
             // deleteButton
@@ -91,7 +91,7 @@ namespace BaseData
             dataGrid.RowHeadersVisible = false;
 
             // Добавляем кнопки на панель
-            buttonPanel.Controls.Add(this.refreshButton);
+            buttonPanel.Controls.Add(this.searchButton);
             buttonPanel.Controls.Add(this.editButton);
             buttonPanel.Controls.Add(this.deleteButton);
             buttonPanel.Controls.Add(this.changeTableButton);
@@ -133,10 +133,10 @@ namespace BaseData
             base.OnLoad(e);
 
             // Применяем стили к кнопкам с увеличенной высотой
-            if (refreshButton != null)
+            if (searchButton != null)
             {
-                Styles.ApplySecondaryButtonStyle(refreshButton);
-                refreshButton.Font = new Font(refreshButton.Font.FontFamily, 9F, FontStyle.Regular);
+                Styles.ApplySecondaryButtonStyle(searchButton);
+                searchButton.Font = new Font(searchButton.Font.FontFamily, 9F, FontStyle.Regular);
             }
             if (editButton != null)
             {
@@ -323,19 +323,10 @@ namespace BaseData
             ClientTableChange table = new ClientTableChange(rch, 0);
             table.ShowDialog();
         }
-    
-            static private void ShowColumnNames(string[] columnNames)
+        private void BtnSearch_Click(object? sender, EventArgs e)
         {
-            if (columnNames == null || columnNames.Length == 0)
-            {
-                MessageBox.Show("Список столбцов пуст.", "Информация",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            string message = string.Join(Environment.NewLine, columnNames);
-            MessageBox.Show(message, "Названия столбцов",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            SearchForm searchForm = new SearchForm();
+            searchForm.ShowDialog();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace BaseData
     public class SellsUC : UserControl
     {
         private static string currentConnectionString;
-        private Button? btnRefresh;
+        private Button? btnSearch;
         private Button? btnDelete;
         private Button? btnViewDetails;
         private static DataGridView dataGridView1;
@@ -26,7 +26,7 @@ namespace BaseData
 
         private void InitializeComponent()
         {
-            this.btnRefresh = new Button();
+            this.btnSearch = new Button();
             this.btnDelete = new Button();
             this.btnViewDetails = new Button();
             dataGridView1 = new DataGridView();
@@ -46,15 +46,15 @@ namespace BaseData
             int buttonSpacing = 15; // Расстояние между кнопками
 
             // btnRefresh
-            this.btnRefresh.Text = "Обновить";
-            this.btnRefresh.Size = buttonSize;
-            this.btnRefresh.Location = new Point(10, 10);
-            this.btnRefresh.Click += (s, e) => RefreshData();
+            this.btnSearch.Text = "Поиск";
+            this.btnSearch.Size = buttonSize;
+            this.btnSearch.Location = new Point(10, 10);
+            this.btnSearch.Click += BtnSearch_Click;
 
             // btnViewDetails
             this.btnViewDetails.Text = "Детали заказа";
             this.btnViewDetails.Size = buttonSize;
-            this.btnViewDetails.Location = new Point(btnRefresh.Right + buttonSpacing, 10);
+            this.btnViewDetails.Location = new Point(btnSearch.Right + buttonSpacing, 10);
             this.btnViewDetails.Click += ViewOrderDetails;
 
             // btnDelete
@@ -89,7 +89,7 @@ namespace BaseData
             dataGridView1.RowHeadersVisible = false;
 
             // Добавляем кнопки на панель
-            buttonPanel.Controls.Add(this.btnRefresh);
+            buttonPanel.Controls.Add(this.btnSearch);
             buttonPanel.Controls.Add(this.btnViewDetails);
             buttonPanel.Controls.Add(this.btnDelete);
             buttonPanel.Controls.Add(this.changeTableButton);
@@ -132,10 +132,10 @@ namespace BaseData
             base.OnLoad(e);
 
             // Применяем стили к кнопкам с увеличенной высотой
-            if (btnRefresh != null)
+            if (btnSearch != null)
             {
-                Styles.ApplySecondaryButtonStyle(btnRefresh);
-                btnRefresh.Font = new Font(btnRefresh.Font.FontFamily, 9F, FontStyle.Regular);
+                Styles.ApplySecondaryButtonStyle(btnSearch);
+                btnSearch.Font = new Font(btnSearch.Font.FontFamily, 9F, FontStyle.Regular);
             }
             if (btnViewDetails != null)
             {
@@ -386,10 +386,27 @@ private static void FormatDataGridViewColumns()
         dgv.Columns["discount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
     }
 }
+        static private void ShowColumnNames(string[] columnNames)
+        {
+            if (columnNames == null || columnNames.Length == 0)
+            {
+                MessageBox.Show("Список столбцов пуст.", "Информация",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string message = string.Join(Environment.NewLine, columnNames);
+            MessageBox.Show(message, "Названия столбцов",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
         private void ChangeTableClick(object? sender, EventArgs e)
         {
             ClientTableChange table = new ClientTableChange(rch, 3);
             table.ShowDialog();
+        }
+        private void BtnSearch_Click(object? sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -9,7 +9,7 @@ namespace BaseData
     public class GoodsUC : UserControl
     {
         static private string currentConnectionString;
-        private Button? btnRefresh;
+        private Button? btnSearch;
         private Button? btnDelete;
         private Button? btnEdit;
         private static DataGridView dataGridView1;
@@ -24,7 +24,7 @@ namespace BaseData
 
         private void InitializeComponent()
         {
-            this.btnRefresh = new Button();
+            this.btnSearch = new Button();
             this.btnDelete = new Button();
             this.btnEdit = new Button();
             this.changeTableButton = new Button();
@@ -41,14 +41,14 @@ namespace BaseData
             Size buttonSize = new Size(140, 60);
             int buttonSpacing = 15;
 
-            this.btnRefresh.Text = "Обновить";
-            this.btnRefresh.Size = buttonSize;
-            this.btnRefresh.Location = new Point(buttonSpacing, 10);
-            this.btnRefresh.Click += (s, e) => RefreshData();
+            this.btnSearch.Text = "Поиск";
+            this.btnSearch.Size = buttonSize;
+            this.btnSearch.Location = new Point(buttonSpacing, 10);
+            this.btnSearch.Click += BtnSearch_Click;
 
             this.btnEdit.Text = "Редактировать";
             this.btnEdit.Size = buttonSize;
-            this.btnEdit.Location = new Point(btnRefresh.Right + buttonSpacing, 10);
+            this.btnEdit.Location = new Point(btnSearch.Right + buttonSpacing, 10);
             this.btnEdit.Click += EditSelectedGood;
 
             this.btnDelete.Text = "Удалить";
@@ -81,7 +81,7 @@ namespace BaseData
             dataGridView1.ColumnHeadersHeight = 35;
             dataGridView1.RowHeadersVisible = false;
 
-            buttonPanel.Controls.Add(this.btnRefresh);
+            buttonPanel.Controls.Add(this.btnSearch);
             buttonPanel.Controls.Add(this.btnEdit);
             buttonPanel.Controls.Add(this.btnDelete);
             buttonPanel.Controls.Add(this.changeTableButton);
@@ -122,10 +122,10 @@ namespace BaseData
         {
             base.OnLoad(e);
 
-            if (btnRefresh != null)
+            if (btnSearch != null)
             {
-                Styles.ApplySecondaryButtonStyle(btnRefresh);
-                btnRefresh.Font = new Font(btnRefresh.Font.FontFamily, 9F, FontStyle.Regular);
+                Styles.ApplySecondaryButtonStyle(btnSearch);
+                btnSearch.Font = new Font(btnSearch.Font.FontFamily, 9F, FontStyle.Regular);
             }
             if (btnEdit != null)
             {
@@ -287,6 +287,10 @@ namespace BaseData
         {
             ClientTableChange table = new ClientTableChange(rch, 1);
             table.ShowDialog();
+        }
+        private void BtnSearch_Click(object? sender, EventArgs e)
+        {
+
         }
     }
 
