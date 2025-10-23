@@ -7,9 +7,9 @@ namespace BaseData
     public partial class Form3 : Form
     {
         private TabControl? mainTabControl;
-        private TabPage? clientsTabPage;
-        private TabPage? goodsTabPage;
-        private TabPage? sellsTabPage;
+        private static TabPage clientsTabPage;
+        private static TabPage goodsTabPage;
+        private static TabPage sellsTabPage;
         Log rch = new Log();
         public Form3(Log log)
         {
@@ -21,28 +21,28 @@ namespace BaseData
         private void InitializeComponent()
         {
             this.mainTabControl = new TabControl();
-            this.clientsTabPage = new TabPage();
-            this.goodsTabPage = new TabPage();
-            this.sellsTabPage = new TabPage();
+            clientsTabPage = new TabPage();
+            goodsTabPage = new TabPage();
+            sellsTabPage = new TabPage();
 
             this.mainTabControl.Dock = DockStyle.Fill;
-            this.mainTabControl.Controls.Add(this.clientsTabPage);
-            this.mainTabControl.Controls.Add(this.goodsTabPage);
-            this.mainTabControl.Controls.Add(this.sellsTabPage);
+            this.mainTabControl.Controls.Add(clientsTabPage);
+            this.mainTabControl.Controls.Add(goodsTabPage);
+            this.mainTabControl.Controls.Add(sellsTabPage);
             this.mainTabControl.Location = new Point(0, 0);
             this.mainTabControl.Size = new Size(1000, 700);
 
-            this.clientsTabPage.Text = MetaInformation.tables[0];
-            this.clientsTabPage.Padding = new Padding(10);
-            this.clientsTabPage.BackColor = Styles.LightColor;
+            clientsTabPage.Text = MetaInformation.tables[0];
+            clientsTabPage.Padding = new Padding(10);
+            clientsTabPage.BackColor = Styles.LightColor;
 
-            this.goodsTabPage.Text = "Товары";
-            this.goodsTabPage.Padding = new Padding(10);
-            this.goodsTabPage.BackColor = Styles.LightColor;
+            goodsTabPage.Text = MetaInformation.tables[1];
+            goodsTabPage.Padding = new Padding(10);
+            goodsTabPage.BackColor = Styles.LightColor;
 
-            this.sellsTabPage.Text = "Продажи";
-            this.sellsTabPage.Padding = new Padding(10);
-            this.sellsTabPage.BackColor = Styles.LightColor;
+            sellsTabPage.Text = MetaInformation.tables[3];
+            sellsTabPage.Padding = new Padding(10);
+            sellsTabPage.BackColor = Styles.LightColor;
 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
@@ -101,14 +101,14 @@ namespace BaseData
 
         private void LoadClientsTab()
         {
-            if (this.clientsTabPage == null) return;
+            if (clientsTabPage == null) return;
 
             try
             {
                 Clients clients = new Clients(rch);
                 clients.Dock = DockStyle.Fill;
-                this.clientsTabPage.Controls.Clear();
-                this.clientsTabPage.Controls.Add(clients);
+                clientsTabPage.Controls.Clear();
+                clientsTabPage.Controls.Add(clients);
 
                 if (AppSettings.IsConnectionStringSet)
                 {
@@ -116,27 +116,27 @@ namespace BaseData
                 }
                 else
                 {
-                    AddInfoLabelToTab(this.clientsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
+                    AddInfoLabelToTab(clientsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                     rch.LogInfo("Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                 }
             }
             catch (Exception ex)
             {
-                AddErrorLabelToTab(this.clientsTabPage, $"Ошибка загрузки клиентов: {ex.Message}");
+                AddErrorLabelToTab(clientsTabPage, $"Ошибка загрузки клиентов: {ex.Message}");
                 rch.LogError($"Ошибка загрузки клиентов: {ex.Message}");
             }
         }
 
         private void LoadGoodsTab()
         {
-            if (this.goodsTabPage == null) return;
+            if (goodsTabPage == null) return;
 
             try
             {
                 GoodsUC goods = new GoodsUC(rch);
                 goods.Dock = DockStyle.Fill;
-                this.goodsTabPage.Controls.Clear();
-                this.goodsTabPage.Controls.Add(goods);
+                goodsTabPage.Controls.Clear();
+                goodsTabPage.Controls.Add(goods);
 
                 if (AppSettings.IsConnectionStringSet)
                 {
@@ -144,27 +144,27 @@ namespace BaseData
                 }
                 else
                 {
-                    AddInfoLabelToTab(this.goodsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
+                    AddInfoLabelToTab(goodsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                     rch.LogInfo("Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                 }
             }
             catch (Exception ex)
             {
-                AddErrorLabelToTab(this.goodsTabPage, $"Ошибка загрузки товаров: {ex.Message}");
+                AddErrorLabelToTab(goodsTabPage, $"Ошибка загрузки товаров: {ex.Message}");
                 rch.LogError($"Ошибка загрузки товаров: {ex.Message}");
             }
         }
 
         private void LoadSellsTab()
         {
-            if (this.sellsTabPage == null) return;
+            if (sellsTabPage == null) return;
 
             try
             {
                 SellsUC sells = new SellsUC(rch);
                 sells.Dock = DockStyle.Fill;
-                this.sellsTabPage.Controls.Clear();
-                this.sellsTabPage.Controls.Add(sells);
+                sellsTabPage.Controls.Clear();
+                sellsTabPage.Controls.Add(sells);
 
                 if (AppSettings.IsConnectionStringSet)
                 {
@@ -172,13 +172,13 @@ namespace BaseData
                 }
                 else
                 {
-                    AddInfoLabelToTab(this.sellsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
+                    AddInfoLabelToTab(sellsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                     rch.LogInfo("Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                 }
             }
             catch (Exception ex)
             {
-                AddErrorLabelToTab(this.sellsTabPage, $"Ошибка загрузки продаж: {ex.Message}");
+                AddErrorLabelToTab(sellsTabPage, $"Ошибка загрузки продаж: {ex.Message}");
                 rch.LogError($"Ошибка загрузки продаж: {ex.Message}");
             }
         }
@@ -211,6 +211,12 @@ namespace BaseData
             };
             tabPage.Controls.Clear();
             tabPage.Controls.Add(label);
+        }
+        public static void RefreshTags()
+        {
+            clientsTabPage.Text = MetaInformation.tables[0];
+            goodsTabPage.Text = MetaInformation.tables[1];
+            sellsTabPage.Text = MetaInformation.tables[3];
         }
     }
 }

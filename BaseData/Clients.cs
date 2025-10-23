@@ -31,7 +31,7 @@ namespace BaseData
             this.editButton = new Button();
             this.changeTableButton = new Button();
             dataGrid = new DataGridView();
-            
+
             SuspendLayout();
 
             // Панель для кнопок
@@ -48,7 +48,7 @@ namespace BaseData
             // refreshButton
             this.refreshButton.Text = "Обновить";
             this.refreshButton.Size = buttonSize;
-            this.refreshButton.Location = new Point( buttonSpacing, 10);
+            this.refreshButton.Location = new Point(buttonSpacing, 10);
             this.refreshButton.Click += (s, e) => RefreshData();
 
             // editButton
@@ -286,12 +286,12 @@ namespace BaseData
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Abob");
+
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        
+
         static private void SafeConfigureDataGridViewColumns()
         {
             try
@@ -320,8 +320,22 @@ namespace BaseData
         }
         private void ChangeTableClick(object? sender, EventArgs e)
         {
-            ClientTableChange table = new ClientTableChange(rch,0);
+            ClientTableChange table = new ClientTableChange(rch, 0);
             table.ShowDialog();
+        }
+    
+            static private void ShowColumnNames(string[] columnNames)
+        {
+            if (columnNames == null || columnNames.Length == 0)
+            {
+                MessageBox.Show("Список столбцов пуст.", "Информация",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string message = string.Join(Environment.NewLine, columnNames);
+            MessageBox.Show(message, "Названия столбцов",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

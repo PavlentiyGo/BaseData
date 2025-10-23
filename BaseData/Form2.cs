@@ -133,7 +133,7 @@ namespace BaseData
                     }
                     rch.LogInfo($"Бд пересоздана");
                     MessageBox.Show("Бд была пересоздана");
-                    MetaInformation.RefreshData();
+                    MetaInformation.RefreshData(true);
                 }
                 catch (Exception ex)
                 {

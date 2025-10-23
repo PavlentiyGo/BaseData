@@ -91,7 +91,7 @@ namespace BaseData
             this.BackColor = Color.White;
             this.Controls.Add(dataGridView1);
             this.Controls.Add(buttonPanel);
-            this.Name = "GoodsUC";
+            this.Name = MetaInformation.tables[1];
             this.Size = new Size(800, 500);
 
             ResumeLayout(false);

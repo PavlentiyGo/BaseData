@@ -308,86 +308,84 @@ namespace BaseData
             RefreshData();
         }
 
-        static public void RefreshData()
-        {
-            if (dataGridView1 == null) return;
+static public void RefreshData()
+{
+    if (dataGridView1 == null) return;
 
-            try
-            {
-                if (string.IsNullOrEmpty(currentConnectionString))
-                    return;
 
-                // Исключаем client_id, так как он заменяется на ФИО клиента
-                var orderColumnsForSelect = MetaInformation.columnsOrders
-                    .Where(col => col != "client_id")
-                    .Select(col => $"o.{col}")
-                    .ToArray();
+    try
+    {
+        if (string.IsNullOrEmpty(currentConnectionString))
+            return;
+                
 
-                var selectList = string.Join(", ", orderColumnsForSelect) +
-                                 ", c.surname || ' ' || c.name AS \"client_id\"";
+        var orderColumnsForSelect = MetaInformation.columnsOrders
+            .Where(col => col != "client_id")
+            .Select(col => $"o.{col}")
+            .ToArray();
 
-                var query = $@"
+        var selectList = string.Join(", ", orderColumnsForSelect) + 
+                         ", c.surname || ' ' || c.name AS \"client\"";
+
+        var query = $@"
             SELECT {selectList}
             FROM {MetaInformation.tables[3]} o
-            JOIN {MetaInformation.tables[0]} c ON o.client_id = c.id
-            ORDER BY o.order_date DESC";
+            JOIN {MetaInformation.tables[0]} c ON o.client_id = c.id";
 
-                using (var connection = new NpgsqlConnection(currentConnectionString))
-                {
-                    connection.Open();
-                    var adapter = new NpgsqlDataAdapter(query, connection);
-                    var dataTable = new DataTable();
-                    adapter.Fill(dataTable);
-
-                    dataGridView1.DataSource = dataTable;
-
-                    // Настройка форматов по фактическим именам столбцов (как в БД)
-                    FormatDataGridViewColumns();
-
-                    dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        // Выносим форматирование в отдельный метод для читаемости
-        private static void FormatDataGridViewColumns()
+        using (var connection = new NpgsqlConnection(currentConnectionString))
         {
-            var dgv = dataGridView1;
-            if (dgv == null) return;
+            connection.Open();
+            var adapter = new NpgsqlDataAdapter(query, connection);
+            var dataTable = new DataTable();
+            adapter.Fill(dataTable);
 
-            // Даты
-            if (dgv.Columns.Contains("order_date"))
-            {
-                dgv.Columns["order_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
-                dgv.Columns["order_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-            if (dgv.Columns.Contains("delivery_date"))
-            {
-                dgv.Columns["delivery_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
-                dgv.Columns["delivery_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
+            dataGridView1.DataSource = dataTable;
 
-            // Сумма
-            if (dgv.Columns.Contains("total_amount"))
-            {
-                dgv.Columns["total_amount"].DefaultCellStyle.Format = "N2";
-                dgv.Columns["total_amount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-            }
-
-            // Скидка
-            if (dgv.Columns.Contains("discount"))
-            {
-                dgv.Columns["discount"].DefaultCellStyle.Format = "N2"; // или "P" если хранится как доля (0.1 = 10%)
-                dgv.Columns["discount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            }
-
-            // Заголовки на русском (опционально)
+            // Настройка форматов по фактическим именам столбцов (как в БД)
+            FormatDataGridViewColumns();
+            
+            dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
         }
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
+            MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+}
+
+// Выносим форматирование в отдельный метод для читаемости
+private static void FormatDataGridViewColumns()
+{
+    var dgv = dataGridView1;
+    if (dgv == null) return;
+
+    // Даты
+    if (dgv.Columns.Contains("order_date"))
+    {
+        dgv.Columns["order_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
+        dgv.Columns["order_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+    }
+    if (dgv.Columns.Contains("delivery_date"))
+    {
+        dgv.Columns["delivery_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
+        dgv.Columns["delivery_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+    }
+
+    // Сумма
+    if (dgv.Columns.Contains("total_amount"))
+    {
+        dgv.Columns["total_amount"].DefaultCellStyle.Format = "N2";
+        dgv.Columns["total_amount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+    }
+
+    // Скидка
+    if (dgv.Columns.Contains("discount"))
+    {
+        dgv.Columns["discount"].DefaultCellStyle.Format = "N2"; // или "P" если хранится как доля (0.1 = 10%)
+        dgv.Columns["discount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+    }
+}
         private void ChangeTableClick(object? sender, EventArgs e)
         {
             ClientTableChange table = new ClientTableChange(rch, 3);

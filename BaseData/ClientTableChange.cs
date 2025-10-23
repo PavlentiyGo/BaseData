@@ -34,22 +34,23 @@ namespace BaseData
             string newTableName = NewTableName.Text;
             string oldColumnName = OldColumnName.Text;
             string newColumnName = NewColumnName.Text;
-            if (!string.IsNullOrEmpty(newTableName))
-            {
-                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} RENAME TO {newTableName}");
-            }
-            if (!string.IsNullOrEmpty(oldColumnName) && !string.IsNullOrEmpty(newColumnName))
-            {
-                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} RENAME COLUMN {oldColumnName} TO {newColumnName}");
-
-            }
-            MetaInformation.RefreshData();
             if (string.IsNullOrEmpty(oldColumnName) ^ string.IsNullOrEmpty(newColumnName))
             {
                 MessageBox.Show("Необходимо полностью заполнить новые имена таблиц или столбцов");
                 log.LogWarning("Необходимо полностью заполнить новые имена таблиц или столбцов");
                 return;
             }
+            if (!string.IsNullOrEmpty(newTableName))
+            {
+                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} RENAME TO {newTableName}");
+                MetaInformation.tables[TableNum] = newTableName.ToLower();
+                Form3.RefreshTags();
+            }
+            if (!string.IsNullOrEmpty(oldColumnName) && !string.IsNullOrEmpty(newColumnName))
+            {
+                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} RENAME COLUMN {oldColumnName} TO {newColumnName}");
+            }
+            MetaInformation.RefreshData();
             RefreshTables();
             this.Close();
         }
@@ -61,11 +62,19 @@ namespace BaseData
                 log.LogWarning("Введите столбец для изменения и новый тип данных для него");
                 return;
             }
-            Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ALTER COLUMN {ChangeDataColumn.Text} TYPE {ChangeTypeData.Text}");
-            MetaInformation.RefreshData();
-            log.LogInfo($"Тип в столбеце {ChangeDataColumn.Text} в таблице {MetaInformation.tables[TableNum]} был изменён на {ChangeTypeData.Text}");
-            RefreshTables();
-            this.Close();
+            if (CanChangeColumnType(ChangeDataColumn.Text, ChangeTypeData.Text)){
+                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ALTER COLUMN {ChangeDataColumn.Text} TYPE {ChangeTypeData.Text}");
+                MetaInformation.RefreshData();
+                log.LogInfo($"Тип в столбеце {ChangeDataColumn.Text} в таблице {MetaInformation.tables[TableNum]} был изменён на {ChangeTypeData.Text}");
+                RefreshTables();
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Данный тип нельзя применить к этому столбцу, попробуйте другой");
+                log.LogWarning("Применён неверный тип");
+                return;
+            }
         }
 
         private void DeleteColumn_Click(object sender, EventArgs e)
@@ -75,12 +84,6 @@ namespace BaseData
             {
                 MessageBox.Show("Выберите удаляемый столбец");
                 log.LogWarning("Выберите удаляемый столбец");
-                return;
-            }
-            if (deleteColumn == "id"|| deleteColumn == "client_id")
-            {
-                MessageBox.Show("Для стабильной работы программы выбранный столбец нельзя удалять");
-                log.LogWarning("Для стабильной работы программы выбранный столбец нельзя удалять");
                 return;
             }
             Request($"ALTER TABLE {MetaInformation.tables[TableNum]} DROP COLUMN {deleteColumn} CASCADE");
@@ -109,6 +112,7 @@ namespace BaseData
             log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[TableNum]}");
             Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD COLUMN {column} {type}");
             MetaInformation.RefreshData();
+            
             RefreshTables();
             this.Close();
         }
@@ -125,21 +129,21 @@ namespace BaseData
         {
             if (tableNum == 0)
             {
-                string[] columns = MetaInformation.columnsClients;
+                string[] columns = FilterOutIdAndNames(MetaInformation.columnsClients);
                 DeleteBox.Items.AddRange(columns);
                 ChangeDataColumn.Items.AddRange(columns);
                 OldColumnName.Items.AddRange(columns);
             }
             else if (tableNum == 1)
             {
-                string[] columns = MetaInformation.columnsGoods;
+                string[] columns = FilterOutIdAndNames(MetaInformation.columnsGoods);
                 DeleteBox.Items.AddRange(columns);
                 ChangeDataColumn.Items.AddRange(columns);
                 OldColumnName.Items.AddRange(columns);
             }
             else if (tableNum == 3)
             {
-                string[] columns = MetaInformation.columnsOrders;
+                string[] columns = FilterOutIdAndNames(MetaInformation.columnsOrders);
                 DeleteBox.Items.AddRange(columns);
                 ChangeDataColumn.Items.AddRange(columns);
                 OldColumnName.Items.AddRange(columns);
@@ -171,6 +175,50 @@ namespace BaseData
             else if (TableNum == 3)
             {
                 SellsUC.RefreshData();
+            }
+        }
+        public static string[] FilterOutIdAndNames(string[] input)
+        {
+            if (input == null)
+                return new string[0];
+
+            var result = new List<string>();
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                string item = input[i];
+                if (item != "id" && item != "surname" && item != "name" && item != "client_id")
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result.ToArray();
+        }
+        private bool CanChangeColumnType(
+    string columnName,
+    string newType)
+        {
+            string tableName = MetaInformation.tables[TableNum];
+            string connectionString = AppSettings.SqlConnection;
+            using var conn = new NpgsqlConnection(connectionString);
+            conn.Open();
+            using var transaction = conn.BeginTransaction();
+
+            try
+            {
+                string sql = $@"
+            ALTER TABLE {tableName}
+            ALTER COLUMN {columnName} TYPE {newType};";
+                using var cmd = new NpgsqlCommand(sql, conn, transaction);
+                cmd.ExecuteNonQuery();
+                transaction.Rollback();
+                return true;
+            }
+            catch (PostgresException)
+            {
+                transaction.Rollback(); 
+                return false;
             }
         }
     }

@@ -39,7 +39,7 @@ namespace BaseData
         ORDER BY table_name;";
 
         using var conn = new NpgsqlConnection(connectionString);
-        conn.Open(); // ← синхронное открытие
+        conn.Open();
 
         using var cmd = new NpgsqlCommand(sql, conn);
         cmd.Parameters.AddWithValue("schema", schemaName);
@@ -93,9 +93,12 @@ namespace BaseData
             }
             return columns.ToArray();
         }
-    public static void RefreshData()
+    public static void RefreshData(bool flag = false)
         {
-            tables = GetTableNamesArray();
+            if (flag)
+            {
+                tables = GetTableNamesArray();
+            }
             columnsClients = GetColumnNames(AppSettings.SqlConnection, tables[0]);
             columnsGoods = GetColumnNames(AppSettings.SqlConnection, tables[1]);
             columnsOrders = GetColumnNames(AppSettings.SqlConnection, tables[3]);
