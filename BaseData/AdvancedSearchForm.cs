@@ -6,28 +6,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace BaseData
 {
     public partial class AdvancedSearchForm : Form
     {
-        private ComboBox? tableComboBox;
-        private CheckedListBox? columnsListBox;
-        private TextBox? whereTextBox;
-        private TextBox? orderByTextBox;
-        private TextBox? groupByTextBox;
-        private TextBox? havingTextBox;
-        private ComboBox? aggregateComboBox;
-        private ComboBox? aggregateColumnComboBox;
-        private Button? executeButton;
-        private Button? clearButton;
-        private Button? selectAllButton;
-        private Button? deselectAllButton;
-        private DataGridView? resultsDataGridView;
-        private TextBox? queryPreviewTextBox;
+        private ComboBox tableComboBox;
+        private CheckedListBox columnsListBox;
+        private TextBox whereTextBox;
+        private TextBox orderByTextBox;
+        private TextBox groupByTextBox;
+        private TextBox havingTextBox;
+        private ComboBox aggregateComboBox;
+        private ComboBox aggregateColumnComboBox;
+        private Button executeButton;
+        private Button clearButton;
+        private Button selectAllButton;
+        private Button deselectAllButton;
+        private DataGridView resultsDataGridView;
+        private TextBox queryPreviewTextBox;
         private Log rch;
-        private Label? resultsCountLabel;
-        private Label? queryTimeLabel;
+        private Label resultsCountLabel;
+        private Label queryTimeLabel;
 
         public AdvancedSearchForm(Log log)
         {
@@ -35,7 +36,7 @@ namespace BaseData
             InitializeComponent();
             ApplyStyles();
             LoadTableList();
-            rch.LogInfo("Форма расширенного поиска инициализирована");
+            rch.LogInfo("Конструктор SQL запросов инициализирован");
         }
 
         private void ApplyStyles()
@@ -61,7 +62,7 @@ namespace BaseData
                 if (resultsCountLabel != null) ApplyResultsCountLabelStyle(resultsCountLabel);
                 if (queryTimeLabel != null) ApplyQueryTimeLabelStyle(queryTimeLabel);
 
-                rch.LogInfo("Стили формы расширенного поиска применены успешно");
+                rch.LogInfo("Стили применены успешно");
             }
             catch (Exception ex)
             {
@@ -101,335 +102,26 @@ namespace BaseData
             label.TextAlign = ContentAlignment.MiddleLeft;
         }
 
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            this.Text = "Расширенный поиск - конструктор SQL запросов";
-            this.Size = new Size(1200, 800);
-            this.StartPosition = FormStartPosition.CenterParent;
-            this.Padding = new Padding(20);
-
-            // Главный контейнер
-            TableLayoutPanel mainPanel = new TableLayoutPanel();
-            mainPanel.Dock = DockStyle.Fill;
-            mainPanel.RowCount = 13;
-            mainPanel.ColumnCount = 3;
-            mainPanel.Padding = new Padding(10);
-            mainPanel.BackColor = Color.Transparent;
-
-            // Заголовок
-            Label titleLabel = new Label()
-            {
-                Text = "Конструктор SQL запросов SELECT",
-                Font = new Font(Styles.MainFont.FontFamily, 16F, FontStyle.Bold),
-                ForeColor = Styles.DarkColor,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Top,
-                Height = 50
-            };
-
-            // 1. Выбор таблицы
-            Label tableLabel = new Label() { Text = "Таблица:*", TextAlign = ContentAlignment.MiddleRight };
-            Styles.ApplyLabelStyle(tableLabel, true);
-            tableComboBox = new ComboBox();
-            tableComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            tableComboBox.SelectedIndexChanged += TableComboBox_SelectedIndexChanged!;
-
-            // 2. Выбор столбцов
-            Label columnsLabel = new Label() { Text = "Столбцы:", TextAlign = ContentAlignment.MiddleRight };
-            Styles.ApplyLabelStyle(columnsLabel, true);
-            columnsListBox = new CheckedListBox();
-            columnsListBox.CheckOnClick = true;
-            columnsListBox.ItemCheck += (s, e) => UpdateQueryPreview();
-
-            // Кнопки для выбора столбцов
-            Panel columnButtonsPanel = new Panel();
-            columnButtonsPanel.Height = 40;
-            columnButtonsPanel.BackColor = Color.Transparent;
-            selectAllButton = new Button() { Text = "Выбрать все", Size = new Size(100, 30) };
-            deselectAllButton = new Button() { Text = "Снять все", Size = new Size(100, 30) };
-            selectAllButton.Click += (s, e) => SelectAllColumns(true);
-            deselectAllButton.Click += (s, e) => SelectAllColumns(false);
-
-            columnButtonsPanel.Controls.Add(selectAllButton);
-            columnButtonsPanel.Controls.Add(deselectAllButton);
-            deselectAllButton.Location = new Point(selectAllButton.Right + 10, 0);
-
-            // 3. Агрегатные функции
-            Label aggregateLabel = new Label() { Text = "Агрегатная функция:", TextAlign = ContentAlignment.MiddleRight };
-            Styles.ApplyLabelStyle(aggregateLabel);
-            aggregateComboBox = new ComboBox();
-            aggregateComboBox.Items.AddRange(new string[] { "Без агрегации", "COUNT", "SUM", "AVG", "MAX", "MIN" });
-            aggregateComboBox.SelectedIndex = 0;
-            aggregateComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            aggregateComboBox.SelectedIndexChanged += AggregateComboBox_SelectedIndexChanged!;
-
-            aggregateColumnComboBox = new ComboBox();
-            aggregateColumnComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            aggregateColumnComboBox.SelectedIndexChanged += (s, e) => UpdateQueryPreview();
-
-            // 4. WHERE условие
-            Label whereLabel = new Label() { Text = "WHERE (условие фильтрации):", TextAlign = ContentAlignment.MiddleRight };
-            Styles.ApplyLabelStyle(whereLabel);
-            whereTextBox = new TextBox();
-            whereTextBox.Font = new Font("Consolas", 9F);
-            whereTextBox.PlaceholderText = "например: price > 100 AND name LIKE '%apple%'";
-            whereTextBox.TextChanged += (s, e) => UpdateQueryPreview();
-
-            // 5. GROUP BY
-            Label groupByLabel = new Label() { Text = "GROUP BY (группировка):", TextAlign = ContentAlignment.MiddleRight };
-            Styles.ApplyLabelStyle(groupByLabel);
-            groupByTextBox = new TextBox();
-            groupByTextBox.Font = new Font("Consolas", 9F);
-            groupByTextBox.PlaceholderText = "например: category, supplier";
-            groupByTextBox.TextChanged += (s, e) => UpdateQueryPreview();
-
-            // 6. HAVING
-            Label havingLabel = new Label() { Text = "HAVING (фильтрация групп):", TextAlign = ContentAlignment.MiddleRight };
-            Styles.ApplyLabelStyle(havingLabel);
-            havingTextBox = new TextBox();
-            havingTextBox.Font = new Font("Consolas", 9F);
-            havingTextBox.PlaceholderText = "например: COUNT(*) > 5";
-            havingTextBox.TextChanged += (s, e) => UpdateQueryPreview();
-
-            // 7. ORDER BY
-            Label orderByLabel = new Label() { Text = "ORDER BY (сортировка):", TextAlign = ContentAlignment.MiddleRight };
-            Styles.ApplyLabelStyle(orderByLabel);
-            orderByTextBox = new TextBox();
-            orderByTextBox.Font = new Font("Consolas", 9F);
-            orderByTextBox.PlaceholderText = "например: name ASC, price DESC";
-            orderByTextBox.TextChanged += (s, e) => UpdateQueryPreview();
-
-            // Предварительный просмотр запроса
-            Label previewLabel = new Label()
-            {
-                Text = "Предварительный просмотр SQL запроса:",
-                Font = new Font(Styles.MainFont.FontFamily, 10F, FontStyle.Bold),
-                ForeColor = Styles.DarkColor,
-                TextAlign = ContentAlignment.MiddleLeft,
-                Height = 30
-            };
-
-            queryPreviewTextBox = new TextBox()
-            {
-                Multiline = true,
-                Height = 80,
-                ReadOnly = true,
-                ScrollBars = ScrollBars.Vertical
-            };
-
-            // Кнопки выполнения
-            Panel buttonPanel = new Panel();
-            buttonPanel.Height = 50;
-            buttonPanel.BackColor = Color.Transparent;
-            executeButton = new Button() { Text = "Выполнить запрос", Size = new Size(150, 40) };
-            clearButton = new Button() { Text = "Очистить", Size = new Size(100, 40) };
-            executeButton.Click += ExecuteButton_Click!;
-            clearButton.Click += ClearButton_Click!;
-
-            buttonPanel.Controls.Add(executeButton);
-            buttonPanel.Controls.Add(clearButton);
-            clearButton.Location = new Point(executeButton.Right + 20, 0);
-
-            // Label для отображения количества результатов
-            resultsCountLabel = new Label()
-            {
-                Text = "Результаты: 0 записей",
-                Height = 25,
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-
-            // Label для отображения времени выполнения
-            queryTimeLabel = new Label()
-            {
-                Text = "Время выполнения: -",
-                Height = 20,
-                TextAlign = ContentAlignment.MiddleLeft
-            };
-
-            // DataGridView для результатов
-            resultsDataGridView = new DataGridView();
-            resultsDataGridView.Dock = DockStyle.Fill;
-            resultsDataGridView.ReadOnly = true;
-            resultsDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            resultsDataGridView.AllowUserToAddRows = false;
-            resultsDataGridView.AllowUserToDeleteRows = false;
-            resultsDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            resultsDataGridView.RowHeadersVisible = false;
-
-            // Настройка layout
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // Таблица
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 120F)); // Столбцы
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // Кнопки столбцов
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // Агрегатные функции
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // WHERE
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // GROUP BY
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // HAVING
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F)); // ORDER BY
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 120F)); // Предпросмотр
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F)); // Кнопки выполнения
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 25F)); // Счетчик результатов
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F)); // Время выполнения
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Результаты
-
-            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 200F));
-            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
-
-            // Добавление элементов на панель
-            mainPanel.Controls.Add(tableLabel, 0, 0);
-            mainPanel.Controls.Add(tableComboBox!, 1, 0);
-            mainPanel.SetColumnSpan(tableComboBox!, 2);
-
-            mainPanel.Controls.Add(columnsLabel, 0, 1);
-            mainPanel.Controls.Add(columnsListBox!, 1, 1);
-            mainPanel.SetColumnSpan(columnsListBox!, 2);
-
-            mainPanel.Controls.Add(columnButtonsPanel, 0, 2);
-            mainPanel.SetColumnSpan(columnButtonsPanel, 3);
-
-            mainPanel.Controls.Add(aggregateLabel, 0, 3);
-            mainPanel.Controls.Add(aggregateComboBox!, 1, 3);
-            mainPanel.Controls.Add(aggregateColumnComboBox!, 2, 3);
-
-            mainPanel.Controls.Add(whereLabel, 0, 4);
-            mainPanel.Controls.Add(whereTextBox!, 1, 4);
-            mainPanel.SetColumnSpan(whereTextBox!, 2);
-
-            mainPanel.Controls.Add(groupByLabel, 0, 5);
-            mainPanel.Controls.Add(groupByTextBox!, 1, 5);
-            mainPanel.SetColumnSpan(groupByTextBox!, 2);
-
-            mainPanel.Controls.Add(havingLabel, 0, 6);
-            mainPanel.Controls.Add(havingTextBox!, 1, 6);
-            mainPanel.SetColumnSpan(havingTextBox!, 2);
-
-            mainPanel.Controls.Add(orderByLabel, 0, 7);
-            mainPanel.Controls.Add(orderByTextBox!, 1, 7);
-            mainPanel.SetColumnSpan(orderByTextBox!, 2);
-
-            mainPanel.Controls.Add(previewLabel, 0, 8);
-            mainPanel.Controls.Add(queryPreviewTextBox!, 1, 8);
-            mainPanel.SetColumnSpan(queryPreviewTextBox!, 2);
-
-            mainPanel.Controls.Add(buttonPanel, 0, 9);
-            mainPanel.SetColumnSpan(buttonPanel, 3);
-
-            mainPanel.Controls.Add(resultsCountLabel!, 0, 10);
-            mainPanel.SetColumnSpan(resultsCountLabel!, 3);
-
-            mainPanel.Controls.Add(queryTimeLabel!, 0, 11);
-            mainPanel.SetColumnSpan(queryTimeLabel!, 3);
-
-            mainPanel.Controls.Add(resultsDataGridView!, 0, 12);
-            mainPanel.SetColumnSpan(resultsDataGridView!, 3);
-
-            this.Controls.Add(mainPanel);
-            this.Controls.Add(titleLabel);
-
-            this.ResumeLayout(false);
-        }
-
-        private void AggregateComboBox_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            if (aggregateColumnComboBox != null)
-            {
-                aggregateColumnComboBox.Enabled = aggregateComboBox?.SelectedItem?.ToString() != "Без агрегации";
-                if (aggregateColumnComboBox.Enabled && aggregateColumnComboBox.Items.Count > 0)
-                {
-                    aggregateColumnComboBox.SelectedIndex = 0;
-                }
-            }
-            UpdateQueryPreview();
-        }
-
-        private void TableComboBox_SelectedIndexChanged(object? sender, EventArgs e)
-        {
-            LoadColumnsForSelectedTable();
-            UpdateAggregateColumns();
-            UpdateQueryPreview();
-        }
-
         private void LoadTableList()
         {
             try
             {
-                tableComboBox?.Items.Clear();
-                tableComboBox?.Items.AddRange(new string[] {
+                tableComboBox.Items.Clear();
+                tableComboBox.Items.AddRange(new string[] {
                     MetaInformation.tables[0], // clients
                     MetaInformation.tables[1], // goods
                     MetaInformation.tables[3]  // orders
                 });
 
-                if (tableComboBox != null && tableComboBox.Items.Count > 0)
+                if (tableComboBox.Items.Count > 0)
                     tableComboBox.SelectedIndex = 0;
 
-                rch.LogInfo("Список таблиц загружен в конструктор запросов");
+                rch.LogInfo("Список таблиц загружен");
             }
             catch (Exception ex)
             {
                 rch.LogError($"Ошибка загрузки списка таблиц: {ex.Message}");
             }
-        }
-
-        private void LoadColumnsForSelectedTable()
-        {
-            if (tableComboBox?.SelectedItem == null || columnsListBox == null) return;
-
-            try
-            {
-                columnsListBox.BeginUpdate();
-                columnsListBox.Items.Clear();
-                string tableName = tableComboBox.SelectedItem.ToString() ?? "";
-
-                string[] columns = tableName switch
-                {
-                    _ when tableName == MetaInformation.tables[0] => MetaInformation.columnsClients,
-                    _ when tableName == MetaInformation.tables[1] => MetaInformation.columnsGoods,
-                    _ when tableName == MetaInformation.tables[3] => MetaInformation.columnsOrders,
-                    _ => new string[0]
-                };
-
-                columnsListBox.Items.AddRange(columns);
-                SelectAllColumns(true);
-                columnsListBox.EndUpdate();
-
-                rch.LogInfo($"Загружены столбцы для таблицы {tableName}: {columns.Length} столбцов");
-            }
-            catch (Exception ex)
-            {
-                rch.LogError($"Ошибка загрузки столбцов: {ex.Message}");
-            }
-        }
-
-        private void UpdateAggregateColumns()
-        {
-            if (aggregateColumnComboBox == null || columnsListBox == null) return;
-
-            aggregateColumnComboBox.Items.Clear();
-            aggregateColumnComboBox.Items.Add("*"); // Для COUNT(*)
-
-            foreach (var item in columnsListBox.Items)
-            {
-                if (item != null)
-                    aggregateColumnComboBox.Items.Add(item.ToString()!);
-            }
-
-            if (aggregateColumnComboBox.Items.Count > 0)
-                aggregateColumnComboBox.SelectedIndex = 0;
-        }
-
-        private void SelectAllColumns(bool select)
-        {
-            if (columnsListBox == null) return;
-
-            columnsListBox.BeginUpdate();
-            for (int i = 0; i < columnsListBox.Items.Count; i++)
-            {
-                columnsListBox.SetItemChecked(i, select);
-            }
-            columnsListBox.EndUpdate();
-            UpdateQueryPreview();
         }
 
         private void UpdateQueryPreview()
@@ -502,6 +194,350 @@ namespace BaseData
             return sb.ToString();
         }
 
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            this.Text = "Конструктор SQL запросов";
+            this.Size = new Size(1200, 700);
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.Padding = new Padding(15);
+
+            // Создаем и инициализируем все элементы управления
+            InitializeControls();
+
+            this.ResumeLayout(false);
+        }
+
+        private void InitializeControls()
+        {
+            // Инициализация всех полей
+            tableComboBox = new ComboBox();
+            columnsListBox = new CheckedListBox();
+            whereTextBox = new TextBox();
+            orderByTextBox = new TextBox();
+            groupByTextBox = new TextBox();
+            havingTextBox = new TextBox();
+            aggregateComboBox = new ComboBox();
+            aggregateColumnComboBox = new ComboBox();
+            executeButton = new Button();
+            clearButton = new Button();
+            selectAllButton = new Button();
+            deselectAllButton = new Button();
+            resultsDataGridView = new DataGridView();
+            queryPreviewTextBox = new TextBox();
+            resultsCountLabel = new Label();
+            queryTimeLabel = new Label();
+
+            // Главный контейнер
+            TableLayoutPanel mainPanel = new TableLayoutPanel();
+            mainPanel.Dock = DockStyle.Fill;
+            mainPanel.RowCount = 8;
+            mainPanel.ColumnCount = 3;
+            mainPanel.Padding = new Padding(10);
+            mainPanel.BackColor = Color.Transparent;
+
+            // Заголовок
+            Label titleLabel = new Label()
+            {
+                Text = "Конструктор SQL запросов",
+                Font = new Font(Styles.MainFont.FontFamily, 16F, FontStyle.Bold),
+                ForeColor = Styles.DarkColor,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Top,
+                Height = 40
+            };
+
+            // 1. Выбор таблицы
+            Label tableLabel = new Label() { Text = "Таблица:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(tableLabel, true);
+            tableComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            tableComboBox.SelectedIndexChanged += TableComboBox_SelectedIndexChanged;
+
+            // 2. Выбор столбцов
+            Label columnsLabel = new Label() { Text = "Столбцы:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(columnsLabel, true);
+            columnsListBox.CheckOnClick = true;
+            columnsListBox.ItemCheck += (s, e) => UpdateQueryPreview();
+
+            // Кнопки для выбора столбцов
+            Panel columnButtonsPanel = new Panel();
+            columnButtonsPanel.Height = 35;
+            columnButtonsPanel.BackColor = Color.Transparent;
+            selectAllButton = new Button() { Text = "Выбрать все", Size = new Size(95, 25) };
+            deselectAllButton = new Button() { Text = "Снять все", Size = new Size(95, 25) };
+            selectAllButton.Click += (s, e) => SelectAllColumns(true);
+            deselectAllButton.Click += (s, e) => SelectAllColumns(false);
+
+            columnButtonsPanel.Controls.Add(selectAllButton);
+            columnButtonsPanel.Controls.Add(deselectAllButton);
+            deselectAllButton.Location = new Point(selectAllButton.Right + 10, 0);
+
+            // 3. Агрегатные функции
+            Label aggregateLabel = new Label() { Text = "Агрегатная функция:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(aggregateLabel);
+            aggregateComboBox.Items.AddRange(new string[] { "Без агрегации", "COUNT", "SUM", "AVG", "MAX", "MIN" });
+            aggregateComboBox.SelectedIndex = 0;
+            aggregateComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            aggregateComboBox.SelectedIndexChanged += AggregateComboBox_SelectedIndexChanged;
+
+            aggregateColumnComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            aggregateColumnComboBox.SelectedIndexChanged += (s, e) => UpdateQueryPreview();
+
+            // Условия WHERE
+            Label whereLabel = new Label() { Text = "WHERE условие:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(whereLabel);
+            whereTextBox.PlaceholderText = "например: price > 100 AND name LIKE '%apple%'";
+            whereTextBox.TextChanged += (s, e) => UpdateQueryPreview();
+
+            // GROUP BY
+            Label groupByLabel = new Label() { Text = "GROUP BY:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(groupByLabel);
+            groupByTextBox.PlaceholderText = "столбец1, столбец2...";
+            groupByTextBox.TextChanged += (s, e) => UpdateQueryPreview();
+
+            // HAVING
+            Label havingLabel = new Label() { Text = "HAVING:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(havingLabel);
+            havingTextBox.PlaceholderText = "условие для сгруппированных данных";
+            havingTextBox.TextChanged += (s, e) => UpdateQueryPreview();
+
+            // ORDER BY
+            Label orderByLabel = new Label() { Text = "ORDER BY:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(orderByLabel);
+            orderByTextBox.PlaceholderText = "столбец1 ASC, столбец2 DESC...";
+            orderByTextBox.TextChanged += (s, e) => UpdateQueryPreview();
+
+            // Предварительный просмотр запроса
+            Label previewLabel = new Label()
+            {
+                Text = "SQL запрос:",
+                Font = new Font(Styles.MainFont.FontFamily, 10F, FontStyle.Bold),
+                ForeColor = Styles.DarkColor,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Height = 25
+            };
+
+            queryPreviewTextBox.Multiline = true;
+            queryPreviewTextBox.Height = 60;
+            queryPreviewTextBox.ReadOnly = true;
+            queryPreviewTextBox.ScrollBars = ScrollBars.Vertical;
+
+            // Кнопки выполнения
+            Panel buttonPanel = new Panel();
+            buttonPanel.Height = 45;
+            buttonPanel.BackColor = Color.Transparent;
+            executeButton.Text = "Выполнить";
+            executeButton.Size = new Size(100, 35);
+            clearButton.Text = "Очистить";
+            clearButton.Size = new Size(80, 35);
+            executeButton.Click += ExecuteButton_Click;
+            clearButton.Click += ClearButton_Click;
+
+            buttonPanel.Controls.Add(executeButton);
+            buttonPanel.Controls.Add(clearButton);
+            clearButton.Location = new Point(executeButton.Right + 15, 0);
+
+            // Label для отображения количества результатов
+            resultsCountLabel.Text = "Результаты: 0 записей";
+            resultsCountLabel.Height = 20;
+            resultsCountLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+            // Label для отображения времени выполнения
+            queryTimeLabel.Text = "Время выполнения: -";
+            queryTimeLabel.Height = 18;
+            queryTimeLabel.TextAlign = ContentAlignment.MiddleLeft;
+
+            // DataGridView для результатов
+            resultsDataGridView.Dock = DockStyle.Fill;
+            resultsDataGridView.ReadOnly = true;
+            resultsDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            resultsDataGridView.AllowUserToAddRows = false;
+            resultsDataGridView.AllowUserToDeleteRows = false;
+            resultsDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            resultsDataGridView.RowHeadersVisible = false;
+
+            // Настройка layout
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));    // Таблица
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F));   // Столбцы
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));    // Кнопки столбцов
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));    // Агрегатные функции
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));    // Условия
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F));    // Предпросмотр + кнопки
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 25F));    // Статистика
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));    // Результаты
+
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120F));
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
+
+            // Добавление элементов на панель
+            mainPanel.Controls.Add(tableLabel, 0, 0);
+            mainPanel.Controls.Add(tableComboBox, 1, 0);
+            mainPanel.SetColumnSpan(tableComboBox, 2);
+
+            mainPanel.Controls.Add(columnsLabel, 0, 1);
+            mainPanel.Controls.Add(columnsListBox, 1, 1);
+            mainPanel.SetColumnSpan(columnsListBox, 2);
+
+            mainPanel.Controls.Add(columnButtonsPanel, 0, 2);
+            mainPanel.SetColumnSpan(columnButtonsPanel, 3);
+
+            mainPanel.Controls.Add(aggregateLabel, 0, 3);
+            mainPanel.Controls.Add(aggregateComboBox, 1, 3);
+            mainPanel.Controls.Add(aggregateColumnComboBox, 2, 3);
+
+            // Условия в одной строке для компактности
+            Panel conditionsPanel = new Panel();
+            conditionsPanel.Dock = DockStyle.Fill;
+            conditionsPanel.BackColor = Color.Transparent;
+
+            int conditionWidth = 180;
+            int conditionSpacing = 10;
+
+            whereLabel.Location = new Point(0, 10);
+            whereLabel.Size = new Size(80, 20);
+            whereTextBox.Location = new Point(85, 8);
+            whereTextBox.Size = new Size(conditionWidth, 25);
+
+            groupByLabel.Location = new Point(whereTextBox.Right + conditionSpacing, 10);
+            groupByLabel.Size = new Size(65, 20);
+            groupByTextBox.Location = new Point(groupByLabel.Right, 8);
+            groupByTextBox.Size = new Size(conditionWidth, 25);
+
+            havingLabel.Location = new Point(groupByTextBox.Right + conditionSpacing, 10);
+            havingLabel.Size = new Size(55, 20);
+            havingTextBox.Location = new Point(havingLabel.Right, 8);
+            havingTextBox.Size = new Size(conditionWidth, 25);
+
+            orderByLabel.Location = new Point(havingTextBox.Right + conditionSpacing, 10);
+            orderByLabel.Size = new Size(65, 20);
+            orderByTextBox.Location = new Point(orderByLabel.Right, 8);
+            orderByTextBox.Size = new Size(conditionWidth, 25);
+
+            conditionsPanel.Controls.AddRange(new Control[] { whereLabel, whereTextBox, groupByLabel, groupByTextBox,
+                havingLabel, havingTextBox, orderByLabel, orderByTextBox });
+
+            mainPanel.Controls.Add(conditionsPanel, 0, 4);
+            mainPanel.SetColumnSpan(conditionsPanel, 3);
+
+            // Предпросмотр и кнопки
+            Panel previewButtonPanel = new Panel();
+            previewButtonPanel.Dock = DockStyle.Fill;
+            previewButtonPanel.BackColor = Color.Transparent;
+
+            previewLabel.Location = new Point(0, 5);
+            previewLabel.Size = new Size(80, 20);
+            queryPreviewTextBox.Location = new Point(85, 5);
+            queryPreviewTextBox.Size = new Size(400, 50);
+
+            buttonPanel.Location = new Point(queryPreviewTextBox.Right + 15, 10);
+
+            previewButtonPanel.Controls.AddRange(new Control[] { previewLabel, queryPreviewTextBox, buttonPanel });
+            mainPanel.Controls.Add(previewButtonPanel, 0, 5);
+            mainPanel.SetColumnSpan(previewButtonPanel, 3);
+
+            // Статистика
+            Panel statsPanel = new Panel();
+            statsPanel.Dock = DockStyle.Fill;
+            statsPanel.BackColor = Color.Transparent;
+
+            resultsCountLabel.Location = new Point(0, 0);
+            resultsCountLabel.Size = new Size(200, 20);
+            queryTimeLabel.Location = new Point(210, 0);
+            queryTimeLabel.Size = new Size(200, 20);
+
+            statsPanel.Controls.AddRange(new Control[] { resultsCountLabel, queryTimeLabel });
+            mainPanel.Controls.Add(statsPanel, 0, 6);
+            mainPanel.SetColumnSpan(statsPanel, 3);
+
+            // Результаты
+            mainPanel.Controls.Add(resultsDataGridView, 0, 7);
+            mainPanel.SetColumnSpan(resultsDataGridView, 3);
+
+            this.Controls.Add(mainPanel);
+            this.Controls.Add(titleLabel);
+        }
+
+        private void TableComboBox_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            LoadColumnsForSelectedTable();
+            UpdateAggregateColumns();
+            UpdateQueryPreview();
+        }
+
+        private void AggregateComboBox_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (aggregateColumnComboBox != null)
+            {
+                aggregateColumnComboBox.Enabled = aggregateComboBox?.SelectedItem?.ToString() != "Без агрегации";
+                if (aggregateColumnComboBox.Enabled && aggregateColumnComboBox.Items.Count > 0)
+                {
+                    aggregateColumnComboBox.SelectedIndex = 0;
+                }
+            }
+            UpdateQueryPreview();
+        }
+
+        private void LoadColumnsForSelectedTable()
+        {
+            if (tableComboBox?.SelectedItem == null || columnsListBox == null) return;
+
+            try
+            {
+                columnsListBox.BeginUpdate();
+                columnsListBox.Items.Clear();
+                string tableName = tableComboBox.SelectedItem.ToString() ?? "";
+
+                string[] columns = tableName switch
+                {
+                    _ when tableName == MetaInformation.tables[0] => MetaInformation.columnsClients,
+                    _ when tableName == MetaInformation.tables[1] => MetaInformation.columnsGoods,
+                    _ when tableName == MetaInformation.tables[3] => MetaInformation.columnsOrders,
+                    _ => new string[0]
+                };
+
+                columnsListBox.Items.AddRange(columns);
+                SelectAllColumns(true);
+                columnsListBox.EndUpdate();
+
+                rch.LogInfo($"Загружены столбцы для таблицы {tableName}: {columns.Length} столбцов");
+            }
+            catch (Exception ex)
+            {
+                rch.LogError($"Ошибка загрузки столбцов: {ex.Message}");
+            }
+        }
+
+        private void UpdateAggregateColumns()
+        {
+            if (aggregateColumnComboBox == null || columnsListBox == null) return;
+
+            aggregateColumnComboBox.Items.Clear();
+            aggregateColumnComboBox.Items.Add("*"); // Для COUNT(*)
+
+            foreach (var item in columnsListBox.Items)
+            {
+                if (item != null)
+                    aggregateColumnComboBox.Items.Add(item.ToString());
+            }
+
+            if (aggregateColumnComboBox.Items.Count > 0)
+                aggregateColumnComboBox.SelectedIndex = 0;
+        }
+
+        private void SelectAllColumns(bool select)
+        {
+            if (columnsListBox == null) return;
+
+            columnsListBox.BeginUpdate();
+            for (int i = 0; i < columnsListBox.Items.Count; i++)
+            {
+                columnsListBox.SetItemChecked(i, select);
+            }
+            columnsListBox.EndUpdate();
+            UpdateQueryPreview();
+        }
+
         private async void ExecuteButton_Click(object? sender, EventArgs e)
         {
             await ExecuteQueryAsync();
@@ -522,20 +558,10 @@ namespace BaseData
                     return;
                 }
 
-                // Базовая валидация SQL
                 if (!ValidateSQLQuery(query))
                 {
                     MessageBox.Show("SQL запрос содержит потенциально опасные конструкции", "Ошибка безопасности",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                // Валидация условий WHERE/HAVING
-                string validationError = ValidateConditions();
-                if (!string.IsNullOrEmpty(validationError))
-                {
-                    MessageBox.Show(validationError, "Ошибка валидации",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -561,23 +587,24 @@ namespace BaseData
 
                         resultsDataGridView.DataSource = dataTable;
                         resultsCountLabel.Text = $"Результаты: {dataTable.Rows.Count} записей";
-                        if (queryTimeLabel != null)
-                            queryTimeLabel.Text = $"Время выполнения: {executionTime.TotalMilliseconds:F0} мс";
+                        queryTimeLabel.Text = $"Время выполнения: {executionTime.TotalMilliseconds:F0} мс";
 
                         rch.LogInfo($"Запрос выполнен успешно. Найдено записей: {dataTable.Rows.Count}, время: {executionTime.TotalMilliseconds:F0} мс");
 
-                        // Автоматическое форматирование числовых столбцов
                         FormatNumericColumns();
 
-                        MessageBox.Show($"Найдено записей: {dataTable.Rows.Count}\nВремя выполнения: {executionTime.TotalMilliseconds:F0} мс", "Результат",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (dataTable.Rows.Count == 0)
+                        {
+                            MessageBox.Show("Запрос выполнен успешно, но данные не найдены", "Информация",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
             }
             catch (NpgsqlException ex)
             {
                 rch.LogError($"Ошибка выполнения SQL запроса: {ex.Message}");
-                MessageBox.Show($"Ошибка выполнения запроса: {ex.Message}\n\nПроверьте синтаксис условий WHERE/HAVING.", "Ошибка SQL",
+                MessageBox.Show($"Ошибка выполнения запроса: {ex.Message}", "Ошибка SQL",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
@@ -626,76 +653,8 @@ namespace BaseData
             }
         }
 
-        private string ValidateConditions()
-        {
-            // Проверка базового синтаксиса условий WHERE
-            if (!string.IsNullOrEmpty(whereTextBox?.Text))
-            {
-                string whereCondition = whereTextBox.Text.Trim();
-                if (whereCondition.StartsWith("AND") || whereCondition.StartsWith("OR") ||
-                    whereCondition.EndsWith("AND") || whereCondition.EndsWith("OR"))
-                {
-                    return "Условие WHERE содержит некорректное использование AND/OR операторов";
-                }
-
-                // Проверка на наличие SQL-инъекций в WHERE
-                if (ContainsDangerousPatterns(whereCondition))
-                {
-                    return "Условие WHERE содержит потенциально опасные конструкции";
-                }
-            }
-
-            // Проверка базового синтаксиса условий HAVING
-            if (!string.IsNullOrEmpty(havingTextBox?.Text))
-            {
-                string havingCondition = havingTextBox.Text.Trim();
-                if (havingCondition.StartsWith("AND") || havingCondition.StartsWith("OR") ||
-                    havingCondition.EndsWith("AND") || havingCondition.EndsWith("OR"))
-                {
-                    return "Условие HAVING содержит некорректное использование AND/OR операторов";
-                }
-
-                // Проверка на наличие SQL-инъекций в HAVING
-                if (ContainsDangerousPatterns(havingCondition))
-                {
-                    return "Условие HAVING содержит потенциально опасные конструкции";
-                }
-            }
-
-            // Проверка GROUP BY и ORDER BY
-            if (!string.IsNullOrEmpty(groupByTextBox?.Text) && ContainsDangerousPatterns(groupByTextBox.Text))
-            {
-                return "Условие GROUP BY содержит потенциально опасные конструкции";
-            }
-
-            if (!string.IsNullOrEmpty(orderByTextBox?.Text) && ContainsDangerousPatterns(orderByTextBox.Text))
-            {
-                return "Условие ORDER BY содержит потенциально опасные конструкции";
-            }
-
-            return string.Empty;
-        }
-
-        private bool ContainsDangerousPatterns(string text)
-        {
-            string[] dangerousPatterns = {
-                "DROP", "DELETE", "UPDATE", "INSERT", "CREATE", "ALTER",
-                "EXEC", "EXECUTE", "TRUNCATE", "GRANT", "REVOKE"
-            };
-
-            foreach (var pattern in dangerousPatterns)
-            {
-                if (text.ToUpper().Contains(pattern))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         private bool ValidateSQLQuery(string query)
         {
-            // Базовая защита от SQL-инъекций - проверяем опасные конструкции
             string[] dangerousPatterns = {
                 "DROP TABLE", "DELETE FROM", "UPDATE ", "INSERT INTO",
                 "CREATE TABLE", "ALTER TABLE", "EXEC ", "EXECUTE ",
@@ -720,15 +679,15 @@ namespace BaseData
 
         private void ClearForm()
         {
-            if (whereTextBox != null) whereTextBox.Text = string.Empty;
-            if (groupByTextBox != null) groupByTextBox.Text = string.Empty;
-            if (havingTextBox != null) havingTextBox.Text = string.Empty;
-            if (orderByTextBox != null) orderByTextBox.Text = string.Empty;
-            if (aggregateComboBox != null) aggregateComboBox.SelectedIndex = 0;
-            if (resultsDataGridView != null) resultsDataGridView.DataSource = null;
-            if (queryPreviewTextBox != null) queryPreviewTextBox.Text = string.Empty;
-            if (resultsCountLabel != null) resultsCountLabel.Text = "Результаты: 0 записей";
-            if (queryTimeLabel != null) queryTimeLabel.Text = "Время выполнения: -";
+            whereTextBox.Text = string.Empty;
+            groupByTextBox.Text = string.Empty;
+            havingTextBox.Text = string.Empty;
+            orderByTextBox.Text = string.Empty;
+            aggregateComboBox.SelectedIndex = 0;
+            resultsDataGridView.DataSource = null;
+            queryPreviewTextBox.Text = string.Empty;
+            resultsCountLabel.Text = "Результаты: 0 записей";
+            queryTimeLabel.Text = "Время выполнения: -";
 
             SelectAllColumns(true);
             rch.LogInfo("Форма конструктора запросов очищена");
@@ -736,7 +695,7 @@ namespace BaseData
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
-            rch.LogInfo("Форма расширенного поиска закрыта");
+            rch.LogInfo("Конструктор SQL запросов закрыт");
             base.OnFormClosed(e);
         }
     }

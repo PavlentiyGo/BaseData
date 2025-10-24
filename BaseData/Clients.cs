@@ -12,6 +12,7 @@ namespace BaseData
         private Button? deleteButton;
         private Button? editButton;
         private Button? changeTableButton;
+        private Button? sqlBuilderButton;
         private static DataGridView? dataGrid;
         private TextBox? searchTextBox;
         private ComboBox? searchTypeComboBox;
@@ -30,6 +31,7 @@ namespace BaseData
             this.deleteButton = new Button();
             this.editButton = new Button();
             this.changeTableButton = new Button();
+            this.sqlBuilderButton = new Button();
             this.searchTextBox = new TextBox();
             this.searchTypeComboBox = new ComboBox();
             this.btnResetSearch = new Button();
@@ -110,6 +112,13 @@ namespace BaseData
             this.changeTableButton.Location = new Point(deleteButton.Right + buttonSpacing, 10);
             this.changeTableButton.Click += ChangeTableClick;
 
+            // НОВАЯ КНОПКА - Конструктор SQL
+            this.sqlBuilderButton.Text = "Конструктор\nSQL";
+            this.sqlBuilderButton.Size = buttonSize;
+            this.sqlBuilderButton.Location = new Point(changeTableButton.Right + buttonSpacing, 10);
+            this.sqlBuilderButton.Click += OpenSqlBuilder;
+            this.sqlBuilderButton.Font = new Font(sqlBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
+
             // dataGrid
             dataGrid.AllowUserToAddRows = false;
             dataGrid.AllowUserToDeleteRows = false;
@@ -135,6 +144,7 @@ namespace BaseData
             buttonPanel.Controls.Add(this.editButton);
             buttonPanel.Controls.Add(this.deleteButton);
             buttonPanel.Controls.Add(this.changeTableButton);
+            buttonPanel.Controls.Add(this.sqlBuilderButton); // Новая кнопка
 
             // UserControl
             this.AutoScaleDimensions = new SizeF(7F, 15F);
@@ -188,6 +198,11 @@ namespace BaseData
             {
                 Styles.ApplySecondaryButtonStyle(changeTableButton);
                 changeTableButton.Font = new Font(changeTableButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (sqlBuilderButton != null)
+            {
+                Styles.ApplySecondaryButtonStyle(sqlBuilderButton);
+                sqlBuilderButton.Font = new Font(sqlBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
             }
             if (searchTextBox != null)
             {
@@ -284,6 +299,33 @@ namespace BaseData
                     MessageBox.Show($"Ошибка удаления клиента: {ex.Message}", "Ошибка",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private void OpenSqlBuilder(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (!AppSettings.IsConnectionStringSet)
+                {
+                    MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    rch.LogWarning("Попытка открыть конструктор SQL без подключения к БД");
+                    return;
+                }
+
+                using (AdvancedSearchForm sqlBuilderForm = new AdvancedSearchForm(rch))
+                {
+                    rch.LogInfo("Открытие конструктора SQL запросов из формы клиентов");
+                    sqlBuilderForm.ShowDialog();
+                    rch.LogInfo("Конструктор SQL запросов закрыт");
+                }
+            }
+            catch (Exception ex)
+            {
+                rch.LogError($"Ошибка при открытии конструктора SQL: {ex.Message}");
+                MessageBox.Show($"Ошибка при открытии конструктора SQL: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
