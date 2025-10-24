@@ -47,8 +47,15 @@ namespace BaseData
                     dgvOrderItems.ColumnHeadersHeight = 50;
                     dgvOrderItems.ColumnHeadersDefaultCellStyle.Font = new Font(Styles.MainFont.FontFamily, 10F, FontStyle.Bold);
                     dgvOrderItems.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    dgvOrderItems.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
-                    dgvOrderItems.ColumnHeadersDefaultCellStyle.ForeColor = Color.DarkBlue;
+                    dgvOrderItems.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+                    dgvOrderItems.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
+
+                    // Добавить эти строки для серого выделения
+                    dgvOrderItems.DefaultCellStyle.SelectionBackColor = Color.LightGray;
+                    dgvOrderItems.DefaultCellStyle.SelectionForeColor = Color.Black;
+                    dgvOrderItems.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
+                    dgvOrderItems.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.Black;
+                    dgvOrderItems.RowHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
                 }
                 if (cmbClients != null) Styles.ApplyComboBoxStyle(cmbClients);
                 if (cmbGoods != null) Styles.ApplyComboBoxStyle(cmbGoods);
@@ -117,17 +124,17 @@ namespace BaseData
                 mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
             }
 
-            Label lblClient = new Label() { Text = "Клиент:*", TextAlign = ContentAlignment.MiddleRight };
+            Label lblClient = new Label() { Text = "Клиент:", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblClient, true);
             this.cmbClients.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbClients.Height = 35;
 
-            Label lblDate = new Label() { Text = "Дата заказа:*", TextAlign = ContentAlignment.MiddleRight };
+            Label lblDate = new Label() { Text = "Дата заказа:", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblDate, true);
             this.dtOrderDate.Value = DateTime.Now;
             this.dtOrderDate.Height = 35;
 
-            Label lblDeliveryDate = new Label() { Text = "Дата доставки:*", TextAlign = ContentAlignment.MiddleRight };
+            Label lblDeliveryDate = new Label() { Text = "Дата доставки:", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblDeliveryDate, true);
             this.dtDeliveryDate.Value = DateTime.Now.AddDays(3);
             this.dtDeliveryDate.Height = 35;
@@ -139,19 +146,19 @@ namespace BaseData
             this.cmbCurrency.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbCurrency.Height = 35;
 
-            Label lblGood = new Label() { Text = "Товар:*", TextAlign = ContentAlignment.MiddleRight };
+            Label lblGood = new Label() { Text = "Товар:", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblGood, true);
             this.cmbGoods.DropDownStyle = ComboBoxStyle.DropDownList;
             this.cmbGoods.Height = 35;
 
-            Label lblQuantity = new Label() { Text = "Количество:*", TextAlign = ContentAlignment.MiddleRight };
+            Label lblQuantity = new Label() { Text = "Количество:", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblQuantity, true);
             this.txtQuantity.Text = "1";
             this.txtQuantity.Height = 35;
 
             this.btnAddItem.Text = "Добавить товар";
-            this.btnAddItem.Height = 50;
-            this.btnAddItem.Font = new Font(Styles.MainFont.FontFamily, 10F, FontStyle.Bold);
+            this.btnAddItem.Size = new Size(180, 70);
+            this.btnAddItem.Font = new Font(Styles.MainFont.FontFamily, 14F, FontStyle.Bold);
             this.btnAddItem.Click += this.AddItemToOrder!;
 
             this.btnCancel.Text = "Отмена";
@@ -175,8 +182,8 @@ namespace BaseData
             this.dgvOrderItems.ColumnHeadersHeight = 50;
             this.dgvOrderItems.ColumnHeadersDefaultCellStyle.Font = new Font(Styles.MainFont.FontFamily, 10F, FontStyle.Bold);
             this.dgvOrderItems.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            this.dgvOrderItems.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
-            this.dgvOrderItems.ColumnHeadersDefaultCellStyle.ForeColor = Color.DarkBlue;
+            this.dgvOrderItems.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+            this.dgvOrderItems.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
 
             this.dgvOrderItems.RowTemplate.Height = 35;
 

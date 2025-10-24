@@ -99,22 +99,21 @@ namespace BaseData
             this.btnEdit.Location = new Point(buttonSpacing, 10);
             this.btnEdit.Click += EditSelectedGood;
 
-            this.btnDelete.Text = "Удалить";
-            this.btnDelete.Size = buttonSize;
-            this.btnDelete.Location = new Point(btnEdit.Right + buttonSpacing, 10);
-            this.btnDelete.Click += DeleteSelectedGood;
-
             this.changeTableButton.Text = "Изменить\nтаблицу";
             this.changeTableButton.Size = buttonSize;
-            this.changeTableButton.Location = new Point(btnDelete.Right + buttonSpacing, 10);
+            this.changeTableButton.Location = new Point(btnEdit.Right + buttonSpacing, 10);
             this.changeTableButton.Click += ChangeTableClick;
 
-            // НОВАЯ КНОПКА - Конструктор SQL
             this.sqlBuilderButton.Text = "Конструктор\nSQL";
             this.sqlBuilderButton.Size = buttonSize;
             this.sqlBuilderButton.Location = new Point(changeTableButton.Right + buttonSpacing, 10);
             this.sqlBuilderButton.Click += OpenSqlBuilder;
             this.sqlBuilderButton.Font = new Font(sqlBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
+
+            this.btnDelete.Text = "Удалить";
+            this.btnDelete.Size = buttonSize;
+            this.btnDelete.Location = new Point(sqlBuilderButton.Right + buttonSpacing, 10);
+            this.btnDelete.Click += DeleteSelectedGood;
 
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.AllowUserToDeleteRows = false;
@@ -131,15 +130,14 @@ namespace BaseData
             dataGridView1.CellDoubleClick += DataGridView1_CellDoubleClick;
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.EnableHeadersVisualStyles = false;
-            dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
             dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             dataGridView1.ColumnHeadersHeight = 35;
             dataGridView1.RowHeadersVisible = false;
 
             buttonPanel.Controls.Add(this.btnEdit);
-            buttonPanel.Controls.Add(this.btnDelete);
             buttonPanel.Controls.Add(this.changeTableButton);
-            buttonPanel.Controls.Add(this.sqlBuilderButton); // Новая кнопка
+            buttonPanel.Controls.Add(this.sqlBuilderButton);
+            buttonPanel.Controls.Add(this.btnDelete);
 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
@@ -161,6 +159,17 @@ namespace BaseData
                 {
                     Styles.ApplyDataGridViewStyle(dataGridView1);
 
+                    // Устанавливаем серый цвет заголовков
+                    dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+                    dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
+                    dataGridView1.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
+                    dataGridView1.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.Black;
+            
+                    // Устанавливаем серый цвет выделения для ячеек и строк
+                    dataGridView1.DefaultCellStyle.SelectionBackColor = Color.LightGray;
+                    dataGridView1.DefaultCellStyle.SelectionForeColor = Color.Black;
+                    dataGridView1.RowHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
+            
                     dataGridView1.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
                     dataGridView1.DefaultCellStyle.Padding = new Padding(3);
                     dataGridView1.RowTemplate.Height = 30;
@@ -468,7 +477,6 @@ namespace BaseData
 
                             dataGridView1.DataSource = data;
 
-                            // Форматирование столбцов
                             if (dataGridView1.Columns.Contains("price"))
                             {
                                 dataGridView1.Columns["price"]!.DefaultCellStyle.Format = "N2";

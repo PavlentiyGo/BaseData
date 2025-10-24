@@ -101,23 +101,22 @@ namespace BaseData
             this.editButton.Location = new Point(buttonSpacing, 10);
             this.editButton.Click += EditSelectedClient;
 
-            // deleteButton
-            this.deleteButton.Text = "Удалить";
-            this.deleteButton.Size = buttonSize;
-            this.deleteButton.Location = new Point(editButton.Right + buttonSpacing, 10);
-            this.deleteButton.Click += DeleteSelectedClient;
-
             this.changeTableButton.Text = "Изменить\nтаблицу";
             this.changeTableButton.Size = buttonSize;
-            this.changeTableButton.Location = new Point(deleteButton.Right + buttonSpacing, 10);
+            this.changeTableButton.Location = new Point(editButton.Right + buttonSpacing, 10);
             this.changeTableButton.Click += ChangeTableClick;
 
-            // НОВАЯ КНОПКА - Конструктор SQL
             this.sqlBuilderButton.Text = "Конструктор\nSQL";
             this.sqlBuilderButton.Size = buttonSize;
             this.sqlBuilderButton.Location = new Point(changeTableButton.Right + buttonSpacing, 10);
             this.sqlBuilderButton.Click += OpenSqlBuilder;
             this.sqlBuilderButton.Font = new Font(sqlBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
+
+            // deleteButton
+            this.deleteButton.Text = "Удалить";
+            this.deleteButton.Size = buttonSize;
+            this.deleteButton.Location = new Point(sqlBuilderButton.Right + buttonSpacing, 10);
+            this.deleteButton.Click += DeleteSelectedClient;
 
             // dataGrid
             dataGrid.AllowUserToAddRows = false;
@@ -135,16 +134,15 @@ namespace BaseData
             dataGrid.CellDoubleClick += DataGrid_CellDoubleClick;
             dataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGrid.EnableHeadersVisualStyles = false;
-            dataGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
             dataGrid.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             dataGrid.ColumnHeadersHeight = 35;
             dataGrid.RowHeadersVisible = false;
 
             // Добавляем кнопки на панель
             buttonPanel.Controls.Add(this.editButton);
-            buttonPanel.Controls.Add(this.deleteButton);
             buttonPanel.Controls.Add(this.changeTableButton);
-            buttonPanel.Controls.Add(this.sqlBuilderButton); // Новая кнопка
+            buttonPanel.Controls.Add(this.sqlBuilderButton);
+            buttonPanel.Controls.Add(this.deleteButton);
 
             // UserControl
             this.AutoScaleDimensions = new SizeF(7F, 15F);
@@ -167,7 +165,17 @@ namespace BaseData
                 {
                     Styles.ApplyDataGridViewStyle(dataGrid);
 
-                    // Дополнительные стили для улучшения внешнего вида
+                    // Устанавливаем серый цвет заголовков
+                    dataGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
+                    dataGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
+                    dataGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
+                    dataGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.Black;
+
+                    // Устанавливаем серый цвет выделения для ячеек и строк
+                    dataGrid.DefaultCellStyle.SelectionBackColor = Color.LightGray;
+                    dataGrid.DefaultCellStyle.SelectionForeColor = Color.Black;
+                    dataGrid.RowHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
+
                     dataGrid.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
                     dataGrid.DefaultCellStyle.Padding = new Padding(3);
                     dataGrid.RowTemplate.Height = 30;
@@ -183,7 +191,6 @@ namespace BaseData
         {
             base.OnLoad(e);
 
-            // Применяем стили к кнопкам
             if (editButton != null)
             {
                 Styles.ApplySecondaryButtonStyle(editButton);
@@ -390,11 +397,9 @@ namespace BaseData
                     string columnName = column.Name.ToLower();
                     column.HeaderText = columnName;
 
-                    // Улучшаем внешний вид колонок
                     column.DefaultCellStyle.Padding = new Padding(5, 3, 5, 3);
                 }
 
-                // Автоматическое изменение размера колонок после загрузки данных
                 dataGrid.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
             }
             catch

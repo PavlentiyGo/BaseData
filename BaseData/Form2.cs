@@ -53,9 +53,26 @@ namespace BaseData
                 if (IdLabel != null) Form1.ApplyLabelStyle(IdLabel, true);
                 if (PasswordLabel != null) Form1.ApplyLabelStyle(PasswordLabel, true);
 
-                if (EntryButton != null) Form1.ApplyButtonStyle(EntryButton);
-                if (AutoButton != null) Form1.ApplySecondaryButtonStyle(AutoButton);
-                if (ResetButton != null) Form1.ApplyButtonStyle(ResetButton);
+                // Применяем стиль заголовка к кнопкам
+                Font buttonFont = new Font("Segoe UI", 10F, FontStyle.Bold);
+
+                if (EntryButton != null)
+                {
+                    Form1.ApplyButtonStyle(EntryButton);
+                    EntryButton.Font = buttonFont; 
+                }
+
+                if (AutoButton != null)
+                {
+                    Form1.ApplySecondaryButtonStyle(AutoButton);
+                    AutoButton.Font = buttonFont; 
+                }
+
+                if (ResetButton != null)
+                {
+                    Form1.ApplyButtonStyle(ResetButton);
+                    ResetButton.Font = buttonFont; 
+                }
             }
             catch (Exception ex)
             {

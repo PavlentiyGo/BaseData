@@ -73,66 +73,139 @@ namespace BaseData
         {
             this.SuspendLayout();
             this.Text = "Добавить клиента";
-            this.Size = new System.Drawing.Size(450, 500);
+            this.Size = new System.Drawing.Size(600, 650);
             this.StartPosition = FormStartPosition.CenterParent;
-            this.Padding = new Padding(20);
+            this.Padding = new Padding(25);
 
             TableLayoutPanel mainPanel = new TableLayoutPanel();
             mainPanel.Dock = DockStyle.Fill;
             mainPanel.RowCount = 10;
             mainPanel.ColumnCount = 2;
-            mainPanel.Padding = new Padding(10);
+            mainPanel.Padding = new Padding(15);
             Styles.ApplyPanelStyle(mainPanel);
 
             Label titleLabel = new Label()
             {
                 Text = "Добавление клиента",
-                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
+                Font = new Font("Segoe UI", 18F, FontStyle.Bold),
                 ForeColor = Styles.DarkColor,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Top,
-                Height = 40
+                Height = 60
             };
 
-            Label lblSurname = new Label() { Text = "Фамилия:*", TextAlign = ContentAlignment.MiddleRight };
+            int textBoxWidth = 300;
+
+            Font labelFont = new Font("Segoe UI", 14F, FontStyle.Regular);
+            Font textBoxFont = new Font("Segoe UI", 14F);
+            Font buttonFont = new Font("Segoe UI", 14F, FontStyle.Bold);
+
+            Label lblSurname = new Label()
+            {
+                Text = "Фамилия:",
+                TextAlign = ContentAlignment.MiddleRight,
+                Font = labelFont
+            };
             Styles.ApplyLabelStyle(lblSurname, true);
-            txtSurname = new System.Windows.Forms.TextBox();
+            txtSurname = new System.Windows.Forms.TextBox()
+            {
+                Width = textBoxWidth,
+                Font = textBoxFont
+            };
             Styles.ApplyTextBoxStyle(txtSurname);
 
-            Label lblName = new Label() { Text = "Имя:*", TextAlign = ContentAlignment.MiddleRight };
+            Label lblName = new Label()
+            {
+                Text = "Имя:",
+                TextAlign = ContentAlignment.MiddleRight,
+                Font = labelFont
+            };
             Styles.ApplyLabelStyle(lblName, true);
-            txtName = new System.Windows.Forms.TextBox();
+            txtName = new System.Windows.Forms.TextBox()
+            {
+                Width = textBoxWidth,
+                Font = textBoxFont
+            };
             Styles.ApplyTextBoxStyle(txtName);
 
-            Label lblMiddleName = new Label() { Text = "Отчество:", TextAlign = ContentAlignment.MiddleRight };
+            Label lblMiddleName = new Label()
+            {
+                Text = "Отчество:",
+                TextAlign = ContentAlignment.MiddleRight,
+                Font = labelFont
+            };
             Styles.ApplyLabelStyle(lblMiddleName);
-            txtMiddleName = new System.Windows.Forms.TextBox();
+            txtMiddleName = new System.Windows.Forms.TextBox()
+            {
+                Width = textBoxWidth,
+                Font = textBoxFont
+            };
             Styles.ApplyTextBoxStyle(txtMiddleName);
 
-            Label lblLocation = new Label() { Text = "Адрес:", TextAlign = ContentAlignment.MiddleRight };
+            Label lblLocation = new Label()
+            {
+                Text = "Адрес:",
+                TextAlign = ContentAlignment.MiddleRight,
+                Font = labelFont
+            };
             Styles.ApplyLabelStyle(lblLocation);
-            txtLocation = new System.Windows.Forms.TextBox();
+            txtLocation = new System.Windows.Forms.TextBox()
+            {
+                Width = textBoxWidth,
+                Font = textBoxFont
+            };
             Styles.ApplyTextBoxStyle(txtLocation);
 
-            Label lblPhone = new Label() { Text = "Телефон:", TextAlign = ContentAlignment.MiddleRight };
+            Label lblPhone = new Label()
+            {
+                Text = "Телефон:",
+                TextAlign = ContentAlignment.MiddleRight,
+                Font = labelFont
+            };
             Styles.ApplyLabelStyle(lblPhone);
-            txtPhone = new System.Windows.Forms.TextBox();
+            txtPhone = new System.Windows.Forms.TextBox()
+            {
+                Width = textBoxWidth,
+                Font = textBoxFont
+            };
             Styles.ApplyTextBoxStyle(txtPhone);
 
-            Label lblEmail = new Label() { Text = "Email:*", TextAlign = ContentAlignment.MiddleRight };
+            Label lblEmail = new Label()
+            {
+                Text = "Email:",
+                TextAlign = ContentAlignment.MiddleRight,
+                Font = labelFont
+            };
             Styles.ApplyLabelStyle(lblEmail, true);
-            txtEmail = new System.Windows.Forms.TextBox();
+            txtEmail = new System.Windows.Forms.TextBox()
+            {
+                Width = textBoxWidth,
+                Font = textBoxFont
+            };
             Styles.ApplyTextBoxStyle(txtEmail);
 
-            chkConstClient = new CheckBox() { Text = "Постоянный клиент" };
+            chkConstClient = new CheckBox()
+            {
+                Text = "Постоянный клиент",
+                Font = new Font("Segoe UI", 14F)
+            };
             chkConstClient.ForeColor = Styles.DarkColor;
-            chkConstClient.Font = Styles.MainFont;
 
-            btnAdd = new System.Windows.Forms.Button() { Text = "Добавить", Size = new Size(120, 45) };
+            btnAdd = new System.Windows.Forms.Button()
+            {
+                Text = "Добавить",
+                Size = new Size(140, 50),
+                Font = buttonFont
+            };
             Styles.ApplyPrimaryButtonStyle(btnAdd);
             btnAdd.Click += BtnAdd_Click;
 
-            btnCancel = new System.Windows.Forms.Button() { Text = "Отмена", Size = new Size(120, 45) };
+            btnCancel = new System.Windows.Forms.Button()
+            {
+                Text = "Отмена",
+                Size = new Size(140, 50),
+                Font = buttonFont
+            };
             Styles.ApplySecondaryButtonStyle(btnCancel);
             btnCancel.Click += (s, e) =>
             {
@@ -167,19 +240,19 @@ namespace BaseData
             btnAdd.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             btnCancel.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
 
-            btnAdd.Top = buttonsPanel.Height - btnAdd.Height - 5;
-            btnAdd.Left = buttonsPanel.Width - btnAdd.Width - 5;
+            btnAdd.Top = buttonsPanel.Height - btnAdd.Height - 10;
+            btnAdd.Left = buttonsPanel.Width - btnAdd.Width - 10;
 
-            btnCancel.Top = buttonsPanel.Height - btnCancel.Height - 5;
-            btnCancel.Left = btnAdd.Left - btnCancel.Width - 10;
+            btnCancel.Top = buttonsPanel.Height - btnCancel.Height - 10;
+            btnCancel.Left = btnAdd.Left - btnCancel.Width - 15;
 
             for (int i = 0; i < 7; i++)
             {
-                mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+                mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 55F));
             }
             mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));
-            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));
+            mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 140F));
             mainPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 
             this.Controls.Add(mainPanel);
@@ -189,7 +262,6 @@ namespace BaseData
             rch.LogInfo("Компоненты формы инициализированы");
         }
 
-        // Остальные методы остаются без изменений...
         private void LoadClientData(int clientId)
         {
             try
