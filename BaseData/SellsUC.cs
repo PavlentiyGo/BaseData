@@ -3,17 +3,20 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Linq;
 
 namespace BaseData
 {
     public class SellsUC : UserControl
     {
         private static string currentConnectionString;
-        private Button? btnSearch;
         private Button? btnDelete;
         private Button? btnViewDetails;
         private static DataGridView dataGridView1;
         private Button? changeTableButton;
+        private TextBox? searchTextBox;
+        private ComboBox? searchTypeComboBox;
+        private Button? btnResetSearch;
         Log rch;
 
         public SellsUC(Log log)
@@ -26,35 +29,76 @@ namespace BaseData
 
         private void InitializeComponent()
         {
-            this.btnSearch = new Button();
             this.btnDelete = new Button();
             this.btnViewDetails = new Button();
             dataGridView1 = new DataGridView();
             this.changeTableButton = new Button();
+            this.searchTextBox = new TextBox();
+            this.searchTypeComboBox = new ComboBox();
+            this.btnResetSearch = new Button();
 
             SuspendLayout();
+
+            // Панель поиска
+            Panel searchPanel = new Panel();
+            searchPanel.Dock = DockStyle.Top;
+            searchPanel.Height = 50;
+            searchPanel.Padding = new Padding(10, 5, 10, 5);
+            searchPanel.BackColor = Color.FromArgb(240, 240, 240);
+
+            // Элементы поиска
+            searchTextBox.Location = new Point(10, 12);
+            searchTextBox.Size = new Size(200, 25);
+            searchTextBox.PlaceholderText = "Введите текст для поиска...";
+            searchTextBox.KeyPress += (s, e) =>
+            {
+                if (e.KeyChar == (char)Keys.Enter)
+                {
+                    PerformSearch();
+                }
+            };
+
+            searchTypeComboBox.Location = new Point(220, 12);
+            searchTypeComboBox.Size = new Size(120, 25);
+            searchTypeComboBox.Items.AddRange(new string[] { "ID заказа", "Клиент", "ID клиента", "Дата заказа" });
+            searchTypeComboBox.SelectedIndex = 0;
+            searchTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            var btnSearch = new Button();
+            btnSearch.Text = "Найти";
+            btnSearch.Location = new Point(350, 12);
+            btnSearch.Size = new Size(80, 25);
+            btnSearch.Click += (s, e) => PerformSearch();
+
+            btnResetSearch.Text = "Сброс";
+            btnResetSearch.Location = new Point(440, 12);
+            btnResetSearch.Size = new Size(80, 25);
+            btnResetSearch.Click += (s, e) =>
+            {
+                searchTextBox.Text = "";
+                RefreshData();
+            };
+
+            searchPanel.Controls.Add(searchTextBox);
+            searchPanel.Controls.Add(searchTypeComboBox);
+            searchPanel.Controls.Add(btnSearch);
+            searchPanel.Controls.Add(btnResetSearch);
 
             // Панель для кнопок
             Panel buttonPanel = new Panel();
             buttonPanel.Dock = DockStyle.Top;
-            buttonPanel.Height = 80; // Увеличена высота панели
-            buttonPanel.Padding = new Padding(10, 12, 10, 12); // Увеличены отступы
+            buttonPanel.Height = 80;
+            buttonPanel.Padding = new Padding(10, 12, 10, 12);
             buttonPanel.BackColor = Color.Transparent;
 
             // Общие настройки для кнопок
-            Size buttonSize = new Size(140, 60); // Увеличена высота кнопок до 40px
-            int buttonSpacing = 15; // Расстояние между кнопками
-
-            // btnRefresh
-            this.btnSearch.Text = "Поиск";
-            this.btnSearch.Size = buttonSize;
-            this.btnSearch.Location = new Point(10, 10);
-            this.btnSearch.Click += BtnSearch_Click;
+            Size buttonSize = new Size(140, 60);
+            int buttonSpacing = 15;
 
             // btnViewDetails
             this.btnViewDetails.Text = "Детали заказа";
             this.btnViewDetails.Size = buttonSize;
-            this.btnViewDetails.Location = new Point(btnSearch.Right + buttonSpacing, 10);
+            this.btnViewDetails.Location = new Point(buttonSpacing, 10);
             this.btnViewDetails.Click += ViewOrderDetails;
 
             // btnDelete
@@ -76,7 +120,7 @@ namespace BaseData
             dataGridView1.BackgroundColor = Color.White;
             dataGridView1.BorderStyle = BorderStyle.FixedSingle;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(0, 60);
+            dataGridView1.Location = new Point(0, 130);
             dataGridView1.Margin = new Padding(10);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
@@ -89,16 +133,17 @@ namespace BaseData
             dataGridView1.RowHeadersVisible = false;
 
             // Добавляем кнопки на панель
-            buttonPanel.Controls.Add(this.btnSearch);
             buttonPanel.Controls.Add(this.btnViewDetails);
             buttonPanel.Controls.Add(this.btnDelete);
             buttonPanel.Controls.Add(this.changeTableButton);
+
             // UserControl
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.BackColor = Color.White;
             this.Controls.Add(dataGridView1);
             this.Controls.Add(buttonPanel);
+            this.Controls.Add(searchPanel);
             this.Name = "SellsUC";
             this.Size = new Size(800, 600);
 
@@ -132,11 +177,6 @@ namespace BaseData
             base.OnLoad(e);
 
             // Применяем стили к кнопкам с увеличенной высотой
-            if (btnSearch != null)
-            {
-                Styles.ApplySecondaryButtonStyle(btnSearch);
-                btnSearch.Font = new Font(btnSearch.Font.FontFamily, 9F, FontStyle.Regular);
-            }
             if (btnViewDetails != null)
             {
                 Styles.ApplySecondaryButtonStyle(btnViewDetails);
@@ -151,6 +191,19 @@ namespace BaseData
             {
                 Styles.ApplySecondaryButtonStyle(changeTableButton);
                 changeTableButton.Font = new Font(changeTableButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (searchTextBox != null)
+            {
+                Styles.ApplyTextBoxStyle(searchTextBox);
+            }
+            if (searchTypeComboBox != null)
+            {
+                Styles.ApplyComboBoxStyle(searchTypeComboBox);
+            }
+            if (btnResetSearch != null)
+            {
+                Styles.ApplySecondaryButtonStyle(btnResetSearch);
+                btnResetSearch.Font = new Font(btnResetSearch.Font.FontFamily, 9F, FontStyle.Regular);
             }
         }
 
@@ -170,7 +223,7 @@ namespace BaseData
             {
                 try
                 {
-                    int orderId = Convert.ToInt32(dataGridView1.CurrentRow.Cells["Номер заказа"].Value);
+                    int orderId = Convert.ToInt32(dataGridView1.CurrentRow.Cells["id"].Value);
 
                     using (var connection = new NpgsqlConnection(currentConnectionString))
                     {
@@ -220,7 +273,7 @@ namespace BaseData
                 return;
             }
 
-            int orderId = Convert.ToInt32(dataGridView1.CurrentRow.Cells["Номер заказа"].Value);
+            int orderId = Convert.ToInt32(dataGridView1.CurrentRow.Cells["id"].Value);
             ShowOrderDetails(orderId);
         }
 
@@ -308,84 +361,83 @@ namespace BaseData
             RefreshData();
         }
 
-static public void RefreshData()
-{
-    if (dataGridView1 == null) return;
-
-
-    try
-    {
-        if (string.IsNullOrEmpty(currentConnectionString))
-            return;
-                
-
-        var orderColumnsForSelect = MetaInformation.columnsOrders
-            .Where(col => col != "client_id")
-            .Select(col => $"o.{col}")
-            .ToArray();
-
-        var selectList = string.Join(", ", orderColumnsForSelect) + 
-                         ", c.surname || ' ' || c.name AS \"client\"";
-
-        var query = $@"
-            SELECT {selectList}
-            FROM {MetaInformation.tables[3]} o
-            JOIN {MetaInformation.tables[0]} c ON o.client_id = c.id";
-
-        using (var connection = new NpgsqlConnection(currentConnectionString))
+        static public void RefreshData()
         {
-            connection.Open();
-            var adapter = new NpgsqlDataAdapter(query, connection);
-            var dataTable = new DataTable();
-            adapter.Fill(dataTable);
+            if (dataGridView1 == null) return;
 
-            dataGridView1.DataSource = dataTable;
+            try
+            {
+                if (string.IsNullOrEmpty(currentConnectionString))
+                    return;
 
-            // Настройка форматов по фактическим именам столбцов (как в БД)
-            FormatDataGridViewColumns();
-            
-            dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
+                var orderColumnsForSelect = MetaInformation.columnsOrders
+                    .Where(col => col != "client_id")
+                    .Select(col => $"o.{col}")
+                    .ToArray();
+
+                var selectList = string.Join(", ", orderColumnsForSelect) +
+                                 ", c.surname || ' ' || c.name AS \"client\"";
+
+                var query = $@"
+                    SELECT {selectList}
+                    FROM {MetaInformation.tables[3]} o
+                    JOIN {MetaInformation.tables[0]} c ON o.client_id = c.id";
+
+                using (var connection = new NpgsqlConnection(currentConnectionString))
+                {
+                    connection.Open();
+                    var adapter = new NpgsqlDataAdapter(query, connection);
+                    var dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+
+                    dataGridView1.DataSource = dataTable;
+
+                    // Настройка форматов по фактическим именам столбцов (как в БД)
+                    FormatDataGridViewColumns();
+
+                    dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-    }
-    catch (Exception ex)
-    {
-        MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
-            MessageBoxButtons.OK, MessageBoxIcon.Error);
-    }
-}
 
-// Выносим форматирование в отдельный метод для читаемости
-private static void FormatDataGridViewColumns()
-{
-    var dgv = dataGridView1;
-    if (dgv == null) return;
+        // Выносим форматирование в отдельный метод для читаемости
+        private static void FormatDataGridViewColumns()
+        {
+            var dgv = dataGridView1;
+            if (dgv == null) return;
 
-    // Даты
-    if (dgv.Columns.Contains("order_date"))
-    {
-        dgv.Columns["order_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
-        dgv.Columns["order_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-    }
-    if (dgv.Columns.Contains("delivery_date"))
-    {
-        dgv.Columns["delivery_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
-        dgv.Columns["delivery_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-    }
+            // Даты
+            if (dgv.Columns.Contains("order_date"))
+            {
+                dgv.Columns["order_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
+                dgv.Columns["order_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+            if (dgv.Columns.Contains("delivery_date"))
+            {
+                dgv.Columns["delivery_date"].DefaultCellStyle.Format = "dd.MM.yyyy";
+                dgv.Columns["delivery_date"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
 
-    // Сумма
-    if (dgv.Columns.Contains("total_amount"))
-    {
-        dgv.Columns["total_amount"].DefaultCellStyle.Format = "N2";
-        dgv.Columns["total_amount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-    }
+            // Сумма
+            if (dgv.Columns.Contains("total_amount"))
+            {
+                dgv.Columns["total_amount"].DefaultCellStyle.Format = "N2";
+                dgv.Columns["total_amount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
 
-    // Скидка
-    if (dgv.Columns.Contains("discount"))
-    {
-        dgv.Columns["discount"].DefaultCellStyle.Format = "N2"; // или "P" если хранится как доля (0.1 = 10%)
-        dgv.Columns["discount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-    }
-}
+            // Скидка
+            if (dgv.Columns.Contains("discount"))
+            {
+                dgv.Columns["discount"].DefaultCellStyle.Format = "N2";
+                dgv.Columns["discount"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            }
+        }
+
         static private void ShowColumnNames(string[] columnNames)
         {
             if (columnNames == null || columnNames.Length == 0)
@@ -399,14 +451,117 @@ private static void FormatDataGridViewColumns()
             MessageBox.Show(message, "Названия столбцов",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
         private void ChangeTableClick(object? sender, EventArgs e)
         {
             ClientTableChange table = new ClientTableChange(rch, 3);
             table.ShowDialog();
         }
-        private void BtnSearch_Click(object? sender, EventArgs e)
-        {
 
+        private void PerformSearch()
+        {
+            if (string.IsNullOrEmpty(searchTextBox?.Text) || dataGridView1 == null)
+            {
+                RefreshData();
+                return;
+            }
+
+            try
+            {
+                string searchTerm = searchTextBox.Text.Trim();
+                string searchType = searchTypeComboBox?.SelectedItem?.ToString() ?? "ID заказа";
+
+                using (var connection = new NpgsqlConnection(currentConnectionString))
+                {
+                    connection.Open();
+
+                    var orderColumnsForSelect = MetaInformation.columnsOrders
+                        .Where(col => col != "client_id")
+                        .Select(col => $"o.{col}")
+                        .ToArray();
+
+                    var selectList = string.Join(", ", orderColumnsForSelect) +
+                                     ", c.surname || ' ' || c.name AS \"client\"";
+
+                    string query = $@"
+                        SELECT {selectList}
+                        FROM {MetaInformation.tables[3]} o
+                        JOIN {MetaInformation.tables[0]} c ON o.client_id = c.id
+                        WHERE ";
+
+                    string whereClause = "";
+                    NpgsqlParameter parameter = new NpgsqlParameter();
+
+                    switch (searchType)
+                    {
+                        case "ID заказа":
+                            if (int.TryParse(searchTerm, out int orderId))
+                            {
+                                whereClause = "o.id = @searchTerm";
+                                parameter = new NpgsqlParameter("@searchTerm", orderId);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Введите корректный числовой ID заказа", "Ошибка",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            break;
+                        case "Клиент":
+                            whereClause = "(c.surname ILIKE @searchTerm OR c.name ILIKE @searchTerm)";
+                            parameter = new NpgsqlParameter("@searchTerm", $"%{searchTerm}%");
+                            break;
+                        case "ID клиента":
+                            if (int.TryParse(searchTerm, out int clientId))
+                            {
+                                whereClause = "o.client_id = @searchTerm";
+                                parameter = new NpgsqlParameter("@searchTerm", clientId);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Введите корректный числовой ID клиента", "Ошибка",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            break;
+                        case "Дата заказа":
+                            whereClause = "o.order_date::text ILIKE @searchTerm";
+                            parameter = new NpgsqlParameter("@searchTerm", $"%{searchTerm}%");
+                            break;
+                    }
+
+                    query += whereClause + " ORDER BY o.order_date DESC";
+
+                    using (var command = new NpgsqlCommand(query, connection))
+                    {
+                        command.Parameters.Add(parameter);
+
+                        using (var adapter = new NpgsqlDataAdapter(command))
+                        {
+                            DataTable data = new DataTable();
+                            adapter.Fill(data);
+
+                            dataGridView1.DataSource = data;
+                            FormatDataGridViewColumns();
+                            dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
+
+                            rch.LogInfo($"Выполнен поиск заказов по {searchType}: '{searchTerm}'. Найдено: {data.Rows.Count} записей");
+
+                            if (data.Rows.Count == 0)
+                            {
+                                MessageBox.Show("Заказы по заданным критериям не найдены", "Результат поиска",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка поиска: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                rch.LogError($"Ошибка поиска заказов: {ex.Message}");
+            }
         }
     }
 }

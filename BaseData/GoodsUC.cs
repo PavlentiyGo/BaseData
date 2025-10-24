@@ -9,12 +9,15 @@ namespace BaseData
     public class GoodsUC : UserControl
     {
         static private string currentConnectionString;
-        private Button? btnSearch;
         private Button? btnDelete;
         private Button? btnEdit;
         private static DataGridView dataGridView1;
         private Button? changeTableButton;
+        private TextBox? searchTextBox;
+        private ComboBox? searchTypeComboBox;
+        private Button? btnResetSearch;
         Log rch = new Log();
+
         public GoodsUC(Log log)
         {
             rch = log;
@@ -24,14 +27,62 @@ namespace BaseData
 
         private void InitializeComponent()
         {
-            this.btnSearch = new Button();
             this.btnDelete = new Button();
             this.btnEdit = new Button();
             this.changeTableButton = new Button();
+            this.searchTextBox = new TextBox();
+            this.searchTypeComboBox = new ComboBox();
+            this.btnResetSearch = new Button();
             dataGridView1 = new DataGridView();
 
             SuspendLayout();
 
+            // Панель поиска
+            Panel searchPanel = new Panel();
+            searchPanel.Dock = DockStyle.Top;
+            searchPanel.Height = 50;
+            searchPanel.Padding = new Padding(10, 5, 10, 5);
+            searchPanel.BackColor = Color.FromArgb(240, 240, 240);
+
+            // Элементы поиска
+            searchTextBox.Location = new Point(10, 12);
+            searchTextBox.Size = new Size(200, 25);
+            searchTextBox.PlaceholderText = "Введите текст для поиска...";
+            searchTextBox.KeyPress += (s, e) =>
+            {
+                if (e.KeyChar == (char)Keys.Enter)
+                {
+                    PerformSearch();
+                }
+            };
+
+            searchTypeComboBox.Location = new Point(220, 12);
+            searchTypeComboBox.Size = new Size(120, 25);
+            searchTypeComboBox.Items.AddRange(new string[] { "Название", "ID", "Цена от", "В наличии" });
+            searchTypeComboBox.SelectedIndex = 0;
+            searchTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            var btnSearch = new Button();
+            btnSearch.Text = "Найти";
+            btnSearch.Location = new Point(350, 12);
+            btnSearch.Size = new Size(80, 25);
+            btnSearch.Click += (s, e) => PerformSearch();
+
+            btnResetSearch.Text = "Сброс";
+            btnResetSearch.Location = new Point(440, 12);
+            btnResetSearch.Size = new Size(80, 25);
+            btnResetSearch.Click += (s, e) =>
+            {
+                searchTextBox.Text = "";
+                RefreshData();
+            };
+
+            searchPanel.Controls.Add(searchTextBox);
+            searchPanel.Controls.Add(searchTypeComboBox);
+            searchPanel.Controls.Add(btnSearch);
+            searchPanel.Controls.Add(btnResetSearch);
+
+            // Панель кнопок действий
             Panel buttonPanel = new Panel();
             buttonPanel.Dock = DockStyle.Top;
             buttonPanel.Height = 80;
@@ -41,14 +92,9 @@ namespace BaseData
             Size buttonSize = new Size(140, 60);
             int buttonSpacing = 15;
 
-            this.btnSearch.Text = "Поиск";
-            this.btnSearch.Size = buttonSize;
-            this.btnSearch.Location = new Point(buttonSpacing, 10);
-            this.btnSearch.Click += BtnSearch_Click;
-
             this.btnEdit.Text = "Редактировать";
             this.btnEdit.Size = buttonSize;
-            this.btnEdit.Location = new Point(btnSearch.Right + buttonSpacing, 10);
+            this.btnEdit.Location = new Point(buttonSpacing, 10);
             this.btnEdit.Click += EditSelectedGood;
 
             this.btnDelete.Text = "Удалить";
@@ -68,7 +114,7 @@ namespace BaseData
             dataGridView1.BackgroundColor = Color.White;
             dataGridView1.BorderStyle = BorderStyle.FixedSingle;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(0, 60);
+            dataGridView1.Location = new Point(0, 130);
             dataGridView1.Margin = new Padding(10);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.ReadOnly = true;
@@ -81,7 +127,6 @@ namespace BaseData
             dataGridView1.ColumnHeadersHeight = 35;
             dataGridView1.RowHeadersVisible = false;
 
-            buttonPanel.Controls.Add(this.btnSearch);
             buttonPanel.Controls.Add(this.btnEdit);
             buttonPanel.Controls.Add(this.btnDelete);
             buttonPanel.Controls.Add(this.changeTableButton);
@@ -91,6 +136,7 @@ namespace BaseData
             this.BackColor = Color.White;
             this.Controls.Add(dataGridView1);
             this.Controls.Add(buttonPanel);
+            this.Controls.Add(searchPanel);
             this.Name = MetaInformation.tables[1];
             this.Size = new Size(800, 500);
 
@@ -122,11 +168,6 @@ namespace BaseData
         {
             base.OnLoad(e);
 
-            if (btnSearch != null)
-            {
-                Styles.ApplySecondaryButtonStyle(btnSearch);
-                btnSearch.Font = new Font(btnSearch.Font.FontFamily, 9F, FontStyle.Regular);
-            }
             if (btnEdit != null)
             {
                 Styles.ApplySecondaryButtonStyle(btnEdit);
@@ -141,6 +182,19 @@ namespace BaseData
             {
                 Styles.ApplySecondaryButtonStyle(changeTableButton);
                 changeTableButton.Font = new Font(changeTableButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
+            if (searchTextBox != null)
+            {
+                Styles.ApplyTextBoxStyle(searchTextBox);
+            }
+            if (searchTypeComboBox != null)
+            {
+                Styles.ApplyComboBoxStyle(searchTypeComboBox);
+            }
+            if (btnResetSearch != null)
+            {
+                Styles.ApplySecondaryButtonStyle(btnResetSearch);
+                btnResetSearch.Font = new Font(btnResetSearch.Font.FontFamily, 9F, FontStyle.Regular);
             }
         }
 
@@ -283,15 +337,125 @@ namespace BaseData
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void ChangeTableClick(object? sender, EventArgs e)
         {
             ClientTableChange table = new ClientTableChange(rch, 1);
             table.ShowDialog();
         }
-        private void BtnSearch_Click(object? sender, EventArgs e)
-        {
 
+        private void PerformSearch()
+        {
+            if (string.IsNullOrEmpty(searchTextBox?.Text) || dataGridView1 == null)
+            {
+                RefreshData();
+                return;
+            }
+
+            try
+            {
+                string searchTerm = searchTextBox.Text.Trim();
+                string searchType = searchTypeComboBox?.SelectedItem?.ToString() ?? "Название";
+
+                using (var connection = new NpgsqlConnection(currentConnectionString))
+                {
+                    connection.Open();
+
+                    string columnList = string.Join(", ", MetaInformation.columnsGoods);
+                    string query = $"SELECT {columnList} FROM {MetaInformation.tables[1]} WHERE ";
+                    string whereClause = "";
+                    NpgsqlParameter parameter = new NpgsqlParameter();
+
+                    switch (searchType)
+                    {
+                        case "Название":
+                            whereClause = "name ILIKE @searchTerm";
+                            parameter = new NpgsqlParameter("@searchTerm", $"%{searchTerm}%");
+                            break;
+                        case "ID":
+                            if (int.TryParse(searchTerm, out int id))
+                            {
+                                whereClause = "id = @searchTerm";
+                                parameter = new NpgsqlParameter("@searchTerm", id);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Введите корректный числовой ID", "Ошибка",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            break;
+                        case "Цена от":
+                            if (decimal.TryParse(searchTerm, out decimal minPrice))
+                            {
+                                whereClause = "price >= @searchTerm";
+                                parameter = new NpgsqlParameter("@searchTerm", minPrice);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Введите корректную цену", "Ошибка",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            break;
+                        case "В наличии":
+                            if (int.TryParse(searchTerm, out int minStock))
+                            {
+                                whereClause = "stock_quantity >= @searchTerm";
+                                parameter = new NpgsqlParameter("@searchTerm", minStock);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Введите корректное количество", "Ошибка",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            break;
+                    }
+
+                    query += whereClause + " ORDER BY id";
+
+                    using (var command = new NpgsqlCommand(query, connection))
+                    {
+                        command.Parameters.Add(parameter);
+
+                        using (var adapter = new NpgsqlDataAdapter(command))
+                        {
+                            DataTable data = new DataTable();
+                            adapter.Fill(data);
+
+                            dataGridView1.DataSource = data;
+
+                            // Форматирование столбцов
+                            if (dataGridView1.Columns.Contains("price"))
+                            {
+                                dataGridView1.Columns["price"]!.DefaultCellStyle.Format = "N2";
+                                dataGridView1.Columns["price"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                            }
+                            if (dataGridView1.Columns.Contains("stock_quantity"))
+                            {
+                                dataGridView1.Columns["stock_quantity"]!.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                            }
+
+                            dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.DisplayedCells);
+
+                            rch.LogInfo($"Выполнен поиск товаров по {searchType}: '{searchTerm}'. Найдено: {data.Rows.Count} записей");
+
+                            if (data.Rows.Count == 0)
+                            {
+                                MessageBox.Show("Товары по заданным критериям не найдены", "Результат поиска",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка поиска: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                rch.LogError($"Ошибка поиска товаров: {ex.Message}");
+            }
         }
     }
-
 }

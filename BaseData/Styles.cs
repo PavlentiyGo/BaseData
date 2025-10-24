@@ -5,54 +5,42 @@ namespace BaseData
 {
     public static class Styles
     {
-        public static FontFamily MainFont => new FontFamily("Segoe UI");
-
-        // Бежево-коричневая цветовая схема
-        public static Color PrimaryColor => Color.FromArgb(139, 69, 19);  // Коричневый
-        public static Color SecondaryColor => Color.FromArgb(245, 222, 179); // Бежевый
-        public static Color LightColor => Color.FromArgb(255, 248, 240); // Светло-бежевый
-        public static Color DarkColor => Color.FromArgb(101, 67, 33); // Темно-коричневый
-        public static Color AccentColor => Color.FromArgb(160, 120, 80); // Средний коричневый
-
-        // Статусные цвета в той же гамме
-        public static Color SuccessColor => Color.FromArgb(85, 107, 47);  // Оливковый
-        public static Color DangerColor => Color.FromArgb(139, 0, 0);     // Темно-красный
+        public static Color LightColor => Color.FromArgb(255, 248, 240);
+        public static Color DarkColor => Color.FromArgb(50, 50, 50);
+        public static Color DangerColor => Color.FromArgb(231, 76, 60);
+        public static Font MainFont => new Font("Segoe UI", 9F, FontStyle.Regular);
 
         public static void ApplyFormStyle(Form form)
         {
             form.BackColor = LightColor;
-            form.Font = new Font(MainFont, 10F);
-            form.StartPosition = FormStartPosition.CenterScreen;
-            form.Padding = new Padding(20);
+            form.Font = MainFont;
+        }
+
+        public static void ApplyPrimaryButtonStyle(Button button)
+        {
+            button.BackColor = Color.White;
+            button.ForeColor = DarkColor;
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderColor = Color.FromArgb(200, 200, 200);
+            button.FlatAppearance.BorderSize = 1;
+            button.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            button.Cursor = Cursors.Hand;
         }
 
         public static void ApplyButtonStyle(Button button)
         {
-            button.BackColor = PrimaryColor;
-            button.ForeColor = Color.White;
-            button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderSize = 0;
-            button.Font = new Font(MainFont, 10F, FontStyle.Bold);
-            button.Cursor = Cursors.Hand;
-            button.Padding = new Padding(15, 10, 15, 10);
-            button.MinimumSize = new Size(120, 40);
-
-            // Эффекты при наведении
-            button.FlatAppearance.MouseOverBackColor = AccentColor;
-            button.FlatAppearance.MouseDownBackColor = DarkColor;
+            ApplyPrimaryButtonStyle(button);
         }
 
         public static void ApplySecondaryButtonStyle(Button button)
         {
-            button.BackColor = SecondaryColor;
+            button.BackColor = Color.FromArgb(240, 240, 240);
             button.ForeColor = DarkColor;
             button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderColor = Color.FromArgb(200, 200, 200);
             button.FlatAppearance.BorderSize = 1;
-            button.FlatAppearance.BorderColor = AccentColor;
-            button.Font = new Font(MainFont, 9F, FontStyle.Regular);
+            button.Font = MainFont;
             button.Cursor = Cursors.Hand;
-            button.Padding = new Padding(12, 8, 12, 8);
-            button.MinimumSize = new Size(100, 35);
         }
 
         public static void ApplyDangerButtonStyle(Button button)
@@ -60,102 +48,72 @@ namespace BaseData
             button.BackColor = DangerColor;
             button.ForeColor = Color.White;
             button.FlatStyle = FlatStyle.Flat;
-            button.FlatAppearance.BorderSize = 0;
-            button.Font = new Font(MainFont, 9F, FontStyle.Bold);
+            button.FlatAppearance.BorderColor = Color.FromArgb(200, 200, 200);
+            button.FlatAppearance.BorderSize = 1;
+            button.Font = MainFont;
             button.Cursor = Cursors.Hand;
-            button.Padding = new Padding(12, 8, 12, 8);
-            button.MinimumSize = new Size(100, 35);
         }
 
-        public static void ApplyDataGridViewStyle(DataGridView dataGrid)
+        public static void ApplyTextBoxStyle(TextBox textBox)
         {
-            dataGrid.BackgroundColor = LightColor;
-            dataGrid.BorderStyle = BorderStyle.FixedSingle;
-            dataGrid.DefaultCellStyle.Font = new Font(MainFont, 9F);
-            dataGrid.DefaultCellStyle.BackColor = LightColor;
-            dataGrid.DefaultCellStyle.ForeColor = DarkColor;
-            dataGrid.DefaultCellStyle.SelectionBackColor = SecondaryColor;
-            dataGrid.DefaultCellStyle.SelectionForeColor = DarkColor;
-            dataGrid.DefaultCellStyle.Padding = new Padding(5);
+            textBox.BackColor = Color.White;
+            textBox.ForeColor = DarkColor;
+            textBox.BorderStyle = BorderStyle.FixedSingle;
+            textBox.Font = MainFont;
+        }
 
-            dataGrid.ColumnHeadersDefaultCellStyle.Font = new Font(MainFont, 10F, FontStyle.Bold);
-            dataGrid.EnableHeadersVisualStyles = false;
-            dataGrid.ColumnHeadersDefaultCellStyle.BackColor = PrimaryColor;
-            dataGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dataGrid.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGrid.ColumnHeadersDefaultCellStyle.Padding = new Padding(5);
+        public static void ApplyComboBoxStyle(ComboBox comboBox)
+        {
+            comboBox.BackColor = Color.White;
+            comboBox.ForeColor = DarkColor;
+            comboBox.FlatStyle = FlatStyle.Flat;
+            comboBox.Font = MainFont;
+        }
 
-            dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dataGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGrid.RowHeadersVisible = false;
-            dataGrid.AllowUserToResizeRows = false;
-            dataGrid.GridColor = AccentColor;
-
-            // Alternating row colors
-            dataGrid.AlternatingRowsDefaultCellStyle.BackColor = SecondaryColor;
-            dataGrid.AlternatingRowsDefaultCellStyle.ForeColor = DarkColor;
+        public static void ApplyDataGridViewStyle(DataGridView dataGridView)
+        {
+            dataGridView.BackgroundColor = Color.White;
+            dataGridView.BorderStyle = BorderStyle.FixedSingle;
+            dataGridView.Font = MainFont;
+            dataGridView.EnableHeadersVisualStyles = false;
+            dataGridView.ColumnHeadersDefaultCellStyle.BackColor = Color.LightSteelBlue;
+            dataGridView.ColumnHeadersDefaultCellStyle.ForeColor = DarkColor;
+            dataGridView.ColumnHeadersDefaultCellStyle.Font = new Font(MainFont.FontFamily, MainFont.Size, FontStyle.Bold);
+            dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            dataGridView.ColumnHeadersHeight = 35;
+            dataGridView.RowHeadersVisible = false;
+            dataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridView.MultiSelect = false;
+            dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView.DefaultCellStyle.Padding = new Padding(3);
+            dataGridView.RowTemplate.Height = 30;
         }
 
         public static void ApplyTabControlStyle(TabControl tabControl)
         {
-            tabControl.Font = new Font(MainFont, 10F);
-            tabControl.ItemSize = new Size(120, 30);
-            tabControl.SizeMode = TabSizeMode.Fixed;
             tabControl.Appearance = TabAppearance.Normal;
-
-            // Устанавливаем цвета в соответствии с нашей цветовой схемой
-            tabControl.BackColor = LightColor;
-            tabControl.ForeColor = DarkColor;
-
-            // Настраиваем стиль вкладок
-            foreach (TabPage page in tabControl.TabPages)
-            {
-                page.BackColor = LightColor;
-                page.ForeColor = DarkColor;
-                page.Font = new Font(MainFont, 9F);
-                page.Padding = new Padding(10);
-            }
+            tabControl.ItemSize = new Size(120, 35);
+            tabControl.SizeMode = TabSizeMode.Fixed;
         }
 
         public static void ApplyLabelStyle(Label label, bool bold = false)
         {
             label.ForeColor = DarkColor;
-            label.Font = new Font(MainFont, 10F, bold ? FontStyle.Bold : FontStyle.Regular);
-            label.BackColor = Color.Transparent;
-            label.AutoSize = true;
-        }
-
-        public static void ApplyTextBoxStyle(TextBox textBox)
-        {
-            textBox.BackColor = LightColor;
-            textBox.ForeColor = DarkColor;
-            textBox.BorderStyle = BorderStyle.FixedSingle;
-            textBox.Font = new Font(MainFont, 9F);
-            textBox.MinimumSize = new Size(150, 25);
-        }
-
-        public static void ApplyComboBoxStyle(ComboBox comboBox)
-        {
-            comboBox.BackColor = LightColor;
-            comboBox.ForeColor = DarkColor;
-            comboBox.FlatStyle = FlatStyle.Flat;
-            comboBox.Font = new Font(MainFont, 9F);
-            comboBox.MinimumSize = new Size(150, 25);
+            label.Font = bold ? new Font(MainFont.FontFamily, MainFont.Size, FontStyle.Bold) : MainFont;
+            label.TextAlign = ContentAlignment.MiddleLeft;
         }
 
         public static void ApplyDateTimePickerStyle(DateTimePicker dateTimePicker)
         {
-            dateTimePicker.BackColor = LightColor;
+            dateTimePicker.BackColor = Color.White;
             dateTimePicker.ForeColor = DarkColor;
-            dateTimePicker.Font = new Font(MainFont, 9F);
-            dateTimePicker.MinimumSize = new Size(150, 25);
+            dateTimePicker.Format = DateTimePickerFormat.Short;
+            dateTimePicker.Font = MainFont;
         }
 
-        public static void ApplyCheckBoxStyle(CheckBox checkBox)
+        public static void ApplyPanelStyle(Panel panel)
         {
-            checkBox.ForeColor = DarkColor;
-            checkBox.Font = new Font(MainFont, 9F);
-            checkBox.BackColor = Color.Transparent;
+            panel.BackColor = Color.Transparent;
         }
     }
 }

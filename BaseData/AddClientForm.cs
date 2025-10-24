@@ -2,21 +2,20 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace BaseData
 {
     public partial class AddClientForm : Form
     {
-        private System.Windows.Forms.TextBox txtSurname;
-        private System.Windows.Forms.TextBox txtName;
-        private System.Windows.Forms.TextBox txtMiddleName;
-        private System.Windows.Forms.TextBox txtLocation;
-        private System.Windows.Forms.TextBox txtPhone;
-        private System.Windows.Forms.TextBox txtEmail;
-        private CheckBox chkConstClient;
-        private System.Windows.Forms.Button btnAdd;
-        private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.TextBox? txtSurname;
+        private System.Windows.Forms.TextBox? txtName;
+        private System.Windows.Forms.TextBox? txtMiddleName;
+        private System.Windows.Forms.TextBox? txtLocation;
+        private System.Windows.Forms.TextBox? txtPhone;
+        private System.Windows.Forms.TextBox? txtEmail;
+        private CheckBox? chkConstClient;
+        private System.Windows.Forms.Button? btnAdd;
+        private System.Windows.Forms.Button? btnCancel;
         private int? _clientId;
         Log rch = new Log();
 
@@ -53,13 +52,13 @@ namespace BaseData
                 if (txtPhone != null) Styles.ApplyTextBoxStyle(txtPhone);
                 if (txtEmail != null) Styles.ApplyTextBoxStyle(txtEmail);
 
-                if (btnAdd != null) Styles.ApplyButtonStyle(btnAdd);
+                if (btnAdd != null) Styles.ApplyPrimaryButtonStyle(btnAdd);
                 if (btnCancel != null) Styles.ApplySecondaryButtonStyle(btnCancel);
 
                 if (chkConstClient != null)
                 {
                     chkConstClient.ForeColor = Styles.DarkColor;
-                    chkConstClient.Font = new Font(Styles.MainFont, 9F);
+                    chkConstClient.Font = Styles.MainFont;
                 }
                 rch.LogInfo("Стили применены успешно");
             }
@@ -83,12 +82,12 @@ namespace BaseData
             mainPanel.RowCount = 10;
             mainPanel.ColumnCount = 2;
             mainPanel.Padding = new Padding(10);
-            mainPanel.BackColor = Color.Transparent;
+            Styles.ApplyPanelStyle(mainPanel);
 
             Label titleLabel = new Label()
             {
                 Text = "Добавление клиента",
-                Font = new Font(Styles.MainFont, 12F, FontStyle.Bold),
+                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
                 ForeColor = Styles.DarkColor,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Top,
@@ -96,41 +95,50 @@ namespace BaseData
             };
 
             Label lblSurname = new Label() { Text = "Фамилия:*", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(lblSurname, true);
             txtSurname = new System.Windows.Forms.TextBox();
+            Styles.ApplyTextBoxStyle(txtSurname);
 
             Label lblName = new Label() { Text = "Имя:*", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(lblName, true);
             txtName = new System.Windows.Forms.TextBox();
+            Styles.ApplyTextBoxStyle(txtName);
 
             Label lblMiddleName = new Label() { Text = "Отчество:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(lblMiddleName);
             txtMiddleName = new System.Windows.Forms.TextBox();
+            Styles.ApplyTextBoxStyle(txtMiddleName);
 
             Label lblLocation = new Label() { Text = "Адрес:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(lblLocation);
             txtLocation = new System.Windows.Forms.TextBox();
+            Styles.ApplyTextBoxStyle(txtLocation);
 
             Label lblPhone = new Label() { Text = "Телефон:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(lblPhone);
             txtPhone = new System.Windows.Forms.TextBox();
+            Styles.ApplyTextBoxStyle(txtPhone);
+
             Label lblEmail = new Label() { Text = "Email:*", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(lblEmail, true);
             txtEmail = new System.Windows.Forms.TextBox();
+            Styles.ApplyTextBoxStyle(txtEmail);
 
             chkConstClient = new CheckBox() { Text = "Постоянный клиент" };
+            chkConstClient.ForeColor = Styles.DarkColor;
+            chkConstClient.Font = Styles.MainFont;
 
             btnAdd = new System.Windows.Forms.Button() { Text = "Добавить", Size = new Size(120, 45) };
+            Styles.ApplyPrimaryButtonStyle(btnAdd);
             btnAdd.Click += BtnAdd_Click;
 
             btnCancel = new System.Windows.Forms.Button() { Text = "Отмена", Size = new Size(120, 45) };
+            Styles.ApplySecondaryButtonStyle(btnCancel);
             btnCancel.Click += (s, e) =>
             {
                 rch.LogInfo("Форма добавления клиента закрыта по отмене");
                 this.Close();
             };
-
-
-            Styles.ApplyLabelStyle(lblSurname, true);
-            Styles.ApplyLabelStyle(lblName, true);
-            Styles.ApplyLabelStyle(lblMiddleName);
-            Styles.ApplyLabelStyle(lblLocation);
-            Styles.ApplyLabelStyle(lblPhone);
-            Styles.ApplyLabelStyle(lblEmail, true);
 
             mainPanel.Controls.Add(lblSurname, 0, 0);
             mainPanel.Controls.Add(txtSurname!, 1, 0);
@@ -149,7 +157,7 @@ namespace BaseData
 
             Panel buttonsPanel = new Panel();
             buttonsPanel.Dock = DockStyle.Fill;
-            buttonsPanel.BackColor = Color.Transparent;
+            Styles.ApplyPanelStyle(buttonsPanel);
             mainPanel.SetColumnSpan(buttonsPanel, 2);
             mainPanel.Controls.Add(buttonsPanel, 0, 8);
 
@@ -181,6 +189,7 @@ namespace BaseData
             rch.LogInfo("Компоненты формы инициализированы");
         }
 
+        // Остальные методы остаются без изменений...
         private void LoadClientData(int clientId)
         {
             try
@@ -240,10 +249,6 @@ namespace BaseData
         private void AddClient(string surname, string name, string middlename, string location, string phone, string email, bool constClient)
         {
             rch.LogInfo("Начало процедуры добавления клиента");
-            //surname = surname.TrimEnd();
-            //name = name.TrimEnd();
-            //middlename = middlename.TrimEnd();
-            //email = email.TrimEnd();
             (bool isValid, string errorMessage) = ValidatorClient.ValidateClientData(surname, name, middlename, location, phone, email, constClient);
             if (!isValid)
             {
@@ -262,7 +267,6 @@ namespace BaseData
                 VALUES (@surname, @name, @middlename, @location, @phone, @email, @constclient)",
                             connection);
 
-                    // Всегда передаем фамилию как строку (даже пустую)
                     command.Parameters.AddWithValue("surname", surname.Trim());
                     command.Parameters.AddWithValue("name", name.Trim());
                     command.Parameters.AddWithValue("middlename", string.IsNullOrEmpty(middlename) ? (object)DBNull.Value : middlename.Trim());
@@ -322,7 +326,6 @@ namespace BaseData
                 return;
             }
 
-            // Если фамилия пустая, используем пустую строку вместо NULL
             if (string.IsNullOrEmpty(surname))
             {
                 surname = "";
@@ -342,7 +345,6 @@ namespace BaseData
                 WHERE id = @id", connection);
 
                     command.Parameters.AddWithValue("id", clientId);
-                    // Всегда передаем фамилию как строку (даже пустую)
                     command.Parameters.AddWithValue("surname", surname.Trim());
                     command.Parameters.AddWithValue("name", name.Trim());
                     command.Parameters.AddWithValue("middlename", string.IsNullOrEmpty(middlename) ? (object)DBNull.Value : middlename.Trim());
@@ -425,6 +427,7 @@ namespace BaseData
             rch.LogInfo($"Форма добавления/редактирования клиента закрыта. Причина: {e.CloseReason}");
             base.OnFormClosed(e);
         }
+
         private bool IsValidName(string name)
         {
             if (string.IsNullOrEmpty(name)) return true;

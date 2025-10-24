@@ -34,28 +34,28 @@ namespace BaseData
         {
             try
             {
-                Styles.ApplyFormStyle(this);
+                Form1.ApplyFormStyle(this);
 
                 if (TitleLabel != null)
                 {
-                    TitleLabel.Font = new Font(Styles.MainFont, 14F, FontStyle.Bold);
-                    TitleLabel.ForeColor = Styles.DarkColor;
+                    TitleLabel.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
+                    TitleLabel.ForeColor = Form1.DarkColor;
                     TitleLabel.TextAlign = ContentAlignment.MiddleCenter;
                 }
 
-                if (PortText != null) Styles.ApplyTextBoxStyle(PortText);
-                if (BdText != null) Styles.ApplyTextBoxStyle(BdText);
-                if (IdText != null) Styles.ApplyTextBoxStyle(IdText);
-                if (PasswordText != null) Styles.ApplyTextBoxStyle(PasswordText);
+                if (PortText != null) Form1.ApplyTextBoxStyle(PortText);
+                if (BdText != null) Form1.ApplyTextBoxStyle(BdText);
+                if (IdText != null) Form1.ApplyTextBoxStyle(IdText);
+                if (PasswordText != null) Form1.ApplyTextBoxStyle(PasswordText);
 
-                if (PortLabel != null) Styles.ApplyLabelStyle(PortLabel, true);
-                if (BdLabel != null) Styles.ApplyLabelStyle(BdLabel, true);
-                if (IdLabel != null) Styles.ApplyLabelStyle(IdLabel, true);
-                if (PasswordLabel != null) Styles.ApplyLabelStyle(PasswordLabel, true);
+                if (PortLabel != null) Form1.ApplyLabelStyle(PortLabel, true);
+                if (BdLabel != null) Form1.ApplyLabelStyle(BdLabel, true);
+                if (IdLabel != null) Form1.ApplyLabelStyle(IdLabel, true);
+                if (PasswordLabel != null) Form1.ApplyLabelStyle(PasswordLabel, true);
 
-                if (EntryButton != null) Styles.ApplyButtonStyle(EntryButton);
-                if (AutoButton != null) Styles.ApplySecondaryButtonStyle(AutoButton);
-                if (ResetButton != null) Styles.ApplyButtonStyle(ResetButton);
+                if (EntryButton != null) Form1.ApplyButtonStyle(EntryButton);
+                if (AutoButton != null) Form1.ApplySecondaryButtonStyle(AutoButton);
+                if (ResetButton != null) Form1.ApplyButtonStyle(ResetButton);
             }
             catch (Exception ex)
             {
@@ -104,6 +104,7 @@ namespace BaseData
             currency VARCHAR(3) DEFAULT 'RUB'
         );";
         }
+
         private void RecreateDatabaseStructure_Click(object? sender, EventArgs e)
         {
             using (NpgsqlConnection sqlConnection = new NpgsqlConnection(AppSettings.SqlConnection))
@@ -181,11 +182,10 @@ namespace BaseData
         private void Auto_Click(object? sender, EventArgs e)
         {
             if (PortText != null) PortText.Text = "5432";
-            if (BdText != null) BdText.Text = "Internet-shop(Project)";
+            if (BdText != null) BdText.Text = "newdata";
             if (IdText != null) IdText.Text = "postgres";
-            if (PasswordText != null) PasswordText.Text = "WE<3ANGELINA";
+            if (PasswordText != null) PasswordText.Text = "Al7xsemenov@";
         }
-       
 
         private void InitializeComponent()
         {

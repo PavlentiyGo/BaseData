@@ -7,10 +7,11 @@ namespace BaseData
     public partial class Form3 : Form
     {
         private TabControl? mainTabControl;
-        private static TabPage clientsTabPage;
-        private static TabPage goodsTabPage;
-        private static TabPage sellsTabPage;
+        private static TabPage? clientsTabPage;
+        private static TabPage? goodsTabPage;
+        private static TabPage? sellsTabPage;
         Log rch = new Log();
+
         public Form3(Log log)
         {
             rch = log;
