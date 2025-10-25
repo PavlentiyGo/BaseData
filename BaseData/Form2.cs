@@ -34,44 +34,43 @@ namespace BaseData
         {
             try
             {
-                Form1.ApplyFormStyle(this);
+                Styles.ApplyFormStyle(this); // Вместо Form1.ApplyFormStyle
 
                 if (TitleLabel != null)
                 {
                     TitleLabel.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-                    TitleLabel.ForeColor = Form1.DarkColor;
+                    TitleLabel.ForeColor = Styles.DarkColor; // Используем Styles
                     TitleLabel.TextAlign = ContentAlignment.MiddleCenter;
                 }
 
-                if (PortText != null) Form1.ApplyTextBoxStyle(PortText);
-                if (BdText != null) Form1.ApplyTextBoxStyle(BdText);
-                if (IdText != null) Form1.ApplyTextBoxStyle(IdText);
-                if (PasswordText != null) Form1.ApplyTextBoxStyle(PasswordText);
+                if (PortText != null) Styles.ApplyTextBoxStyle(PortText); // Вместо Form1.ApplyTextBoxStyle
+                if (BdText != null) Styles.ApplyTextBoxStyle(BdText);
+                if (IdText != null) Styles.ApplyTextBoxStyle(IdText);
+                if (PasswordText != null) Styles.ApplyTextBoxStyle(PasswordText);
 
-                if (PortLabel != null) Form1.ApplyLabelStyle(PortLabel, true);
-                if (BdLabel != null) Form1.ApplyLabelStyle(BdLabel, true);
-                if (IdLabel != null) Form1.ApplyLabelStyle(IdLabel, true);
-                if (PasswordLabel != null) Form1.ApplyLabelStyle(PasswordLabel, true);
+                if (PortLabel != null) Styles.ApplyLabelStyle(PortLabel, true); // Вместо Form1.ApplyLabelStyle
+                if (BdLabel != null) Styles.ApplyLabelStyle(BdLabel, true);
+                if (IdLabel != null) Styles.ApplyLabelStyle(IdLabel, true);
+                if (PasswordLabel != null) Styles.ApplyLabelStyle(PasswordLabel, true);
 
-                // Применяем стиль заголовка к кнопкам
                 Font buttonFont = new Font("Segoe UI", 10F, FontStyle.Bold);
 
                 if (EntryButton != null)
                 {
-                    Form1.ApplyButtonStyle(EntryButton);
-                    EntryButton.Font = buttonFont; 
+                    Styles.ApplyPrimaryButtonStyle(EntryButton); // Вместо Form1.ApplyButtonStyle
+                    EntryButton.Font = buttonFont;
                 }
 
                 if (AutoButton != null)
                 {
-                    Form1.ApplySecondaryButtonStyle(AutoButton);
-                    AutoButton.Font = buttonFont; 
+                    Styles.ApplySecondaryButtonStyle(AutoButton); // Вместо Form1.ApplySecondaryButtonStyle
+                    AutoButton.Font = buttonFont;
                 }
 
                 if (ResetButton != null)
                 {
-                    Form1.ApplyButtonStyle(ResetButton);
-                    ResetButton.Font = buttonFont; 
+                    Styles.ApplyPrimaryButtonStyle(ResetButton); // Вместо Form1.ApplyButtonStyle
+                    ResetButton.Font = buttonFont;
                 }
             }
             catch (Exception ex)

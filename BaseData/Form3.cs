@@ -9,7 +9,7 @@ namespace BaseData
         private TabControl? mainTabControl;
         private static TabPage? clientsTabPage;
         private static TabPage? goodsTabPage;
-        private static TabPage? sellsTabPage;
+        private static TabPage? ordersTabPage;
         Log rch = new Log();
 
         public Form3(Log log)
@@ -24,26 +24,27 @@ namespace BaseData
             this.mainTabControl = new TabControl();
             clientsTabPage = new TabPage();
             goodsTabPage = new TabPage();
-            sellsTabPage = new TabPage();
+            ordersTabPage = new TabPage();
 
             this.mainTabControl.Dock = DockStyle.Fill;
             this.mainTabControl.Controls.Add(clientsTabPage);
             this.mainTabControl.Controls.Add(goodsTabPage);
-            this.mainTabControl.Controls.Add(sellsTabPage);
+            this.mainTabControl.Controls.Add(ordersTabPage);
             this.mainTabControl.Location = new Point(0, 0);
             this.mainTabControl.Size = new Size(1000, 700);
 
-            clientsTabPage.Text = MetaInformation.tables[0];
+            // Устанавливаем фиксированные названия вкладок
+            clientsTabPage.Text = "Клиенты";
             clientsTabPage.Padding = new Padding(10);
             clientsTabPage.BackColor = Styles.LightColor;
 
-            goodsTabPage.Text = MetaInformation.tables[1];
+            goodsTabPage.Text = "Товары";
             goodsTabPage.Padding = new Padding(10);
             goodsTabPage.BackColor = Styles.LightColor;
 
-            sellsTabPage.Text = MetaInformation.tables[3];
-            sellsTabPage.Padding = new Padding(10);
-            sellsTabPage.BackColor = Styles.LightColor;
+            ordersTabPage.Text = "Заказы";
+            ordersTabPage.Padding = new Padding(10);
+            ordersTabPage.BackColor = Styles.LightColor;
 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
@@ -60,15 +61,24 @@ namespace BaseData
                 Styles.ApplyFormStyle(this);
                 if (this.mainTabControl != null)
                 {
+                    // Используем стандартный режим отрисовки вместо OwnerDraw
                     Styles.ApplyTabControlStyle(this.mainTabControl);
 
                     this.mainTabControl.ItemSize = new Size(120, 35);
                     this.mainTabControl.SizeMode = TabSizeMode.Fixed;
 
+                    // Убедимся, что используется стандартная отрисовка
+                    this.mainTabControl.DrawMode = TabDrawMode.Normal;
+
                     foreach (TabPage tabPage in this.mainTabControl.TabPages)
                     {
                         tabPage.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+                        // Явно устанавливаем цвет текста для вкладок
+                        tabPage.ForeColor = Styles.DarkColor;
                     }
+
+                    // Устанавливаем цвет текста для активной вкладки
+                    this.mainTabControl.SelectedTab?.SetForeColor(Styles.DarkColor);
                 }
             }
             catch (Exception ex)
@@ -90,7 +100,7 @@ namespace BaseData
             {
                 LoadClientsTab();
                 LoadGoodsTab();
-                LoadSellsTab();
+                LoadOrdersTab();
             }
             catch (Exception ex)
             {
@@ -156,16 +166,16 @@ namespace BaseData
             }
         }
 
-        private void LoadSellsTab()
+        private void LoadOrdersTab()
         {
-            if (sellsTabPage == null) return;
+            if (ordersTabPage == null) return;
 
             try
             {
                 SellsUC sells = new SellsUC(rch);
                 sells.Dock = DockStyle.Fill;
-                sellsTabPage.Controls.Clear();
-                sellsTabPage.Controls.Add(sells);
+                ordersTabPage.Controls.Clear();
+                ordersTabPage.Controls.Add(sells);
 
                 if (AppSettings.IsConnectionStringSet)
                 {
@@ -173,14 +183,14 @@ namespace BaseData
                 }
                 else
                 {
-                    AddInfoLabelToTab(sellsTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
+                    AddInfoLabelToTab(ordersTabPage, "Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                     rch.LogInfo("Подключение к базе данных не установлено.\nПожалуйста, сначала подключитесь к базе данных.");
                 }
             }
             catch (Exception ex)
             {
-                AddErrorLabelToTab(sellsTabPage, $"Ошибка загрузки продаж: {ex.Message}");
-                rch.LogError($"Ошибка загрузки продаж: {ex.Message}");
+                AddErrorLabelToTab(ordersTabPage, $"Ошибка загрузки заказов: {ex.Message}");
+                rch.LogError($"Ошибка загрузки заказов: {ex.Message}");
             }
         }
 
@@ -213,11 +223,22 @@ namespace BaseData
             tabPage.Controls.Clear();
             tabPage.Controls.Add(label);
         }
+
         public static void RefreshTags()
         {
-            clientsTabPage.Text = MetaInformation.tables[0];
-            goodsTabPage.Text = MetaInformation.tables[1];
-            sellsTabPage.Text = MetaInformation.tables[3];
+            // Устанавливаем фиксированные названия вкладок
+            if (clientsTabPage != null) clientsTabPage.Text = "Клиенты";
+            if (goodsTabPage != null) goodsTabPage.Text = "Товары";
+            if (ordersTabPage != null) ordersTabPage.Text = "Заказы";
+        }
+    }
+
+    // Extension method для установки цвета текста вкладки
+    public static class TabPageExtensions
+    {
+        public static void SetForeColor(this TabPage tabPage, Color color)
+        {
+            tabPage.ForeColor = color;
         }
     }
 }

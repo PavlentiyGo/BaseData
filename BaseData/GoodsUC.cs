@@ -3,20 +3,22 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Linq;
 
 namespace BaseData
 {
     public class GoodsUC : UserControl
     {
-        static private string currentConnectionString;
+        static private string? currentConnectionString;
         private Button? btnDelete;
         private Button? btnEdit;
         private Button? sqlBuilderButton;
-        private static DataGridView dataGridView1;
+        private static DataGridView? dataGridView1;
         private Button? changeTableButton;
         private TextBox? searchTextBox;
         private ComboBox? searchTypeComboBox;
         private Button? btnResetSearch;
+        private Button? joinBuilderButton;
         Log rch = new Log();
 
         public GoodsUC(Log log)
@@ -35,6 +37,7 @@ namespace BaseData
             this.searchTextBox = new TextBox();
             this.searchTypeComboBox = new ComboBox();
             this.btnResetSearch = new Button();
+            this.joinBuilderButton = new Button();
             dataGridView1 = new DataGridView();
 
             SuspendLayout();
@@ -44,10 +47,10 @@ namespace BaseData
             searchPanel.Dock = DockStyle.Top;
             searchPanel.Height = 50;
             searchPanel.Padding = new Padding(10, 5, 10, 5);
-            searchPanel.BackColor = Color.FromArgb(240, 240, 240);
+            searchPanel.BackColor = Styles.LightColor;
 
             // Элементы поиска
-            searchTextBox.Location = new Point(10, 12);
+            searchTextBox!.Location = new Point(10, 12);
             searchTextBox.Size = new Size(200, 25);
             searchTextBox.PlaceholderText = "Введите текст для поиска...";
             searchTextBox.KeyPress += (s, e) =>
@@ -58,7 +61,7 @@ namespace BaseData
                 }
             };
 
-            searchTypeComboBox.Location = new Point(220, 12);
+            searchTypeComboBox!.Location = new Point(220, 12);
             searchTypeComboBox.Size = new Size(120, 25);
             searchTypeComboBox.Items.AddRange(new string[] { "Название", "ID", "Цена от", "В наличии" });
             searchTypeComboBox.SelectedIndex = 0;
@@ -70,7 +73,7 @@ namespace BaseData
             btnSearch.Size = new Size(80, 25);
             btnSearch.Click += (s, e) => PerformSearch();
 
-            btnResetSearch.Text = "Сброс";
+            btnResetSearch!.Text = "Сброс";
             btnResetSearch.Location = new Point(440, 12);
             btnResetSearch.Size = new Size(80, 25);
             btnResetSearch.Click += (s, e) =>
@@ -94,28 +97,35 @@ namespace BaseData
             Size buttonSize = new Size(140, 60);
             int buttonSpacing = 15;
 
-            this.btnEdit.Text = "Редактировать";
+            this.btnEdit!.Text = "Редактировать";
             this.btnEdit.Size = buttonSize;
             this.btnEdit.Location = new Point(buttonSpacing, 10);
             this.btnEdit.Click += EditSelectedGood;
 
-            this.changeTableButton.Text = "Изменить\nтаблицу";
+            this.changeTableButton!.Text = "Изменить\nтаблицу";
             this.changeTableButton.Size = buttonSize;
             this.changeTableButton.Location = new Point(btnEdit.Right + buttonSpacing, 10);
             this.changeTableButton.Click += ChangeTableClick;
 
-            this.sqlBuilderButton.Text = "Конструктор\nSQL";
+            this.sqlBuilderButton!.Text = "Конструктор\nSQL";
             this.sqlBuilderButton.Size = buttonSize;
             this.sqlBuilderButton.Location = new Point(changeTableButton.Right + buttonSpacing, 10);
             this.sqlBuilderButton.Click += OpenSqlBuilder;
             this.sqlBuilderButton.Font = new Font(sqlBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
 
-            this.btnDelete.Text = "Удалить";
+            this.btnDelete!.Text = "Удалить";
             this.btnDelete.Size = buttonSize;
             this.btnDelete.Location = new Point(sqlBuilderButton.Right + buttonSpacing, 10);
             this.btnDelete.Click += DeleteSelectedGood;
 
-            dataGridView1.AllowUserToAddRows = false;
+            // joinBuilderButton
+            this.joinBuilderButton!.Text = "Мастер\nсоединений";
+            this.joinBuilderButton.Size = buttonSize;
+            this.joinBuilderButton.Location = new Point(btnDelete.Right + buttonSpacing, 10);
+            this.joinBuilderButton.Click += OpenJoinBuilder;
+            this.joinBuilderButton.Font = new Font(joinBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
+
+            dataGridView1!.AllowUserToAddRows = false;
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.Dock = DockStyle.Fill;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -138,6 +148,7 @@ namespace BaseData
             buttonPanel.Controls.Add(this.changeTableButton);
             buttonPanel.Controls.Add(this.sqlBuilderButton);
             buttonPanel.Controls.Add(this.btnDelete);
+            buttonPanel.Controls.Add(this.joinBuilderButton);
 
             this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
@@ -151,6 +162,33 @@ namespace BaseData
             ResumeLayout(false);
         }
 
+        private void OpenJoinBuilder(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (!AppSettings.IsConnectionStringSet)
+                {
+                    MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    rch.LogWarning("Попытка открыть мастер соединений без подключения к БД");
+                    return;
+                }
+
+                using (JoinBuilderForm joinBuilderForm = new JoinBuilderForm(rch))
+                {
+                    rch.LogInfo("Открытие мастера соединений из формы товаров");
+                    joinBuilderForm.ShowDialog();
+                    rch.LogInfo("Мастер соединений закрыт");
+                }
+            }
+            catch (Exception ex)
+            {
+                rch.LogError($"Ошибка при открытии мастера соединений: {ex.Message}");
+                MessageBox.Show($"Ошибка при открытии мастера соединений: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void ApplyDataGridViewStyle()
         {
             try
@@ -159,17 +197,15 @@ namespace BaseData
                 {
                     Styles.ApplyDataGridViewStyle(dataGridView1);
 
-                    // Устанавливаем серый цвет заголовков
-                    dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
-                    dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
-                    dataGridView1.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
-                    dataGridView1.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.Black;
-            
-                    // Устанавливаем серый цвет выделения для ячеек и строк
-                    dataGridView1.DefaultCellStyle.SelectionBackColor = Color.LightGray;
-                    dataGridView1.DefaultCellStyle.SelectionForeColor = Color.Black;
-                    dataGridView1.RowHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
-            
+                    dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Styles.AccentColor;
+                    dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                    dataGridView1.ColumnHeadersDefaultCellStyle.SelectionBackColor = Styles.AccentColor;
+                    dataGridView1.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
+
+                    dataGridView1.DefaultCellStyle.SelectionBackColor = Color.FromArgb(245, 240, 235);
+                    dataGridView1.DefaultCellStyle.SelectionForeColor = Styles.DarkColor;
+                    dataGridView1.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(245, 240, 235);
+
                     dataGridView1.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
                     dataGridView1.DefaultCellStyle.Padding = new Padding(3);
                     dataGridView1.RowTemplate.Height = 30;
@@ -186,6 +222,14 @@ namespace BaseData
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            // Применяем стили к кнопке поиска
+            var btnSearch = searchPanel?.Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Найти");
+            if (btnSearch != null)
+            {
+                Styles.ApplySecondaryButtonStyle(btnSearch);
+                btnSearch.Font = new Font(btnSearch.Font.FontFamily, 9F, FontStyle.Regular);
+            }
 
             if (btnEdit != null)
             {
@@ -207,6 +251,11 @@ namespace BaseData
                 Styles.ApplySecondaryButtonStyle(sqlBuilderButton);
                 sqlBuilderButton.Font = new Font(sqlBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
             }
+            if (joinBuilderButton != null)
+            {
+                Styles.ApplySecondaryButtonStyle(joinBuilderButton);
+                joinBuilderButton.Font = new Font(joinBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
             if (searchTextBox != null)
             {
                 Styles.ApplyTextBoxStyle(searchTextBox);
@@ -221,6 +270,8 @@ namespace BaseData
                 btnResetSearch.Font = new Font(btnResetSearch.Font.FontFamily, 9F, FontStyle.Regular);
             }
         }
+
+        private Panel? searchPanel => this.Controls.OfType<Panel>().FirstOrDefault();
 
         private void DataGridView1_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
         {
