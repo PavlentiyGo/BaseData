@@ -42,16 +42,16 @@ namespace BaseData
         {
             try
             {
-                Form1.ApplyFormStyle(this);
+                Styles.ApplyFormStyle(this);
 
-                if (txtName != null) Form1.ApplyTextBoxStyle(txtName);
-                if (txtPrice != null) Form1.ApplyTextBoxStyle(txtPrice);
-                if (txtStock != null) Form1.ApplyTextBoxStyle(txtStock);
-                if (cmbUnit != null) Form1.ApplyComboBoxStyle(cmbUnit);
-                if (cmbCurrency != null) Form1.ApplyComboBoxStyle(cmbCurrency);
+                if (txtName != null) Styles.ApplyTextBoxStyle(txtName);
+                if (txtPrice != null) Styles.ApplyTextBoxStyle(txtPrice);
+                if (txtStock != null) Styles.ApplyTextBoxStyle(txtStock);
+                if (cmbUnit != null) Styles.ApplyComboBoxStyle(cmbUnit);
+                if (cmbCurrency != null) Styles.ApplyComboBoxStyle(cmbCurrency);
 
-                if (btnAdd != null) Form1.ApplyButtonStyle(btnAdd);
-                if (btnCancel != null) Form1.ApplySecondaryButtonStyle(btnCancel);
+                if (btnAdd != null) Styles.ApplyButtonStyle(btnAdd);
+                if (btnCancel != null) Styles.ApplySecondaryButtonStyle(btnCancel);
 
                 rch.LogInfo("Стили формы товара применены успешно");
             }
@@ -80,35 +80,30 @@ namespace BaseData
             Label titleLabel = new Label()
             {
                 Text = "Добавление товара",
-                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
-                ForeColor = Form1.DarkColor,
+                Font = new Font(Styles.MainFont, 12F, FontStyle.Bold),
+                ForeColor = Styles.DarkColor,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Top,
                 Height = 40
             };
 
             Label lblName = new Label() { Text = "Название:*", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblName, true);
             txtName = new TextBox();
 
             Label lblPrice = new Label() { Text = "Цена:*", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblPrice, true);
             txtPrice = new TextBox();
 
             Label lblCurrency = new Label() { Text = "Валюта:", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblCurrency);
             cmbCurrency = new ComboBox();
             cmbCurrency.Items.AddRange(new string[] { "RUB", "USD", "EUR", "KZT" });
             cmbCurrency.SelectedIndex = 0;
 
             Label lblUnit = new Label() { Text = "Единица:*", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblUnit, true);
             cmbUnit = new ComboBox();
             cmbUnit.Items.AddRange(new string[] { "шт", "кг", "л", "м", "уп" });
             cmbUnit.SelectedIndex = 0;
 
             Label lblStock = new Label() { Text = "Количество:", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblStock);
             txtStock = new TextBox() { Text = "0" };
 
             btnAdd = new Button() { Text = "Добавить", Size = new Size(120, 45) };
@@ -121,11 +116,11 @@ namespace BaseData
                 this.Close();
             };
 
-            Form1.ApplyLabelStyle(lblName, true);
-            Form1.ApplyLabelStyle(lblPrice, true);
-            Form1.ApplyLabelStyle(lblCurrency);
-            Form1.ApplyLabelStyle(lblUnit, true);
-            Form1.ApplyLabelStyle(lblStock);
+            Styles.ApplyLabelStyle(lblName, true);
+            Styles.ApplyLabelStyle(lblPrice, true);
+            Styles.ApplyLabelStyle(lblCurrency);
+            Styles.ApplyLabelStyle(lblUnit, true);
+            Styles.ApplyLabelStyle(lblStock);
 
             mainPanel.Controls.Add(lblName, 0, 0);
             mainPanel.Controls.Add(txtName!, 1, 0);
@@ -172,7 +167,6 @@ namespace BaseData
             rch.LogInfo("Компоненты формы товара инициализированы");
         }
 
-        // Остальные методы класса остаются без изменений
         private void LoadProductData(int productId)
         {
             try
@@ -371,7 +365,6 @@ namespace BaseData
             rch.LogInfo($"Форма добавления/редактирования товара закрыта. Причина: {e.CloseReason}");
             base.OnFormClosed(e);
         }
-
         public static bool IsRussianLetter(char c)
         {
             return (c >= 'а' && c <= 'я') || (c >= 'А' && c <= 'Я') || c == 'ё' || c == 'Ё';
@@ -381,12 +374,11 @@ namespace BaseData
         {
             return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
         }
-
         bool RusNotEng(string name)
         {
             bool flag = false;
             foreach (char c in name)
-            {
+            { 
                 if (IsRussianLetter(c))
                 {
                     flag = true;

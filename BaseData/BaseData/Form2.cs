@@ -34,45 +34,28 @@ namespace BaseData
         {
             try
             {
-                Form1.ApplyFormStyle(this);
+                Styles.ApplyFormStyle(this);
 
                 if (TitleLabel != null)
                 {
-                    TitleLabel.Font = new Font("Segoe UI", 14F, FontStyle.Bold);
-                    TitleLabel.ForeColor = Form1.DarkColor;
+                    TitleLabel.Font = new Font(Styles.MainFont, 14F, FontStyle.Bold);
+                    TitleLabel.ForeColor = Styles.DarkColor;
                     TitleLabel.TextAlign = ContentAlignment.MiddleCenter;
                 }
 
-                if (PortText != null) Form1.ApplyTextBoxStyle(PortText);
-                if (BdText != null) Form1.ApplyTextBoxStyle(BdText);
-                if (IdText != null) Form1.ApplyTextBoxStyle(IdText);
-                if (PasswordText != null) Form1.ApplyTextBoxStyle(PasswordText);
+                if (PortText != null) Styles.ApplyTextBoxStyle(PortText);
+                if (BdText != null) Styles.ApplyTextBoxStyle(BdText);
+                if (IdText != null) Styles.ApplyTextBoxStyle(IdText);
+                if (PasswordText != null) Styles.ApplyTextBoxStyle(PasswordText);
 
-                if (PortLabel != null) Form1.ApplyLabelStyle(PortLabel, true);
-                if (BdLabel != null) Form1.ApplyLabelStyle(BdLabel, true);
-                if (IdLabel != null) Form1.ApplyLabelStyle(IdLabel, true);
-                if (PasswordLabel != null) Form1.ApplyLabelStyle(PasswordLabel, true);
+                if (PortLabel != null) Styles.ApplyLabelStyle(PortLabel, true);
+                if (BdLabel != null) Styles.ApplyLabelStyle(BdLabel, true);
+                if (IdLabel != null) Styles.ApplyLabelStyle(IdLabel, true);
+                if (PasswordLabel != null) Styles.ApplyLabelStyle(PasswordLabel, true);
 
-                // Применяем стиль заголовка к кнопкам
-                Font buttonFont = new Font("Segoe UI", 10F, FontStyle.Bold);
-
-                if (EntryButton != null)
-                {
-                    Form1.ApplyButtonStyle(EntryButton);
-                    EntryButton.Font = buttonFont; 
-                }
-
-                if (AutoButton != null)
-                {
-                    Form1.ApplySecondaryButtonStyle(AutoButton);
-                    AutoButton.Font = buttonFont; 
-                }
-
-                if (ResetButton != null)
-                {
-                    Form1.ApplyButtonStyle(ResetButton);
-                    ResetButton.Font = buttonFont; 
-                }
+                if (EntryButton != null) Styles.ApplyButtonStyle(EntryButton);
+                if (AutoButton != null) Styles.ApplySecondaryButtonStyle(AutoButton);
+                if (ResetButton != null) Styles.ApplyButtonStyle(ResetButton);
             }
             catch (Exception ex)
             {
@@ -121,7 +104,6 @@ namespace BaseData
             currency VARCHAR(3) DEFAULT 'RUB'
         );";
         }
-
         private void RecreateDatabaseStructure_Click(object? sender, EventArgs e)
         {
             using (NpgsqlConnection sqlConnection = new NpgsqlConnection(AppSettings.SqlConnection))
@@ -164,50 +146,46 @@ namespace BaseData
 
         private void EntryButton_Click(object? sender, EventArgs e)
         {
-            try {
-                if (AppSettings.connect)
-                {
-                    MessageBox.Show("Вы уже подключены к базе данных");
-                    return;
-                }
-                if (string.IsNullOrEmpty(PortText?.Text) || string.IsNullOrEmpty(BdText?.Text) ||
-                    string.IsNullOrEmpty(IdText?.Text) || string.IsNullOrEmpty(PasswordText?.Text))
-                {
-                    MessageBox.Show("Пожалуйста, заполните все поля", "Внимание",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    rch.LogWarning("Пожалуйста, заполните все поля");
-                    return;
-                }
-
-                AppSettings.SqlConnection = $"Server=localhost;Port={PortText.Text};Database={BdText.Text};User Id={IdText.Text};Password={PasswordText.Text};";
-                MetaInformation meta = new MetaInformation();
-
-                if (AppSettings.TestConnection())
-                {
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
-                    AppSettings.connect = true;
-
-                }
-                else
-                {
-                    MessageBox.Show("Не удалось подключиться к БД", "Ошибка",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    rch.LogError("Не удалось подключиться к БД");
-                }
-            }catch (Exception ex)
+            if (AppSettings.connect)
             {
-                MessageBox.Show("Такой бд не существует");
+                MessageBox.Show("Вы уже подключены к базе данных");
+                return;
             }
-        } 
+            if (string.IsNullOrEmpty(PortText?.Text) || string.IsNullOrEmpty(BdText?.Text) ||
+                string.IsNullOrEmpty(IdText?.Text) || string.IsNullOrEmpty(PasswordText?.Text))
+            {
+                MessageBox.Show("Пожалуйста, заполните все поля", "Внимание",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                rch.LogWarning("Пожалуйста, заполните все поля");
+                return;
+            }
+
+            AppSettings.SqlConnection = $"Server=localhost;Port={PortText.Text};Database={BdText.Text};User Id={IdText.Text};Password={PasswordText.Text};";
+            MetaInformation meta = new MetaInformation();
+
+            if (AppSettings.TestConnection())
+            {
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+                AppSettings.connect = true;
+
+            }
+            else
+            {
+                MessageBox.Show("Не удалось подключиться к БД", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                rch.LogError("Не удалось подключиться к БД");
+            }
+        }
 
         private void Auto_Click(object? sender, EventArgs e)
         {
             if (PortText != null) PortText.Text = "5432";
-            if (BdText != null) BdText.Text = "newdata";
+            if (BdText != null) BdText.Text = "online-store1";
             if (IdText != null) IdText.Text = "postgres";
-            if (PasswordText != null) PasswordText.Text = "Al7xsemenov@";
+            if (PasswordText != null) PasswordText.Text = "m63bhqhn6";
         }
+       
 
         private void InitializeComponent()
         {
