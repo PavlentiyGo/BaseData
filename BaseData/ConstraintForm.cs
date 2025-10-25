@@ -16,8 +16,9 @@ namespace BaseData
         private int TableNum;
         private Log rch = new Log();
 
-        public ConstraintForm(int num)
+        public ConstraintForm(int num, Log log)
         {
+            rch = log;
             TableNum = num;
             InitializeComponent();
             ApplyStyles();

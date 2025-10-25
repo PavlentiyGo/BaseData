@@ -67,7 +67,7 @@ namespace BaseData
 
         private void SetConstraint_Click(object sender, EventArgs e)
         {
-            ConstraintForm constraintForm = new ConstraintForm(TableNum);
+            ConstraintForm constraintForm = new ConstraintForm(TableNum,log);
             constraintForm.ShowDialog();
             this.Close();
         }
@@ -268,7 +268,7 @@ namespace BaseData
 
         private void DeleteConstraintBtn_Click(object sender, EventArgs e)
         {
-            DeleteConstraints del = new DeleteConstraints(TableNum);
+            DeleteConstraints del = new DeleteConstraints(TableNum,log);
             del.ShowDialog();
             this.Close();
         }

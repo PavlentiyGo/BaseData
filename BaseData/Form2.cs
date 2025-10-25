@@ -163,37 +163,42 @@ namespace BaseData
 
         private void EntryButton_Click(object? sender, EventArgs e)
         {
-            if (AppSettings.connect)
-            {
-                MessageBox.Show("Вы уже подключены к базе данных");
-                return;
-            }
-            if (string.IsNullOrEmpty(PortText?.Text) || string.IsNullOrEmpty(BdText?.Text) ||
-                string.IsNullOrEmpty(IdText?.Text) || string.IsNullOrEmpty(PasswordText?.Text))
-            {
-                MessageBox.Show("Пожалуйста, заполните все поля", "Внимание",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                rch.LogWarning("Пожалуйста, заполните все поля");
-                return;
-            }
+            try {
+                if (AppSettings.connect)
+                {
+                    MessageBox.Show("Вы уже подключены к базе данных");
+                    return;
+                }
+                if (string.IsNullOrEmpty(PortText?.Text) || string.IsNullOrEmpty(BdText?.Text) ||
+                    string.IsNullOrEmpty(IdText?.Text) || string.IsNullOrEmpty(PasswordText?.Text))
+                {
+                    MessageBox.Show("Пожалуйста, заполните все поля", "Внимание",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    rch.LogWarning("Пожалуйста, заполните все поля");
+                    return;
+                }
 
-            AppSettings.SqlConnection = $"Server=localhost;Port={PortText.Text};Database={BdText.Text};User Id={IdText.Text};Password={PasswordText.Text};";
-            MetaInformation meta = new MetaInformation();
+                AppSettings.SqlConnection = $"Server=localhost;Port={PortText.Text};Database={BdText.Text};User Id={IdText.Text};Password={PasswordText.Text};";
+                MetaInformation meta = new MetaInformation();
 
-            if (AppSettings.TestConnection())
-            {
-                this.DialogResult = DialogResult.OK;
-                this.Close();
-                AppSettings.connect = true;
+                if (AppSettings.TestConnection())
+                {
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                    AppSettings.connect = true;
 
-            }
-            else
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось подключиться к БД", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    rch.LogError("Не удалось подключиться к БД");
+                }
+            }catch (Exception ex)
             {
-                MessageBox.Show("Не удалось подключиться к БД", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                rch.LogError("Не удалось подключиться к БД");
+                MessageBox.Show("Такой бд не существует");
             }
-        }
+        } 
 
         private void Auto_Click(object? sender, EventArgs e)
         {

@@ -11,9 +11,10 @@ namespace BaseData
         private int TabNum;
         private Log rch = new Log();
 
-        public DeleteConstraints(int tabNum)
+        public DeleteConstraints(int tabNum, Log log )
         {
             TabNum = tabNum;
+            rch = log;
             InitializeComponent();
             ApplyStyles();
             System.Windows.Forms.ComboBox deleteComboBox = this.DeleteComboBox;
