@@ -19,7 +19,7 @@ namespace BaseData
         {
             try
             {
-                Form1.ApplyFormStyle(this);
+                Styles.ApplyFormStyle(this);
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace BaseData
             {
                 Text = "Добавление данных",
                 Font = new Font("Segoe UI", 16F, FontStyle.Bold),
-                ForeColor = Form1.DarkColor,
+                ForeColor = Styles.DarkColor, // Используем Styles вместо Form1
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Fill,
             };
@@ -151,10 +151,10 @@ namespace BaseData
 
             this.ResumeLayout(false);
 
-            // Применяем стили к кнопкам после инициализации
-            Form1.ApplyButtonStyle(btnAddClient);
-            Form1.ApplyButtonStyle(btnAddProduct);
-            Form1.ApplyButtonStyle(btnAddSale);
+            // Применяем стили к кнопкам через Styles вместо Form1
+            Styles.ApplyPrimaryButtonStyle(btnAddClient);
+            Styles.ApplyPrimaryButtonStyle(btnAddProduct);
+            Styles.ApplyPrimaryButtonStyle(btnAddSale);
         }
     }
 }

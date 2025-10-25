@@ -29,7 +29,7 @@ namespace BaseData
         {
             try
             {
-                Styles.ApplyFormStyle(this);
+                Styles.ApplyFormStyle(this); // Вместо Form1.ApplyFormStyle
 
                 if (AddColumn != null) Styles.ApplyPrimaryButtonStyle(AddColumn);
                 if (DeleteColumn != null) Styles.ApplyDangerButtonStyle(DeleteColumn);

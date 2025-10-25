@@ -42,16 +42,16 @@ namespace BaseData
         {
             try
             {
-                Form1.ApplyFormStyle(this);
+                Styles.ApplyFormStyle(this);
 
-                if (txtName != null) Form1.ApplyTextBoxStyle(txtName);
-                if (txtPrice != null) Form1.ApplyTextBoxStyle(txtPrice);
-                if (txtStock != null) Form1.ApplyTextBoxStyle(txtStock);
-                if (cmbUnit != null) Form1.ApplyComboBoxStyle(cmbUnit);
-                if (cmbCurrency != null) Form1.ApplyComboBoxStyle(cmbCurrency);
+                if (txtName != null) Styles.ApplyTextBoxStyle(txtName);
+                if (txtPrice != null) Styles.ApplyTextBoxStyle(txtPrice);
+                if (txtStock != null) Styles.ApplyTextBoxStyle(txtStock);
+                if (cmbUnit != null) Styles.ApplyComboBoxStyle(cmbUnit);
+                if (cmbCurrency != null) Styles.ApplyComboBoxStyle(cmbCurrency);
 
-                if (btnAdd != null) Form1.ApplyButtonStyle(btnAdd);
-                if (btnCancel != null) Form1.ApplySecondaryButtonStyle(btnCancel);
+                if (btnAdd != null) Styles.ApplyPrimaryButtonStyle(btnAdd);
+                if (btnCancel != null) Styles.ApplySecondaryButtonStyle(btnCancel);
 
                 rch.LogInfo("Стили формы товара применены успешно");
             }
@@ -81,34 +81,34 @@ namespace BaseData
             {
                 Text = "Добавление товара",
                 Font = new Font("Segoe UI", 12F, FontStyle.Bold),
-                ForeColor = Form1.DarkColor,
+                ForeColor = Styles.DarkColor, // Используем Styles вместо Form1
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Top,
                 Height = 40
             };
 
-            Label lblName = new Label() { Text = "Название:*", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblName, true);
+            Label lblName = new Label() { Text = "Название:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(lblName, true); // Используем Styles вместо Form1
             txtName = new TextBox();
 
-            Label lblPrice = new Label() { Text = "Цена:*", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblPrice, true);
+            Label lblPrice = new Label() { Text = "Цена:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(lblPrice, true); // Используем Styles вместо Form1
             txtPrice = new TextBox();
 
             Label lblCurrency = new Label() { Text = "Валюта:", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblCurrency);
+            Styles.ApplyLabelStyle(lblCurrency); // Используем Styles вместо Form1
             cmbCurrency = new ComboBox();
             cmbCurrency.Items.AddRange(new string[] { "RUB", "USD", "EUR", "KZT" });
             cmbCurrency.SelectedIndex = 0;
 
-            Label lblUnit = new Label() { Text = "Единица:*", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblUnit, true);
+            Label lblUnit = new Label() { Text = "Единица:", TextAlign = ContentAlignment.MiddleRight };
+            Styles.ApplyLabelStyle(lblUnit, true); // Используем Styles вместо Form1
             cmbUnit = new ComboBox();
             cmbUnit.Items.AddRange(new string[] { "шт", "кг", "л", "м", "уп" });
             cmbUnit.SelectedIndex = 0;
 
             Label lblStock = new Label() { Text = "Количество:", TextAlign = ContentAlignment.MiddleRight };
-            Form1.ApplyLabelStyle(lblStock);
+            Styles.ApplyLabelStyle(lblStock); // Используем Styles вместо Form1
             txtStock = new TextBox() { Text = "0" };
 
             btnAdd = new Button() { Text = "Добавить", Size = new Size(120, 45) };
@@ -121,11 +121,8 @@ namespace BaseData
                 this.Close();
             };
 
-            Form1.ApplyLabelStyle(lblName, true);
-            Form1.ApplyLabelStyle(lblPrice, true);
-            Form1.ApplyLabelStyle(lblCurrency);
-            Form1.ApplyLabelStyle(lblUnit, true);
-            Form1.ApplyLabelStyle(lblStock);
+            // Удаляем повторные вызовы Form1.ApplyLabelStyle (строки 95-99)
+            // Styles уже применены выше для каждой метки
 
             mainPanel.Controls.Add(lblName, 0, 0);
             mainPanel.Controls.Add(txtName!, 1, 0);
@@ -172,7 +169,6 @@ namespace BaseData
             rch.LogInfo("Компоненты формы товара инициализированы");
         }
 
-        // Остальные методы класса остаются без изменений
         private void LoadProductData(int productId)
         {
             try

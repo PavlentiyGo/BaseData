@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Linq;
 
 namespace BaseData
 {
@@ -17,6 +18,7 @@ namespace BaseData
         private TextBox? searchTextBox;
         private ComboBox? searchTypeComboBox;
         private Button? btnResetSearch;
+        private Button? joinBuilderButton;
         Log rch = new Log();
 
         public Clients(Log log)
@@ -35,6 +37,7 @@ namespace BaseData
             this.searchTextBox = new TextBox();
             this.searchTypeComboBox = new ComboBox();
             this.btnResetSearch = new Button();
+            this.joinBuilderButton = new Button();
             dataGrid = new DataGridView();
 
             SuspendLayout();
@@ -44,10 +47,10 @@ namespace BaseData
             searchPanel.Dock = DockStyle.Top;
             searchPanel.Height = 50;
             searchPanel.Padding = new Padding(10, 5, 10, 5);
-            searchPanel.BackColor = Color.FromArgb(240, 240, 240);
+            searchPanel.BackColor = Styles.LightColor;
 
             // Элементы поиска
-            searchTextBox.Location = new Point(10, 12);
+            searchTextBox!.Location = new Point(10, 12);
             searchTextBox.Size = new Size(200, 25);
             searchTextBox.PlaceholderText = "Введите текст для поиска...";
             searchTextBox.KeyPress += (s, e) =>
@@ -58,7 +61,7 @@ namespace BaseData
                 }
             };
 
-            searchTypeComboBox.Location = new Point(220, 12);
+            searchTypeComboBox!.Location = new Point(220, 12);
             searchTypeComboBox.Size = new Size(120, 25);
             searchTypeComboBox.Items.AddRange(new string[] { "ФИО", "Email", "Телефон", "ID", "Постоянный" });
             searchTypeComboBox.SelectedIndex = 0;
@@ -70,7 +73,7 @@ namespace BaseData
             btnSearch.Size = new Size(80, 25);
             btnSearch.Click += (s, e) => PerformSearch();
 
-            btnResetSearch.Text = "Сброс";
+            btnResetSearch!.Text = "Сброс";
             btnResetSearch.Location = new Point(440, 12);
             btnResetSearch.Size = new Size(80, 25);
             btnResetSearch.Click += (s, e) =>
@@ -96,30 +99,37 @@ namespace BaseData
             int buttonSpacing = 15;
 
             // editButton
-            this.editButton.Text = "Редактировать";
+            this.editButton!.Text = "Редактировать";
             this.editButton.Size = buttonSize;
             this.editButton.Location = new Point(buttonSpacing, 10);
             this.editButton.Click += EditSelectedClient;
 
-            this.changeTableButton.Text = "Изменить\nтаблицу";
+            this.changeTableButton!.Text = "Изменить\nтаблицу";
             this.changeTableButton.Size = buttonSize;
             this.changeTableButton.Location = new Point(editButton.Right + buttonSpacing, 10);
             this.changeTableButton.Click += ChangeTableClick;
 
-            this.sqlBuilderButton.Text = "Конструктор\nSQL";
+            this.sqlBuilderButton!.Text = "Конструктор\nSQL";
             this.sqlBuilderButton.Size = buttonSize;
             this.sqlBuilderButton.Location = new Point(changeTableButton.Right + buttonSpacing, 10);
             this.sqlBuilderButton.Click += OpenSqlBuilder;
             this.sqlBuilderButton.Font = new Font(sqlBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
 
             // deleteButton
-            this.deleteButton.Text = "Удалить";
+            this.deleteButton!.Text = "Удалить";
             this.deleteButton.Size = buttonSize;
             this.deleteButton.Location = new Point(sqlBuilderButton.Right + buttonSpacing, 10);
             this.deleteButton.Click += DeleteSelectedClient;
 
+            // joinBuilderButton
+            this.joinBuilderButton!.Text = "Мастер\nсоединений";
+            this.joinBuilderButton.Size = buttonSize;
+            this.joinBuilderButton.Location = new Point(deleteButton.Right + buttonSpacing, 10);
+            this.joinBuilderButton.Click += OpenJoinBuilder;
+            this.joinBuilderButton.Font = new Font(joinBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
+
             // dataGrid
-            dataGrid.AllowUserToAddRows = false;
+            dataGrid!.AllowUserToAddRows = false;
             dataGrid.AllowUserToDeleteRows = false;
             dataGrid.Dock = DockStyle.Fill;
             dataGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -143,6 +153,7 @@ namespace BaseData
             buttonPanel.Controls.Add(this.changeTableButton);
             buttonPanel.Controls.Add(this.sqlBuilderButton);
             buttonPanel.Controls.Add(this.deleteButton);
+            buttonPanel.Controls.Add(this.joinBuilderButton);
 
             // UserControl
             this.AutoScaleDimensions = new SizeF(7F, 15F);
@@ -157,6 +168,33 @@ namespace BaseData
             ResumeLayout(false);
         }
 
+        private void OpenJoinBuilder(object? sender, EventArgs e)
+        {
+            try
+            {
+                if (!AppSettings.IsConnectionStringSet)
+                {
+                    MessageBox.Show("Сначала подключитесь к базе данных", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    rch.LogWarning("Попытка открыть мастер соединений без подключения к БД");
+                    return;
+                }
+
+                using (JoinBuilderForm joinBuilderForm = new JoinBuilderForm(rch))
+                {
+                    rch.LogInfo("Открытие мастера соединений из формы клиентов");
+                    joinBuilderForm.ShowDialog();
+                    rch.LogInfo("Мастер соединений закрыт");
+                }
+            }
+            catch (Exception ex)
+            {
+                rch.LogError($"Ошибка при открытии мастера соединений: {ex.Message}");
+                MessageBox.Show($"Ошибка при открытии мастера соединений: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void ApplyDataGridViewStyle()
         {
             try
@@ -165,16 +203,14 @@ namespace BaseData
                 {
                     Styles.ApplyDataGridViewStyle(dataGrid);
 
-                    // Устанавливаем серый цвет заголовков
-                    dataGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.LightGray;
-                    dataGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.Black;
-                    dataGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
-                    dataGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.Black;
+                    dataGrid.ColumnHeadersDefaultCellStyle.BackColor = Styles.AccentColor;
+                    dataGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                    dataGrid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Styles.AccentColor;
+                    dataGrid.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.White;
 
-                    // Устанавливаем серый цвет выделения для ячеек и строк
-                    dataGrid.DefaultCellStyle.SelectionBackColor = Color.LightGray;
-                    dataGrid.DefaultCellStyle.SelectionForeColor = Color.Black;
-                    dataGrid.RowHeadersDefaultCellStyle.SelectionBackColor = Color.LightGray;
+                    dataGrid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(245, 240, 235);
+                    dataGrid.DefaultCellStyle.SelectionForeColor = Styles.DarkColor;
+                    dataGrid.RowHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(245, 240, 235);
 
                     dataGrid.DefaultCellStyle.Font = new Font("Segoe UI", 8.5F);
                     dataGrid.DefaultCellStyle.Padding = new Padding(3);
@@ -190,6 +226,14 @@ namespace BaseData
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            // Применяем стили к кнопке поиска
+            var btnSearch = searchPanel?.Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Найти");
+            if (btnSearch != null)
+            {
+                Styles.ApplySecondaryButtonStyle(btnSearch);
+                btnSearch.Font = new Font(btnSearch.Font.FontFamily, 9F, FontStyle.Regular);
+            }
 
             if (editButton != null)
             {
@@ -211,6 +255,11 @@ namespace BaseData
                 Styles.ApplySecondaryButtonStyle(sqlBuilderButton);
                 sqlBuilderButton.Font = new Font(sqlBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
             }
+            if (joinBuilderButton != null)
+            {
+                Styles.ApplySecondaryButtonStyle(joinBuilderButton);
+                joinBuilderButton.Font = new Font(joinBuilderButton.Font.FontFamily, 9F, FontStyle.Regular);
+            }
             if (searchTextBox != null)
             {
                 Styles.ApplyTextBoxStyle(searchTextBox);
@@ -225,6 +274,8 @@ namespace BaseData
                 btnResetSearch.Font = new Font(btnResetSearch.Font.FontFamily, 9F, FontStyle.Regular);
             }
         }
+
+        private Panel? searchPanel => this.Controls.OfType<Panel>().FirstOrDefault();
 
         private void DataGrid_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
         {
