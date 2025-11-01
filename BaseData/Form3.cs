@@ -34,15 +34,15 @@ namespace BaseData
             this.mainTabControl.Size = new Size(1000, 700);
 
             // Устанавливаем фиксированные названия вкладок
-            clientsTabPage.Text = "Клиенты";
+            clientsTabPage.Text = MetaInformation.tables[0];
             clientsTabPage.Padding = new Padding(10);
             clientsTabPage.BackColor = Styles.LightColor;
 
-            goodsTabPage.Text = "Товары";
+            goodsTabPage.Text = MetaInformation.tables[1];
             goodsTabPage.Padding = new Padding(10);
             goodsTabPage.BackColor = Styles.LightColor;
 
-            ordersTabPage.Text = "Заказы";
+            ordersTabPage.Text = MetaInformation.tables[3];
             ordersTabPage.Padding = new Padding(10);
             ordersTabPage.BackColor = Styles.LightColor;
 
@@ -223,17 +223,13 @@ namespace BaseData
             tabPage.Controls.Clear();
             tabPage.Controls.Add(label);
         }
-
-        public static void RefreshTags()
+        public static void RefreshData()
         {
-            // Устанавливаем фиксированные названия вкладок
-            if (clientsTabPage != null) clientsTabPage.Text = "Клиенты";
-            if (goodsTabPage != null) goodsTabPage.Text = "Товары";
-            if (ordersTabPage != null) ordersTabPage.Text = "Заказы";
+            clientsTabPage.Text = MetaInformation.tables[0];
+            goodsTabPage.Text = MetaInformation.tables[1];
+            ordersTabPage.Text = MetaInformation.tables[3];
         }
     }
-
-    // Extension method для установки цвета текста вкладки
     public static class TabPageExtensions
     {
         public static void SetForeColor(this TabPage tabPage, Color color)

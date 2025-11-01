@@ -87,7 +87,7 @@ namespace BaseData
             {
                 Request($"ALTER TABLE {MetaInformation.tables[TableNum]} RENAME TO {newTableName}");
                 MetaInformation.tables[TableNum] = newTableName.ToLower();
-                Form3.RefreshTags();
+                Form3.RefreshData();
             }
             if (!string.IsNullOrEmpty(oldColumnName) && !string.IsNullOrEmpty(newColumnName))
             {
@@ -140,25 +140,32 @@ namespace BaseData
 
         private void AddColumn_Click(object sender, EventArgs e)
         {
-            string column = AddColumnText.Text;
-            string type = AddColumnTypeBox.Text;
-            if (column == "")
+            try
             {
-                MessageBox.Show("Введите название столбца");
-                log.LogWarning("Введите название столбца");
-                return;
+                string column = AddColumnText.Text;
+                string type = AddColumnTypeBox.Text;
+                if (column == "" || type == "")
+                {
+                    MessageBox.Show("Введите название столбца и тип");
+                    log.LogWarning("Введите название столбца");
+                    return;
+                }
+                if (column == "" || !ContainsOnlyEnglishLetters(column))
+                {
+                    MessageBox.Show("Столбец должен быть назван английскими буквами");
+                    log.LogWarning("Столбец должен быть назван английскими буквами");
+                    return;
+                }
+                log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[TableNum]}");
+                Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD COLUMN {column} {type}");
+                MetaInformation.RefreshData();
+                RefreshTables();
+                this.Close();
             }
-            if (column == "" || !ContainsOnlyEnglishLetters(column))
+            catch (Exception ex)
             {
-                MessageBox.Show("Столбец должен быть назван английскими буквами");
-                log.LogWarning("Столбец должен быть назван английскими буквами");
-                return;
+                MessageBox.Show(ex.Message);
             }
-            log.LogInfo($"Добавлен столбец {column} с типом {type} в таблицу {MetaInformation.tables[TableNum]}");
-            Request($"ALTER TABLE {MetaInformation.tables[TableNum]} ADD COLUMN {column} {type}");
-            MetaInformation.RefreshData();
-            RefreshTables();
-            this.Close();
         }
         private void Request(string request)
         {

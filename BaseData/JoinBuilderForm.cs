@@ -63,7 +63,7 @@ namespace BaseData
             mainPanel.SetColumnSpan(titleLabel, 2);
             mainPanel.Controls.Add(titleLabel, 0, 0);
 
-            // Панель выбора таблиц
+            // ������ ������ ������
             GroupBox tableSelectionGroup = new GroupBox()
             {
                 Text = "Выбор таблиц для соединения",
@@ -111,6 +111,8 @@ namespace BaseData
             cmbSecondColumn = new ComboBox();
             cmbSecondColumn.DropDownStyle = ComboBoxStyle.DropDownList;
 
+
+
             tablePanel.Controls.Add(lblFirstColumn, 0, 1);
             tablePanel.Controls.Add(cmbFirstColumn, 1, 1);
             tablePanel.Controls.Add(lblSecondColumn, 2, 1);
@@ -125,7 +127,8 @@ namespace BaseData
                 Font = new Font(Styles.MainFont.FontFamily, 10F, FontStyle.Bold),
                 ForeColor = Styles.DarkColor,
                 Dock = DockStyle.Fill,
-                Padding = new Padding(10)
+                Padding = new Padding(10),
+                Height = 50
             };
             mainPanel.SetColumnSpan(joinControlGroup, 2);
             mainPanel.Controls.Add(joinControlGroup, 0, 2);
@@ -134,29 +137,42 @@ namespace BaseData
             controlPanel.Dock = DockStyle.Fill;
             controlPanel.RowCount = 1;
             controlPanel.ColumnCount = 5;
-            controlPanel.Padding = new Padding(5);
+            controlPanel.Padding = new Padding(10);
+            controlPanel.Height = 60;
 
             Label lblJoinType = new Label() { Text = "Тип соединения:", TextAlign = ContentAlignment.MiddleRight };
             Styles.ApplyLabelStyle(lblJoinType, true);
             cmbJoinType = new ComboBox();
             cmbJoinType.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbJoinType.Items.AddRange(new string[] { "INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL JOIN" });
+            cmbJoinType.Items.AddRange(new string[] { "INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL JOIN", "CROSS JOIN" });
             cmbJoinType.SelectedIndex = 0;
 
-            btnAddJoin = new Button() { Text = "Добавить условие", Size = new Size(120, 28) };
+            btnAddJoin = new Button() { Text = "Добавить условие", Size = new Size(150, 70) };
             btnAddJoin.Click += BtnAddJoin_Click;
 
-            btnExecute = new Button() { Text = "Выполнить запрос", Size = new Size(120, 28) };
+            btnExecute = new Button() { Text = "Выполнить запрос", Size = new Size(150, 70) };
             btnExecute.Click += BtnExecute_Click;
 
-            btnClear = new Button() { Text = "Очистить все", Size = new Size(120, 28) };
+            btnClear = new Button() { Text = "Очистить все", Size = new Size(150, 70) };
             btnClear.Click += BtnClear_Click;
+
+            // После создания кнопок добавьте:
+            btnAddJoin.Margin = new Padding(10, 5, 10, 5);
+            btnExecute.Margin = new Padding(10, 5, 10, 5);
+            btnClear.Margin = new Padding(10, 5, 10, 5);
 
             controlPanel.Controls.Add(lblJoinType, 0, 0);
             controlPanel.Controls.Add(cmbJoinType, 1, 0);
             controlPanel.Controls.Add(btnAddJoin, 2, 0);
             controlPanel.Controls.Add(btnExecute, 3, 0);
             controlPanel.Controls.Add(btnClear, 4, 0);
+
+            // Добавьте выравнивание для элементов в ячейках
+            controlPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // Тип соединения
+            controlPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // ComboBox
+            controlPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // Добавить условие
+            controlPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // Выполнить
+            controlPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize)); // Очистить
 
             joinControlGroup.Controls.Add(controlPanel);
 
@@ -170,7 +186,6 @@ namespace BaseData
                 Padding = new Padding(10)
             };
             mainPanel.Controls.Add(joinsListGroup, 0, 3);
-            mainPanel.SetColumnSpan(joinsListGroup, 2);
 
             lstJoins = new ListBox();
             lstJoins.Dock = DockStyle.Fill;
@@ -196,7 +211,7 @@ namespace BaseData
             dgvResults.AllowUserToDeleteRows = false;
             dgvResults.ReadOnly = true;
             dgvResults.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvResults.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvResults.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
             dgvResults.Height = 300;
             resultsGroup.Controls.Add(dgvResults);
 
@@ -211,14 +226,13 @@ namespace BaseData
             Button btnClose = new Button() { Text = "Закрыть", Size = new Size(100, 35) };
             btnClose.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             btnClose.Click += (s, e) => this.Close();
-            Styles.ApplySecondaryButtonStyle(btnClose);
 
             bottomPanel.Controls.Add(btnClose);
 
             // Настройка строк и колонок главной панели
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));  // Заголовок
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));  // // Заголовок
             mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 100F)); // Выбор таблиц
-            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));  // Управление
+            mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 150F));  // Управление
             mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 150F)); // Список соединений
             mainPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));  // Результаты
             mainPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F));  // Кнопка закрытия
@@ -244,7 +258,7 @@ namespace BaseData
                 if (cmbJoinType != null) Styles.ApplyComboBoxStyle(cmbJoinType);
 
                 if (btnAddJoin != null) Styles.ApplySecondaryButtonStyle(btnAddJoin);
-                if (btnExecute != null) Styles.ApplyPrimaryButtonStyle(btnExecute);
+                if (btnExecute != null) Styles.ApplyButtonStyle(btnExecute);
                 if (btnClear != null) Styles.ApplyDangerButtonStyle(btnClear);
 
                 if (dgvResults != null)
@@ -384,10 +398,22 @@ namespace BaseData
         {
             try
             {
-                if (cmbFirstTable.SelectedItem == null || cmbSecondTable.SelectedItem == null ||
-                    cmbFirstColumn.SelectedItem == null || cmbSecondColumn.SelectedItem == null)
+                string selectedJoinType = cmbJoinType.SelectedItem?.ToString();
+                bool isCrossJoin = selectedJoinType == "CROSS JOIN";
+
+                // Для CROSS JOIN не требуются колонки для соединения
+                if (!isCrossJoin && (cmbFirstTable.SelectedItem == null || cmbSecondTable.SelectedItem == null ||
+                    cmbFirstColumn.SelectedItem == null || cmbSecondColumn.SelectedItem == null))
                 {
                     MessageBox.Show("Заполните все поля для добавления условия соединения", "Внимание",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Для обычных JOIN требуются все поля
+                if (isCrossJoin && (cmbFirstTable.SelectedItem == null || cmbSecondTable.SelectedItem == null))
+                {
+                    MessageBox.Show("Выберите таблицы для CROSS JOIN", "Внимание",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -396,9 +422,9 @@ namespace BaseData
                 {
                     FirstTable = cmbFirstTable.SelectedItem.ToString(),
                     SecondTable = cmbSecondTable.SelectedItem.ToString(),
-                    FirstColumn = cmbFirstColumn.SelectedItem.ToString(),
-                    SecondColumn = cmbSecondColumn.SelectedItem.ToString(),
-                    JoinType = cmbJoinType.SelectedItem.ToString()
+                    FirstColumn = isCrossJoin ? null : cmbFirstColumn.SelectedItem?.ToString(),
+                    SecondColumn = isCrossJoin ? null : cmbSecondColumn.SelectedItem?.ToString(),
+                    JoinType = selectedJoinType
                 };
 
                 joinConditions.Add(joinCondition);
@@ -409,7 +435,7 @@ namespace BaseData
             catch (Exception ex)
             {
                 rch.LogError($"Ошибка добавления условия соединения: {ex.Message}");
-                MessageBox.Show($"Ошибка добавления условия соединения: {ex.Message}", "Ошибка",
+                MessageBox.Show($"Ошибка добавления условия соединения: {ex.Message}", "ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -425,6 +451,7 @@ namespace BaseData
                     return;
                 }
 
+                // ДОБАВЛЕННАЯ ЛОГИКА ВЫПОЛНЕНИЯ ЗАПРОСА:
                 string query = BuildJoinQuery();
                 rch.LogInfo($"Выполнение JOIN запроса: {query}");
 
@@ -440,17 +467,8 @@ namespace BaseData
                         ApplyResultGridStyles();
 
                         rch.LogInfo($"Запрос выполнен успешно. Получено строк: {dataTable.Rows.Count}");
-
-                        if (dataTable.Rows.Count == 0)
-                        {
-                            MessageBox.Show("Запрос выполнен успешно, но данные не найдены", "Информация",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                        else
-                        {
-                            MessageBox.Show($"Запрос выполнен успешно. Найдено записей: {dataTable.Rows.Count}",
-                                "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
+                        MessageBox.Show($"Запрос выполнен успешно. Найдено записей: {dataTable.Rows.Count}",
+                            "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
@@ -461,6 +479,42 @@ namespace BaseData
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
+
+        private string BuildJoinQuery()
+        {
+            if (joinConditions.Count == 0) return string.Empty;
+
+            var firstCondition = joinConditions[0];
+            string query;
+
+            if (firstCondition.JoinType == "CROSS JOIN")
+            {
+                query = $"SELECT * FROM {firstCondition.FirstTable} CROSS JOIN {firstCondition.SecondTable}";
+            }
+            else
+            {
+                query = $"SELECT * FROM {firstCondition.FirstTable} " + $"{firstCondition.JoinType} {firstCondition.SecondTable} " + $"ON {firstCondition.FirstTable}.{firstCondition.FirstColumn} = " + $"{firstCondition.SecondTable}.{firstCondition.SecondColumn}";
+            }
+
+            for (int i = 1; i < joinConditions.Count; i++)
+            {
+                var condition = joinConditions[i];
+
+                if (condition.JoinType == "CROSS JOIN")
+                {
+                    query += $" CROSS JOIN {condition.SecondTable}";
+                }
+                else
+                {
+                    query += $" {condition.JoinType} {condition.SecondTable} " + $"ON {condition.FirstTable}.{condition.FirstColumn} = " + $"{condition.SecondTable}.{condition.SecondColumn}";
+                }
+            }
+
+            return query;
+        }
+
 
         private void BtnClear_Click(object sender, EventArgs e)
         {
@@ -479,28 +533,6 @@ namespace BaseData
             }
         }
 
-        private string BuildJoinQuery()
-        {
-            if (joinConditions.Count == 0) return string.Empty;
-
-            // Начинаем с первой таблицы
-            var firstCondition = joinConditions[0];
-            string query = $"SELECT * FROM {firstCondition.FirstTable} " +
-                          $"{firstCondition.JoinType} {firstCondition.SecondTable} " +
-                          $"ON {firstCondition.FirstTable}.{firstCondition.FirstColumn} = " +
-                          $"{firstCondition.SecondTable}.{firstCondition.SecondColumn}";
-
-            // Добавляем остальные JOIN условия
-            for (int i = 1; i < joinConditions.Count; i++)
-            {
-                var condition = joinConditions[i];
-                query += $" {condition.JoinType} {condition.SecondTable} " +
-                        $"ON {condition.FirstTable}.{condition.FirstColumn} = " +
-                        $"{condition.SecondTable}.{condition.SecondColumn}";
-            }
-
-            return query;
-        }
 
         private void ApplyResultGridStyles()
         {
@@ -527,4 +559,5 @@ namespace BaseData
             base.OnFormClosed(e);
         }
     }
+
 }

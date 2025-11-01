@@ -203,9 +203,9 @@ namespace BaseData
         private void Auto_Click(object? sender, EventArgs e)
         {
             if (PortText != null) PortText.Text = "5432";
-            if (BdText != null) BdText.Text = "newdata";
+            if (BdText != null) BdText.Text = "Internet-shop(Project)";
             if (IdText != null) IdText.Text = "postgres";
-            if (PasswordText != null) PasswordText.Text = "Al7xsemenov@";
+            if (PasswordText != null) PasswordText.Text = "WE<3ANGELINA";
         }
 
         private void InitializeComponent()
